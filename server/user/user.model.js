@@ -86,11 +86,11 @@ class User extends Model {
     };
   }
 
-  static hooks() {
+  static hooks(Hooks) {
     return {
-      beforeCreate: user => user.encryptPassword(),
-      beforeUpdate: user => user.encryptPassword(),
-      beforeBulkCreate: users => {
+      [Hooks.beforeCreate]: user => user.encryptPassword(),
+      [Hooks.beforeUpdate]: user => user.encryptPassword(),
+      [Hooks.beforeBulkCreate]: users => {
         return Promise.all(users.map(user => user.encryptPassword()));
       }
     };
@@ -135,7 +135,7 @@ class User extends Model {
     return Promise.map(users, userData => Promise.try(() => {
       const user = find(found, { email: userData.email });
       if (user && !user.deletedAt) {
-        const message = this.attributes.email.unique.msg;
+        const message = this.rawAttributes.email.unique.msg;
         throw new UniqueConstraintError({ message });
       }
       if (user) {

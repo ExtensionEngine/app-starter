@@ -4,6 +4,7 @@ const { migrationsPath } = require('../../../sequelize.config');
 const { wrapAsyncMethods } = require('./helpers');
 const config = require('./config');
 const forEach = require('lodash/forEach');
+const Hooks = require('./hooks');
 const invoke = require('lodash/invoke');
 const logger = require('../logger')('db');
 const pick = require('lodash/pick');
@@ -17,16 +18,6 @@ const User = require('../../user/user.model');
 
 const isProduction = process.env.NODE_ENV === 'production';
 const sequelize = createConnection(config);
-const { Sequelize: { DataTypes } } = sequelize;
-
-const defineModel = Model => {
-  const fields = invoke(Model, 'fields', DataTypes, sequelize) || {};
-  const hooks = invoke(Model, 'hooks') || {};
-  const scopes = invoke(Model, 'scopes', sequelize) || {};
-  const options = invoke(Model, 'options') || {};
-  wrapAsyncMethods(Model);
-  return Model.init(fields, { sequelize, hooks, scopes, ...options });
-};
 
 function initialize() {
   const umzug = new Umzug({
@@ -36,7 +27,7 @@ function initialize() {
       tableName: config.migrationStorageTableName
     },
     migrations: {
-      params: [sequelize.getQueryInterface(), Sequelize],
+      params: [sequelize.getQueryInterface(), sequelize.Sequelize],
       path: migrationsPath
     },
     logging(message) {
@@ -49,10 +40,10 @@ function initialize() {
     }
   });
 
-  umzug.on('migrating', migration => logger.info({ migration }, '⬆️  Migrating:', migration));
-  umzug.on('migrated', migration => logger.info({ migration }, '⬆️  Migrated:', migration));
-  umzug.on('reverting', migration => logger.info({ migration }, '⬇️  Reverting:', migration));
-  umzug.on('reverted', migration => logger.info({ migration }, '⬇️  Reverted:', migration));
+  umzug.on('migrating', m => logger.info({ migration: m }, '⬆️  Migrating:', m));
+  umzug.on('migrated', m => logger.info({ migration: m }, '⬆️  Migrated:', m));
+  umzug.on('reverting', m => logger.info({ migration: m }, '⬇️  Reverting:', m));
+  umzug.on('reverted', m => logger.info({ migration: m }, '⬇️  Reverted:', m));
 
   return sequelize.authenticate()
     .then(() => logger.info(getConfig(sequelize), '🗄️  Connected to database'))
@@ -70,10 +61,30 @@ const models = {
   User: defineModel(User)
 };
 
+function defineModel(Model, connection = sequelize) {
+  const { DataTypes } = connection.Sequelize;
+  const fields = invoke(Model, 'fields', DataTypes, connection) || {};
+  const options = invoke(Model, 'options') || {};
+  Object.assign(options, { sequelize: connection });
+  wrapAsyncMethods(Model);
+  return Model.init(fields, options);
+}
+
 forEach(models, model => {
   invoke(model, 'associate', models);
-  invoke(model, 'addHooks', models);
+  addHooks(model, Hooks, models);
+  addScopes(model, models);
 });
+
+function addHooks(model, Hooks, models) {
+  const hooks = invoke(model, 'hooks', Hooks, models);
+  forEach(hooks, (it, type) => model.addHook(type, it));
+}
+
+function addScopes(model, models) {
+  const scopes = invoke(model, 'scopes', models);
+  forEach(scopes, (it, name) => model.addScope(name, it, { override: true }));
+}
 
 const db = {
   Sequelize,
@@ -93,7 +104,8 @@ function createConnection(config) {
 }
 
 function getConfig(sequelize) {
-  // NOTE: List public fields: https://git.io/fxVG2
+  // NOTE: List public fields:
+  // https://github.com/sequelize/sequelize/blob/v5.12.2/lib/sequelize.js#L280-L295
   return pick(sequelize.config, [
     'database', 'username', 'host', 'port', 'protocol',
     'pool',
@@ -107,15 +119,13 @@ function getConfig(sequelize) {
 }
 
 function checkPostgreVersion(sequelize) {
-  const type = sequelize.QueryTypes.VERSION;
-  return sequelize.query('SHOW server_version', { type })
-    .then(version => {
-      logger.info({ version }, 'PostgreSQL version:', version);
-      const range = pkg.engines && pkg.engines.postgres;
-      if (!range) return;
-      if (semver.satisfies(semver.coerce(version), range)) return;
-      const err = new Error(`"${pkg.name}" requires PostgreSQL ${range}`);
-      logger.error({ version, required: range }, err.message);
-      return Promise.reject(err);
-    });
+  return sequelize.getQueryInterface().databaseVersion().then(version => {
+    logger.info({ version }, 'PostgreSQL version:', version);
+    const range = pkg.engines && pkg.engines.postgres;
+    if (!range) return;
+    if (semver.satisfies(semver.coerce(version), range)) return;
+    const err = new Error(`"${pkg.name}" requires PostgreSQL ${range}`);
+    logger.error({ version, required: range }, err.message);
+    return Promise.reject(err);
+  });
 }
