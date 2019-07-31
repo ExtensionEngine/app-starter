@@ -5,12 +5,13 @@ const ctrl = require('./user.controller');
 const multer = require('multer');
 const router = require('express').Router();
 
+const isString = arg => typeof arg === 'string';
 const upload = multer({ storage: multer.memoryStorage() });
 
 router
-  .post('/login', ctrl.login)
-  .post('/forgotPassword', ctrl.forgotPassword)
-  .post('/resetPassword', ctrl.resetPassword)
+  .post('/login', normalizeEmail, ctrl.login)
+  .post('/forgotPassword', normalizeEmail, ctrl.forgotPassword)
+  .post('/resetPassword', normalizeEmail, ctrl.resetPassword)
   .use(auth)
   .get('/', ctrl.list)
   .post('/', ctrl.create)
@@ -23,3 +24,9 @@ module.exports = {
   path: '/users',
   router
 };
+
+function normalizeEmail(req, _res, next) {
+  const { body } = req;
+  if (isString(body.email)) body.email = body.email.toLowerCase();
+  next();
+}
