@@ -8,7 +8,6 @@ const mime = require('mime');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 
-const { ACCEPTED, BAD_REQUEST, CONFLICT, NOT_FOUND } = HttpStatus;
 const { Op } = Sequelize;
 
 const columns = {
@@ -37,7 +36,7 @@ function create(req, res) {
   const { body, origin } = req;
   return User.restoreOrBuild(pick(body, inputAttrs))
     .then(([result]) => {
-      if (result.isRejected()) return createError(CONFLICT);
+      if (result.isRejected()) return createError(HttpStatus.CONFLICT);
       return User.invite(result.value(), { origin });
     })
     .then(user => res.jsend.success(user.profile));
@@ -45,7 +44,7 @@ function create(req, res) {
 
 function patch({ params, body }, res) {
   return User.findByPk(params.id, { paranoid: false })
-    .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
+    .then(user => user || createError(HttpStatus.NOT_FOUND, 'User does not exist!'))
     .then(user => user.update(pick(body, inputAttrs)))
     .then(user => res.jsend.success(user.profile));
 }
@@ -53,7 +52,7 @@ function patch({ params, body }, res) {
 function destroy({ params }, res) {
   sequelize.transaction(async transaction => {
     const user = await User.findByPk(params.id, { transaction });
-    if (!user) createError(NOT_FOUND);
+    if (!user) createError(HttpStatus.NOT_FOUND);
     await user.destroy({ transaction });
     res.end();
   });
@@ -67,15 +66,15 @@ function login({ user }, res) {
 
 function invite({ params, origin }, res) {
   return User.findByPk(params.id, { paranoid: false })
-    .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
+    .then(user => user || createError(HttpStatus.NOT_FOUND, 'User does not exist!'))
     .then(user => User.invite(user, { origin }))
-    .then(() => res.status(ACCEPTED).end());
+    .then(() => res.status(HttpStatus.ACCEPTED).end());
 }
 
 function forgotPassword({ origin, body }, res) {
   const { email } = body;
   return User.findOne({ where: { email } })
-    .then(user => user || createError(NOT_FOUND, 'User not found!'))
+    .then(user => user || createError(HttpStatus.NOT_FOUND, 'User not found!'))
     .then(user => user.sendResetToken({ origin }))
     .then(() => res.end());
 }
@@ -83,7 +82,7 @@ function forgotPassword({ origin, body }, res) {
 function resetPassword({ body, params }, res) {
   const { password, token } = body;
   return User.findOne({ where: { token } })
-    .then(user => user || createError(NOT_FOUND, 'Invalid token!'))
+    .then(user => user || createError(HttpStatus.NOT_FOUND, 'Invalid token!'))
     .then(user => {
       user.password = password;
       return user.save();
