@@ -2,7 +2,7 @@
 
 const { auth: config = {} } = require('../config');
 const { Model, Sequelize, Op, UniqueConstraintError } = require('sequelize');
-const { role } = require('../../common/config');
+const { Role } = require('../../common/config');
 const { sql } = require('../common/database/helpers');
 const bcrypt = require('bcrypt');
 const castArray = require('lodash/castArray');
@@ -13,8 +13,6 @@ const mail = require('../common/mail');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const Promise = require('bluebird');
-const Role = require('../../common/config/role');
-const values = require('lodash/values');
 
 class User extends Model {
   static fields(DataTypes) {
@@ -30,9 +28,9 @@ class User extends Model {
         validate: { notEmpty: true, len: [5, 255] }
       },
       role: {
-        type: DataTypes.ENUM(values(role)),
+        type: DataTypes.ENUM(Object.values(Role)),
         allowNull: false,
-        defaultValue: role.RISING_LEADER
+        defaultValue: Role.User
       },
       token: {
         type: DataTypes.STRING,
@@ -172,7 +170,7 @@ class User extends Model {
   }
 
   isAdmin() {
-    return this.role === Role.ADMIN;
+    return this.role === Role.Admin;
   }
 }
 

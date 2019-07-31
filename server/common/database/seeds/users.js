@@ -2,7 +2,7 @@
 
 const { auth: config = {} } = require('../../../config');
 const bcrypt = require('bcrypt');
-const { role } = require('../../../../common/config');
+const { Role } = require('../../../../common/config');
 
 const hash = password => bcrypt.hashSync(password, config.saltRounds);
 
@@ -12,7 +12,7 @@ const users = [{
   last_name: 'Example',
   email: 'admin@example.org',
   password: hash('admin123'),
-  role: role.ADMIN,
+  role: Role.Admin,
   created_at: now,
   updated_at: now
 }, {
@@ -20,7 +20,7 @@ const users = [{
   last_name: 'Example',
   email: 'user@example.org',
   password: hash('user123'),
-  role: role.USER,
+  role: Role.User,
   created_at: now,
   updated_at: now
 }];

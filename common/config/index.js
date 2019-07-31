@@ -1,7 +1,3 @@
 'use strict';
 
-const role = require('./role');
-
-module.exports = {
-  role
-};
+exports.Role = require('./role');
