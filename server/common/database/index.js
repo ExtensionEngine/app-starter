@@ -9,6 +9,7 @@ const invoke = require('lodash/invoke');
 const logger = require('../logger')('db');
 const pick = require('lodash/pick');
 const pkg = require('../../../package.json');
+const result = require('lodash/result');
 const semver = require('semver');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
@@ -83,7 +84,10 @@ function addHooks(model, Hooks, models) {
 
 function addScopes(model, models) {
   const scopes = invoke(model, 'scopes', models);
-  forEach(scopes, (it, name) => model.addScope(name, it, { override: true }));
+  forEach(scopes, (scope, name) => {
+    if (name === 'defaultScope') scope = result(scopes, 'defaultScope');
+    model.addScope(name, scope, { override: true });
+  });
 }
 
 const db = {
