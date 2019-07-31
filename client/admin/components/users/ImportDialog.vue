@@ -151,7 +151,7 @@ export default {
 }
 
 .v-text-field {
-  /deep/ .v-text-field__slot {
+  ::v-deep .v-text-field__slot {
     cursor: pointer;
 
     input {
@@ -159,7 +159,7 @@ export default {
     }
   }
 
-  /deep/ .mdi {
+  ::v-deep .mdi {
     transform: rotate(-90deg);
   }
 }

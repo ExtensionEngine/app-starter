@@ -134,7 +134,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.user-table /deep/ .v-input--checkbox {
+.user-table ::v-deep .v-input--checkbox {
   justify-content: center;
 }
 </style>
