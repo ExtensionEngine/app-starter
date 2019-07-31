@@ -26,12 +26,10 @@ import { mapActions } from 'vuex';
 import VInput from '@/common/components/form/VInput';
 
 export default {
-  data() {
-    return {
-      email: '',
-      message: null
-    };
-  },
+  data: () => ({
+    email: '',
+    message: null
+  }),
   methods: {
     ...mapActions('auth', ['forgotPassword']),
     submit() {

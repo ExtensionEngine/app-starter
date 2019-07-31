@@ -84,18 +84,16 @@ const headers = () => [
 
 export default {
   name: 'user-list',
-  data() {
-    return {
-      users: [],
-      selectedUsers: [],
-      filter: null,
-      dataTable: defaultPage(),
-      totalItems: 0,
-      userDialog: false,
-      editedUser: null,
-      confirmation: { dialog: null }
-    };
-  },
+  data: () => ({
+    users: [],
+    selectedUsers: [],
+    filter: null,
+    dataTable: defaultPage(),
+    totalItems: 0,
+    userDialog: false,
+    editedUser: null,
+    confirmation: { dialog: null }
+  }),
   computed: {
     headers,
     defaultPage

@@ -85,12 +85,10 @@ export default {
     visible: { type: Boolean, default: false },
     userData: { type: Object, default: () => ({}) }
   },
-  data() {
-    return {
-      user: resetUser(),
-      isLoading: false
-    };
-  },
+  data: () => ({
+    user: resetUser(),
+    isLoading: false
+  }),
   computed: {
     show: {
       get() {

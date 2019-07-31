@@ -37,13 +37,11 @@ const LOGIN_ERR_MESSAGE = 'User email and password do not match';
 export default {
   name: 'login',
   mixins: [withValidation()],
-  data() {
-    return {
-      email: '',
-      password: '',
-      message: ''
-    };
-  },
+  data: () => ({
+    email: '',
+    password: '',
+    message: ''
+  }),
   methods: {
     ...mapActions('auth', ['login']),
     submit() {

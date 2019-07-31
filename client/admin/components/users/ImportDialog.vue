@@ -67,15 +67,13 @@ const inputFormats = {
 export default {
   name: 'import-dialog',
   mixins: [withValidation(), withFocusTrap({ el })],
-  data() {
-    return {
-      showDialog: false,
-      importing: false,
-      filename: null,
-      form: null,
-      serverErrorsReport: null
-    };
-  },
+  data: () => ({
+    showDialog: false,
+    importing: false,
+    filename: null,
+    form: null,
+    serverErrorsReport: null
+  }),
   computed: {
     importDisabled() {
       return !this.filename || this.vErrors.any() || this.importing;

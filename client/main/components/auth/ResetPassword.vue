@@ -28,13 +28,11 @@ import { withValidation } from '@/common/validation';
 
 export default {
   mixins: [withValidation()],
-  data() {
-    return {
-      error: null,
-      password: '',
-      passwordConfirmation: ''
-    };
-  },
+  data: () => ({
+    error: null,
+    password: '',
+    passwordConfirmation: ''
+  }),
   methods: {
     ...mapActions('auth', ['resetPassword']),
     submit() {
