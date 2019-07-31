@@ -7,7 +7,8 @@ const url = {
 };
 
 function login(credentials) {
-  return request.post(url.login, credentials)
+  return request.base
+    .post(url.login, credentials)
     .then(res => res.data.data)
     .then(({ token, user }) => {
       localStorage.setItem('LMS_TOKEN', token);

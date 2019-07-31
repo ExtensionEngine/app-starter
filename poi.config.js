@@ -72,8 +72,11 @@ module.exports = {
     config.resolve.extensions.merge(extensions);
 
     config
-    .plugin('dotenv')
-    .use(require.resolve('dotenv-webpack'));
+      .plugin('dotenv')
+      .use(require.resolve('dotenv-webpack'));
+  },
+  envs: {
+    API_PATH: process.env.API_PATH
   },
   devServer
 };
