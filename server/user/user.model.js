@@ -168,7 +168,8 @@ class User extends Model {
   }
 
   createToken(options = {}) {
-    const payload = pick(this, ['id', 'email']);
+    const payload = { id: this.id, email: this.email };
+    Object.assign(options, { issuer: config.issuer });
     return jwt.sign(payload, config.secret, options);
   }
 

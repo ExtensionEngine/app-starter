@@ -1,16 +1,20 @@
 'use strict';
 
-// const auth = require('./common/auth').authenticate('jwt');
+const { authenticate } = require('./common/auth');
 const express = require('express');
 const get = require('lodash/get');
 const { Sequelize } = require('./common/database');
 const user = require('./user');
 
 const router = express.Router();
-// TODO: Remove this demo route!
-router.use('/ping', (_, res) => res.jsend.success(null));
-router.use('/', parseOptions);
+router.use(parseOptions);
+
+// Public routes:
 router.use(user.path, user.router);
+
+// Protected routes:
+router.use(authenticate('jwt'));
+// router.use(<module>.path, <module>.router);
 
 module.exports = router;
 
