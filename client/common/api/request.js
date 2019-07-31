@@ -11,7 +11,7 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(config => {
-  const token = window.localStorage.getItem('LMS_TOKEN');
+  const token = localStorage.getItem('LMS_TOKEN');
   if (token) {
     config.headers['Authorization'] = `JWT ${token}`;
   } else if (!token && config.headers['Authorization']) {
@@ -22,8 +22,8 @@ client.interceptors.request.use(config => {
 
 client.interceptors.response.use(res => res, err => {
   if (err.response.status === 401) {
-    window.localStorage.removeItem('LMS_TOKEN');
-    window.location.replace(window.location.origin);
+    localStorage.removeItem('LMS_TOKEN');
+    location.replace(location.origin);
   } else {
     throw err;
   }

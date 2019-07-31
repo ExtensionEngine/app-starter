@@ -4,7 +4,7 @@ const set = require('lodash/set');
 
 export const auth = ({ actions, path, key, storage }) => store => {
   key = key || 'USER';
-  storage = window.localStorage;
+  storage = localStorage;
   path = path || 'auth.user';
   const { login, logout } = Object.assign({
     login: 'auth/login',
@@ -25,6 +25,6 @@ export const auth = ({ actions, path, key, storage }) => store => {
   store.subscribeAction(({ type }) => {
     if (type !== logout) return;
     storage.removeItem(key);
-    window.location.replace(window.location.origin);
+    location.replace(location.origin);
   });
 };

@@ -28,6 +28,6 @@ router.beforeEach((to, from, next) => {
   next();
 });
 
-const loadMainSpa = () => window.location.replace(window.location.origin);
+const loadMainSpa = () => location.replace(location.origin);
 
 export default router;
