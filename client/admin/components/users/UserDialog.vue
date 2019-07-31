@@ -25,7 +25,7 @@
             class="mb-3" />
           <v-select
             v-model="user.role"
-            v-validate="'required'"
+            v-validate="{ required: true }"
             @focus="focusTrap.pause()"
             @blur="focusTrap.unpause()"
             :items="roles"
@@ -35,14 +35,14 @@
             class="mb-3" />
           <v-text-field
             v-model="user.firstName"
-            v-validate="'required|alpha|min:2|max:50'"
+            v-validate="{ required: true, alpha: true, min: 2, max: 50 }"
             :error-messages="vErrors.collect('firstName')"
             label="First Name"
             data-vv-name="firstName"
             class="mb-3" />
           <v-text-field
             v-model="user.lastName"
-            v-validate="'required|alpha|min:2|max:50'"
+            v-validate="{ required: true, alpha: true, min: 2, max: 50 }"
             :error-messages="vErrors.collect('lastName')"
             label="Last Name"
             data-vv-name="lastName"
