@@ -21,13 +21,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ExtensionEngine/APP_STARTER.git"
+    "url": "git+https://github.com/ExtensionEngine/app-starter.git"
   },
   "keywords": [],
   "bugs": {
-    "url": "https://github.com/ExtensionEngine/APP_STARTER/issues"
+    "url": "https://github.com/ExtensionEngine/app-starter/issues"
   },
-  "homepage": "https://github.com/ExtensionEngine/APP_STARTER#readme",
+  "homepage": "https://github.com/ExtensionEngine/app-starter#readme",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.5.5",
