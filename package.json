@@ -62,7 +62,7 @@
     "@mdi/font": "^3.0.39",
     "aws-sdk": "^2.342.0",
     "axios": "^0.18.0",
-    "bcrypt": "^3.0.1",
+    "bcrypt": "^3.0.6",
     "bluebird": "^3.5.2",
     "body-parser": "^1.18.3",
     "bulma": "^0.7.1",

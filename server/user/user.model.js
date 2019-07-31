@@ -88,16 +88,10 @@ class User extends Model {
 
   static hooks() {
     return {
-      beforeCreate(user) {
-        return user.encryptPassword();
-      },
-      beforeUpdate(user) {
-        return user.changed('password')
-          ? user.encryptPassword()
-          : Promise.resolve(user);
-      },
-      beforeBulkCreate(users) {
-        return Promise.map(users, user => user.encryptPassword());
+      beforeCreate: user => user.encryptPassword(),
+      beforeUpdate: user => user.encryptPassword(),
+      beforeBulkCreate: users => {
+        return Promise.all(users.map(user => user.encryptPassword()));
       }
     };
   }
@@ -153,14 +147,16 @@ class User extends Model {
   }
 
   async encryptPassword() {
-    if (!this.password) return;
+    if (!this.password) return false;
+    if (!this.changed('password')) return this;
     this.password = await bcrypt.hash(this.password, config.saltRounds);
     return this;
   }
 
   async authenticate(password) {
-    const result = await bcrypt.compare(password, this.password);
-    return result && this;
+    if (!this.password) return false;
+    const isValid = await bcrypt.compare(password, this.password);
+    return isValid ? this : false;
   }
 
   sendResetToken(options) {
