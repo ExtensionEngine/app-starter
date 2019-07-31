@@ -1,34 +1,56 @@
+'use strict';
+
 const isDev = process.env.NODE_ENV === 'development';
 
 module.exports = {
   root: true,
-  parserOptions: {
-    sourceType: 'module',
-    ecmaVersion: 2017
-  },
   // https://github.com/Flet/eslint-config-semistandard
-  extends: ['semistandard', 'plugin:vue/recommended'],
+  extends: [
+    'semistandard',
+    'plugin:vue/recommended'
+  ],
   // required to lint *.vue files
   plugins: ['vue'],
   rules: {
     indent: ['error', 2, {
       SwitchCase: 1,
       // NOTE: Consistent indentation IS enforced;
-      //       ESlint calculated indentation start IS NOT!
+      //       ESLint calculated indentation start IS NOT!
       // https://eslint.org/docs/rules/indent#memberexpression
       MemberExpression: 'off'
     }],
-    'arrow-parens': 'off',
+    'arrow-parens': ['error', 'as-needed'],
+    // TODO: Remove this after all error reports get resolved!
+    'prefer-const': 'off',
+    'comma-dangle': ['warn', 'never'],
     'no-debugger': isDev ? 'warn' : 'error',
+    'no-unreachable': isDev ? 'warn' : 'error',
     'space-before-function-paren': ['error', {
       anonymous: 'always',
       named: 'never'
     }],
-    'sort-imports': ['error', { ignoreCase: true }],
+    'sort-imports': ['error', {
+      'ignoreCase': true
+    }],
     // Vue rules
-    'vue/html-self-closing': 'off',
-    'vue/attribute-hyphenation': 'off',
-    'vue/max-attributes-per-line': ['error', { singleline: 5 }],
+    'vue/html-self-closing': ['error', {
+      html: {
+        void: 'never',
+        normal: 'never',
+        component: 'always'
+      },
+      svg: 'never',
+      math: 'never'
+    }],
+    'vue/html-closing-bracket-newline': ['error', {
+      singleline: 'never',
+      multiline: 'never'
+    }],
+    'vue/singleline-html-element-content-newline': 'off',
+    'vue/max-attributes-per-line': ['error', {
+      singleline: 5,
+      multiline: 4
+    }],
     'vue/name-property-casing': ['error', 'kebab-case'],
     // TODO: Add order for custom directives once supported
     'vue/attributes-order': ['error', {
@@ -38,11 +60,12 @@ module.exports = {
         'CONDITIONALS',
         'RENDER_MODIFIERS',
         'UNIQUE',
-        'BINDING',
+        'TWO_WAY_BINDING',
+        'OTHER_DIRECTIVES',
         'EVENTS',
-        'CONTENT',
         'GLOBAL',
-        'OTHER_ATTR'
+        'OTHER_ATTR',
+        'CONTENT'
       ]
     }],
     'vue/order-in-components': ['error', {
@@ -50,7 +73,7 @@ module.exports = {
         'el',
         'name',
         ['template', 'render', 'renderError'],
-        ['parent', 'functional', 'delimiters', 'comments'],
+        ['parent','functional', 'delimiters', 'comments'],
         'extends',
         'mixins',
         'inheritAttrs',

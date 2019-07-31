@@ -1,7 +1,7 @@
 <template>
   <v-dialog
-    v-hotkey="{ esc: close }"
     v-model="showDialog"
+    v-hotkey="{ esc: close }"
     persistent
     no-click-animation
     width="700">
@@ -21,10 +21,10 @@
               prepend-icon="mdi-attachment"
               label="Upload .xlsx or .csv file"
               readonly
-              single-line/>
+              single-line />
             <input
-              v-validate="inputValidation"
               ref="fileInput"
+              v-validate="inputValidation"
               @change="onFileSelected"
               id="userImportInput"
               name="file"
@@ -32,7 +32,7 @@
           </label>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-fade-transition>
             <v-btn
               v-show="serverErrorsReport"

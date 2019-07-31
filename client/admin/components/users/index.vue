@@ -2,8 +2,8 @@
   <v-layout justify-center>
     <v-flex class="mt-5">
       <v-toolbar color="#f5f5f5" flat>
-        <v-spacer/>
-        <import-dialog @imported="fetch(defaultPage)"/>
+        <v-spacer />
+        <import-dialog @imported="fetch(defaultPage)" />
         <v-btn @click.stop="showUserDialog()" color="success" outline>
           Add user
         </v-btn>
@@ -16,7 +16,7 @@
               append-icon="mdi-magnify"
               label="Search"
               single-line
-              clearable/>
+              clearable />
           </v-flex>
         </v-layout>
         <v-data-table
@@ -31,7 +31,7 @@
           <template slot="items" slot-scope="props">
             <tr>
               <td>
-                <v-checkbox v-model="props.selected" primary hide-details/>
+                <v-checkbox v-model="props.selected" primary hide-details />
               </td>
               <td>{{ props.item.email }}</td>
               <td>{{ props.item.role }}</td>
@@ -51,16 +51,16 @@
         </v-data-table>
       </div>
       <user-dialog
-        :visible.sync="userDialog"
-        :userData="editedUser"
+        @created="fetch(defaultPage)"
         @updated="fetch(defaultPage)"
-        @created="fetch(defaultPage)"/>
+        :visible.sync="userDialog"
+        :user-data="editedUser" />
       <confirmation-dialog
+        @confirmed="fetch()"
         :visible.sync="confirmation.dialog"
         :action="confirmation.action"
         :message="confirmation.message"
-        @confirmed="fetch()"
-        heading="Remove user"/>
+        heading="Remove user" />
     </v-flex>
   </v-layout>
 </template>
