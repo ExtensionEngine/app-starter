@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
-    "//NOTE": "This DOES not work with `.vue` files!",
     "baseUrl": "./",
     "paths": {
-      "@/*": ["./client/*"]
+      // This does NOT work with `.vue` files!
+      "@/*": [
+        "./client/*"
+      ]
     }
   },
   "exclude": [
