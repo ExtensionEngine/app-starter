@@ -64,7 +64,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import humanize from 'humanize-string';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
-import { role } from '@/../common/config';
+import { Role } from '@/../common/config';
 import { withFocusTrap } from '@/common/focustrap';
 import { withValidation } from '@/common/validation';
 
@@ -101,7 +101,7 @@ export default {
       }
     },
     roles() {
-      return map(role, it => ({ text: humanize(it), value: it }));
+      return map(Role, it => ({ text: humanize(it), value: it }));
     },
     isNewUser() {
       return !this.user.id;
