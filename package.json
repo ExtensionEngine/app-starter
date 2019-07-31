@@ -4,6 +4,11 @@
   "private": true,
   "scripts": {
     "dev:client": "poi --serve",
+    "build": "del-cli node_modules/.cache/vue-loader && poi --prod",
+    "clean": "del-cli dist/* !dist/.gitkeep",
+    "webpack:inspect-config": "poi --inspect-webpack",
+    "webpack:bundle-report": "poi --prod --bundle-report",
+    "webpack:stats": "poi --prod --print-stats",
     "dev:server": "nodemon -r dotenv/config ./server | bunyan",
     "db": "node ./server/script/sequelize",
     "db:reset": "npm run db drop && npm run db create && npm run db migrate",
@@ -14,9 +19,7 @@
     "lint": "npm run lint:js; npm run lint:scss",
     "debug": "nodemon --inspect-brk -r dotenv/config ./server | bunyan",
     "start": "NODE_ENV=production node -r dotenv/config ./server",
-    "build": "poi --prod",
     "bundle-report": "poi --prod -- --bundle-report",
-    "clean": "del-cli dist/* !dist/.gitkeep",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -31,9 +34,12 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.5.5",
+    "@poi/plugin-bundle-report": "^12.1.1",
     "@poi/plugin-eslint": "^12.0.0",
+    "clean-webpack-plugin": "^3.0.0",
     "dargs": "^7.0.0",
     "del-cli": "^2.0.0",
+    "dotenv-webpack": "^1.7.0",
     "emoji-strip": "^1.0.1",
     "eslint": "^6.1.0",
     "eslint-config-semistandard": "^14.0.0",
@@ -55,8 +61,7 @@
     "stylelint-config-standard": "^18.3.0",
     "stylelint-order": "^3.0.1",
     "stylelint-scss": "^3.9.2",
-    "vue-template-compiler": "^2.6.10",
-    "webpack-bundle-analyzer": "^3.4.1"
+    "vue-template-compiler": "^2.6.10"
   },
   "dependencies": {
     "@mdi/font": "^3.0.39",
