@@ -23,7 +23,7 @@ const devServer = {
   // Override using: `npm run dev:client -- --port <number>`
   port: 8081,
   hot: true,
-  hotEntries: ['admin, main']
+  hotEntries: ['admin', 'main']
 };
 
 const extensions = ['.vue'];
