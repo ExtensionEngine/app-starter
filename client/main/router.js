@@ -3,9 +3,10 @@ import ForgotPassword from '@/main/components/auth/ForgotPassword';
 import get from 'lodash/get';
 import Home from '@/main/components';
 import Login from '@/main/components/auth/Login';
+import { navigate } from '@/common/navigation';
 import NotFound from '@/admin/components/common/NotFound';
 import ResetPassword from '@/main/components/auth/ResetPassword';
-import role from '@/../common/config/role';
+import { Role } from '@/../common/config';
 import Router from 'vue-router';
 import store from './store';
 import Vue from 'vue';
@@ -40,13 +41,11 @@ const router = new Router({
   }, fallbackRoute]
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const user = get(store.state, 'auth.user');
   const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
   if (isNotAuthenticated) return next({ name: 'login' });
-  if (user && user.role === role.ADMIN) {
-    document.location.replace(`${document.location.origin}/admin`);
-  }
+  if (user && user.role === Role.Admin) return navigate('/admin/');
   return next();
 });
 

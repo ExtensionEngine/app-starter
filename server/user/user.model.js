@@ -2,7 +2,7 @@
 
 const { auth: config = {} } = require('../config');
 const { Model, Sequelize, Op, UniqueConstraintError } = require('sequelize');
-const { role } = require('../../common/config');
+const { Role } = require('../../common/config');
 const { sql } = require('../common/database/helpers');
 const bcrypt = require('bcrypt');
 const castArray = require('lodash/castArray');
@@ -13,14 +13,15 @@ const mail = require('../common/mail');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const Promise = require('bluebird');
-const Role = require('../../common/config/role');
-const values = require('lodash/values');
 
 class User extends Model {
   static fields(DataTypes) {
     return {
       email: {
         type: DataTypes.STRING,
+        set(email) {
+          this.setDataValue('email', email.toLowerCase());
+        },
         allowNull: false,
         validate: { isEmail: true, notEmpty: true },
         unique: { msg: 'This email address is already in use.' }
@@ -30,9 +31,9 @@ class User extends Model {
         validate: { notEmpty: true, len: [5, 255] }
       },
       role: {
-        type: DataTypes.ENUM(values(role)),
+        type: DataTypes.ENUM(Object.values(Role)),
         allowNull: false,
-        defaultValue: role.RISING_LEADER
+        defaultValue: Role.User
       },
       token: {
         type: DataTypes.STRING,
@@ -86,18 +87,12 @@ class User extends Model {
     };
   }
 
-  static hooks() {
+  static hooks(Hooks) {
     return {
-      beforeCreate(user) {
-        return user.encryptPassword();
-      },
-      beforeUpdate(user) {
-        return user.changed('password')
-          ? user.encryptPassword()
-          : Promise.resolve(user);
-      },
-      beforeBulkCreate(users) {
-        return Promise.map(users, user => user.encryptPassword());
+      [Hooks.beforeCreate]: user => user.encryptPassword(),
+      [Hooks.beforeUpdate]: user => user.encryptPassword(),
+      [Hooks.beforeBulkCreate]: users => {
+        return Promise.all(users.map(user => user.encryptPassword()));
       }
     };
   }
@@ -141,7 +136,7 @@ class User extends Model {
     return Promise.map(users, userData => Promise.try(() => {
       const user = find(found, { email: userData.email });
       if (user && !user.deletedAt) {
-        const message = this.attributes.email.unique.msg;
+        const message = this.rawAttributes.email.unique.msg;
         throw new UniqueConstraintError({ message });
       }
       if (user) {
@@ -153,14 +148,16 @@ class User extends Model {
   }
 
   async encryptPassword() {
-    if (!this.password) return;
+    if (!this.password) return false;
+    if (!this.changed('password')) return this;
     this.password = await bcrypt.hash(this.password, config.saltRounds);
     return this;
   }
 
   async authenticate(password) {
-    const result = await bcrypt.compare(password, this.password);
-    return result && this;
+    if (!this.password) return false;
+    const isValid = await bcrypt.compare(password, this.password);
+    return isValid ? this : false;
   }
 
   sendResetToken(options) {
@@ -171,12 +168,13 @@ class User extends Model {
   }
 
   createToken(options = {}) {
-    const payload = pick(this, ['id', 'email']);
+    const payload = { id: this.id, email: this.email };
+    Object.assign(options, { issuer: config.issuer });
     return jwt.sign(payload, config.secret, options);
   }
 
   isAdmin() {
-    return this.role === Role.ADMIN;
+    return this.role === Role.Admin;
   }
 }
 

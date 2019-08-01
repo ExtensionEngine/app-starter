@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="system-font-stack">
-    <router-view/>
+    <router-view />
   </div>
 </template>
 
@@ -28,7 +28,9 @@ html, body {
 
 #app {
   height: 100%;
-  overflow-y: scroll;
+  overflow-x: auto !important;
+  overflow-y: overlay !important;
+  overflow-y: auto !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

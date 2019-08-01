@@ -1,10 +1,10 @@
 <template>
   <v-app id="app">
-    <sidebar :drawer.sync="drawer"/>
-    <navbar :drawer.sync="drawer"/>
+    <sidebar :drawer.sync="drawer" />
+    <navbar :drawer.sync="drawer" />
     <v-content>
       <v-container fluid fill-height class="grey lighten-4">
-        <router-view/>
+        <router-view />
       </v-container>
     </v-content>
   </v-app>
@@ -16,9 +16,7 @@ import Sidebar from '@/admin/components/common/Sidebar';
 
 export default {
   name: 'admin-app',
-  data() {
-    return { drawer: true };
-  },
+  data: () => ({ drawer: true }),
   components: { Navbar, Sidebar }
 };
 </script>
@@ -35,6 +33,9 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: auto !important;
+  overflow-y: overlay !important;
+  overflow-y: auto !important;
 }
 
 #app {

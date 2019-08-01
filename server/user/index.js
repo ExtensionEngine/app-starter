@@ -1,21 +1,29 @@
 'use strict';
 
-const auth = require('../common/auth').authenticate('jwt');
+const { authenticate } = require('../common/auth');
 const ctrl = require('./user.controller');
 const multer = require('multer');
 const router = require('express').Router();
 
+const isString = arg => typeof arg === 'string';
 const upload = multer({ storage: multer.memoryStorage() });
 
 router
-  .post('/login', ctrl.login)
-  .post('/forgotPassword', ctrl.forgotPassword)
-  .post('/resetPassword', ctrl.resetPassword)
-  .use(auth)
-  .get('/', ctrl.list)
-  .post('/', ctrl.create)
-  .patch('/:id', ctrl.patch)
-  .delete('/:id', ctrl.destroy)
+  .post('/login', authenticate('local'), normalizeEmail, ctrl.login)
+  .post('/forgot-password', normalizeEmail, ctrl.forgotPassword)
+  .post('/reset-password', normalizeEmail, ctrl.resetPassword);
+
+router.use(authenticate('jwt'));
+
+router.route('/')
+  .get(ctrl.list)
+  .post(ctrl.create);
+
+router.route('/:id')
+  .patch(ctrl.patch)
+  .delete(ctrl.destroy);
+
+router
   .post('/:id/invite', ctrl.invite)
   .post('/import', upload.single('file'), ctrl.bulkImport);
 
@@ -23,3 +31,9 @@ module.exports = {
   path: '/users',
   router
 };
+
+function normalizeEmail(req, _res, next) {
+  const { body } = req;
+  if (isString(body.email)) body.email = body.email.toLowerCase();
+  next();
+}

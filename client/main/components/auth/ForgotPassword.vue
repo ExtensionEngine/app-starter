@@ -10,7 +10,7 @@
     </div>
     <div v-else>
       <form @submit.prevent="submit">
-        <v-input v-model="email" name="email" validate="required|email"></v-input>
+        <v-input v-model="email" name="email" validate="required|email" />
         <button type="submit" class="button">Send reset email</button>
         <div class="options">
           <a @click="$router.go(-1)">Back</a>
@@ -21,17 +21,15 @@
 </template>
 
 <script>
-import { delay } from 'bluebird';
+import delay from 'delay';
 import { mapActions } from 'vuex';
 import VInput from '@/common/components/form/VInput';
 
 export default {
-  data() {
-    return {
-      email: '',
-      message: null
-    };
-  },
+  data: () => ({
+    email: '',
+    message: null
+  }),
   methods: {
     ...mapActions('auth', ['forgotPassword']),
     submit() {

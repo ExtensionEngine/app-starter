@@ -1,9 +1,31 @@
 'use strict';
 
-const { auth: config = {} } = require('../../config');
-const { ExtractJwt, Strategy } = require('passport-jwt');
-const { User } = require('../database');
-const passport = require('passport');
+const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
+const { User, Sequelize } = require('../database');
+const { Authenticator } = require('passport');
+const { auth: config } = require('../../config');
+const autobind = require('auto-bind');
+const LocalStrategy = require('passport-local');
+
+const { EmptyResultError } = Sequelize;
+
+const auth = new (class extends Authenticator {
+  constructor() {
+    super();
+    autobind(this);
+  }
+
+  authenticate(strategy, { failWithError = true, ...options } = {}) {
+    // NOTE: Setup passport to forward errors down the middleware chain
+    // https://github.com/jaredhanson/passport/blob/ad5fe1df/lib/middleware/authenticate.js#L171
+    return super.authenticate(strategy, { ...options, failWithError });
+  }
+})();
+
+const localOptions = {
+  usernameField: 'email',
+  session: false
+};
 
 const jwtOptions = {
   ...config,
@@ -11,22 +33,24 @@ const jwtOptions = {
   secretOrKey: config.secret
 };
 
-passport.use(new Strategy(jwtOptions, (payload, done) => {
-  return User.findById(payload.id)
+auth.use('local', new LocalStrategy(localOptions, (email, password, done) => {
+  const where = { email };
+  return User.findOne({ where, rejectOnEmpty: true })
+    .then(user => user.authenticate(password))
     .then(user => done(null, user || false))
-    .error(err => done(err, false));
+    .catch(EmptyResultError, () => done(null, false))
+    .catch(err => done(err));
 }));
+auth.use('jwt', new JwtStrategy(jwtOptions, verify));
 
-passport.serializeUser((user, done) => done(null, user));
-passport.deserializeUser((user, done) => done(null, user));
+auth.serializeUser((user, done) => done(null, user));
+auth.deserializeUser((user, done) => done(null, user));
 
-module.exports = {
-  initialize(options = {}) {
-    return passport.initialize(options);
-  },
-  authenticate(strategy, options = {}) {
-    // NOTE:  passport to forward errors down the middleware chain:
-    // https://github.com/jaredhanson/passport/blob/ad5fe1dfaeb79f81ba21f99e6025daa0dec87e6e/lib/middleware/authenticate.js#L171
-    return passport.authenticate(strategy, { ...options, failWithError: true });
-  }
-};
+module.exports = auth;
+
+function verify(payload, done) {
+  return User.findByPk(payload.id, { rejectOnEmpty: true })
+    .then(user => done(null, user))
+    .catch(EmptyResultError, () => done(null, false))
+    .catch(err => done(err));
+}

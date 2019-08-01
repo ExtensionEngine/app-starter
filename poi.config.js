@@ -1,34 +1,57 @@
+'use strict';
+
 require('dotenv').config();
-const argv = require('minimist')(process.argv.slice(2));
-const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+
 const config = require('./server/config');
 const path = require('path');
 
 const isProduction = process.env.NODE_ENV === 'production';
-const extensions = ['.vue'];
+const serverUrl = `http://${config.ip}:${config.port}`;
+
 const aliases = {
   '@': path.resolve(__dirname, './client')
 };
 
+/** @type {import('poi').Config.DevServer} */
 const devServer = {
   headers: {
     'X-Powered-By': 'Webpack DevSever'
   },
   proxy: {
-    '/api': {
-      target: `http://${config.ip}:${config.port}`
-    }
+    '/api': { target: serverUrl }
   },
   // Override using: `npm run dev:client -- --port <number>`
   port: 8081,
   hot: true,
-  hotEntries: ['admin', 'main']
+  hotEntries: ['admin, main']
 };
 
+const extensions = ['.vue'];
+
+/** @type {import('poi').Config.Plugins} */
+const plugins = [
+  '@poi/eslint',
+  '@poi/bundle-report',
+  require.resolve('./build/plugins/stats'),
+  {
+    resolve: require.resolve('./build/plugins/output-filenames'),
+    options: {
+      vendor: {
+        font: 'assets/fonts/[name].[ext]',
+        image: 'assets/images/[name].[ext]'
+      }
+    }
+  }, {
+    resolve: require.resolve('./build/plugins/clean-out-dir'),
+    options: {
+      cleanOnceBeforeBuildPatterns: ['**/*', '!.gitkeep']
+    }
+  },
+  require.resolve('./build/plugins/html-version-spec')
+];
+
+/** @type {import('poi').Config} */
 module.exports = {
-  plugins: [
-    '@poi/eslint'
-  ],
   pages: {
     admin: {
       filename: 'admin/index.html',
@@ -43,22 +66,14 @@ module.exports = {
     dir: 'dist',
     sourceMap: !isProduction
   },
+  plugins,
   chainWebpack(config) {
-    configureModuleResolution(config);
     config.resolve.alias.merge(aliases);
     config.resolve.extensions.merge(extensions);
   },
-  configureWebpack(config) {
-    if (!argv._.includes('--bundle-report')) return;
-    config.plugins.push(new BundleAnalyzerPlugin());
+  envs: {
+    API_PATH: process.env.API_PATH,
+    AUTH_JWT_SCHEME: process.env.AUTH_JWT_SCHEME
   },
   devServer
 };
-
-// NOTE: Remove absolute path to local `node_modules` from configuration
-// https://github.com/webpack/webpack/issues/6538#issuecomment-367324775
-function configureModuleResolution(config) {
-  const localModules = path.join(__dirname, 'node_modules');
-  config.resolve.modules.delete(localModules);
-  config.resolveLoader.modules.delete(localModules);
-}

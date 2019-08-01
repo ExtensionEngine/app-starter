@@ -2,16 +2,14 @@
 
 const { createError } = require('../errors');
 const HttpStatus = require('http-status');
-const Role = require('../../../common/config/role');
-
-const { UNAUTHORIZED, FORBIDDEN } = HttpStatus;
+const { Role } = require('../../../common/config');
 
 function authorize(...allowed) {
-  allowed.push(Role.ADMIN);
+  allowed.push(Role.Admin);
   return ({ user }, res, next) => {
-    if (!user) return createError(UNAUTHORIZED, 'Access restricted');
+    if (!user) return createError(HttpStatus.UNAUTHORIZED, 'Access restricted');
     if (!allowed.includes(user.role)) {
-      return createError(FORBIDDEN, 'Access denied');
+      return createError(HttpStatus.FORBIDDEN, 'Access denied');
     }
     return next();
   };

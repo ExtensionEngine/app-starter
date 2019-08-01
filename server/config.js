@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const yn = require('yn');
 
 module.exports = {
   hostname: process.env.HOSTNAME,
@@ -29,8 +30,8 @@ module.exports = {
     password: process.env.EMAIL_PASSWORD,
     host: process.env.EMAIL_HOST,
     port: process.env.EMAIL_PORT || null,
-    ssl: Boolean(process.env.EMAIL_SSL),
-    tls: Boolean(process.env.EMAIL_TLS)
+    ssl: yn(process.env.EMAIL_SSL),
+    tls: yn(process.env.EMAIL_TLS)
   },
   storage: {
     amazon: {

@@ -1,55 +1,55 @@
 <template>
-  <v-dialog v-hotkey="{ esc: close }" v-model="show" width="700">
+  <v-dialog v-model="show" v-hotkey="{ esc: close }" width="700">
     <v-form @submit.prevent="save">
       <v-card class="pa-3">
         <v-card-title class="headline pr-0">
           <span>{{ userData ? 'Edit' : 'Create' }} User</span>
-          <v-spacer/>
+          <v-spacer />
           <v-btn
             v-if="!isNewUser"
+            @click="invite"
             :disabled="isLoading"
             :loading="isLoading"
             :outline="true"
-            @click="invite"
             color="blue-grey">
             Reinvite
           </v-btn>
         </v-card-title>
         <v-card-text>
           <v-text-field
-            v-validate="{ required: true, email: true, 'unique-email': userData }"
             v-model="user.email"
+            v-validate="{ required: true, email: true, 'unique-email': userData }"
             :error-messages="vErrors.collect('email')"
             label="E-mail"
             data-vv-name="email"
-            class="mb-3"/>
+            class="mb-3" />
           <v-select
-            v-validate="'required'"
             v-model="user.role"
-            :items="roles"
-            :error-messages="vErrors.collect('role')"
+            v-validate="{ required: true }"
             @focus="focusTrap.pause()"
             @blur="focusTrap.unpause()"
+            :items="roles"
+            :error-messages="vErrors.collect('role')"
             label="Role"
             data-vv-name="role"
-            class="mb-3"/>
+            class="mb-3" />
           <v-text-field
-            v-validate="'required|alpha|min:2|max:50'"
             v-model="user.firstName"
+            v-validate="{ required: true, alpha: true, min: 2, max: 50 }"
             :error-messages="vErrors.collect('firstName')"
             label="First Name"
             data-vv-name="firstName"
-            class="mb-3"/>
+            class="mb-3" />
           <v-text-field
-            v-validate="'required|alpha|min:2|max:50'"
             v-model="user.lastName"
+            v-validate="{ required: true, alpha: true, min: 2, max: 50 }"
             :error-messages="vErrors.collect('lastName')"
             label="Last Name"
             data-vv-name="lastName"
-            class="mb-3"/>
+            class="mb-3" />
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-btn @click="close">Cancel</v-btn>
           <v-btn color="success" type="submit">Save</v-btn>
         </v-card-actions>
@@ -64,7 +64,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import humanize from 'humanize-string';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
-import { role } from '@/../common/config';
+import { Role } from '@/../common/config';
 import { withFocusTrap } from '@/common/focustrap';
 import { withValidation } from '@/common/validation';
 
@@ -85,12 +85,10 @@ export default {
     visible: { type: Boolean, default: false },
     userData: { type: Object, default: () => ({}) }
   },
-  data() {
-    return {
-      user: resetUser(),
-      isLoading: false
-    };
-  },
+  data: () => ({
+    user: resetUser(),
+    isLoading: false
+  }),
   computed: {
     show: {
       get() {
@@ -101,7 +99,7 @@ export default {
       }
     },
     roles() {
-      return map(role, it => ({ text: humanize(it), value: it }));
+      return map(Role, it => ({ text: humanize(it), value: it }));
     },
     isNewUser() {
       return !this.user.id;
@@ -133,11 +131,11 @@ export default {
       if (!isEmpty(this.userData)) this.user = cloneDeep(this.userData);
     }
   },
-  mounted() {
+  created() {
     if (this.$validator.rules['unique-email']) return;
     this.$validator.extend('unique-email', {
       getMessage: field => `The ${field} is not unique.`,
-      validate: (email, [userData]) => {
+      validate: (email, userData) => {
         if (userData && email === userData.email) return true;
         return api.fetch({ params: { email } })
           .then(({ total }) => ({ valid: !total }));

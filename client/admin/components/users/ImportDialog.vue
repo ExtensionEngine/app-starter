@@ -1,7 +1,7 @@
 <template>
   <v-dialog
-    v-hotkey="{ esc: close }"
     v-model="showDialog"
+    v-hotkey="{ esc: close }"
     persistent
     no-click-animation
     width="700">
@@ -21,10 +21,10 @@
               prepend-icon="mdi-attachment"
               label="Upload .xlsx or .csv file"
               readonly
-              single-line/>
+              single-line />
             <input
-              v-validate="inputValidation"
               ref="fileInput"
+              v-validate="inputValidation"
               @change="onFileSelected"
               id="userImportInput"
               name="file"
@@ -32,7 +32,7 @@
           </label>
         </v-card-text>
         <v-card-actions>
-          <v-spacer/>
+          <v-spacer />
           <v-fade-transition>
             <v-btn
               v-show="serverErrorsReport"
@@ -67,15 +67,13 @@ const inputFormats = {
 export default {
   name: 'import-dialog',
   mixins: [withValidation(), withFocusTrap({ el })],
-  data() {
-    return {
-      showDialog: false,
-      importing: false,
-      filename: null,
-      form: null,
-      serverErrorsReport: null
-    };
-  },
+  data: () => ({
+    showDialog: false,
+    importing: false,
+    filename: null,
+    form: null,
+    serverErrorsReport: null
+  }),
   computed: {
     importDisabled() {
       return !this.filename || this.vErrors.any() || this.importing;
@@ -151,7 +149,7 @@ export default {
 }
 
 .v-text-field {
-  /deep/ .v-text-field__slot {
+  ::v-deep .v-text-field__slot {
     cursor: pointer;
 
     input {
@@ -159,7 +157,7 @@ export default {
     }
   }
 
-  /deep/ .mdi {
+  ::v-deep .mdi {
     transform: rotate(-90deg);
   }
 }

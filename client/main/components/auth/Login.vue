@@ -8,15 +8,13 @@
         v-model="email"
         autocomplete="email"
         name="email"
-        validate="required|email">
-      </v-input>
+        validate="required|email" />
       <v-input
         v-model="password"
         autocomplete="current-password"
         name="password"
         type="password"
-        validate="required">
-      </v-input>
+        validate="required" />
       <div class="options">
         <router-link :to="{ name: 'forgot-password' }">
           Forgot password ?
@@ -30,7 +28,7 @@
 <script>
 import { mapActions } from 'vuex';
 import pick from 'lodash/pick';
-import role from '@/../common/config/role';
+import { Role } from '@/../common/config';
 import VInput from '@/common/components/form/VInput';
 import { withValidation } from '@/common/validation';
 
@@ -39,13 +37,11 @@ const LOGIN_ERR_MESSAGE = 'User email and password do not match';
 export default {
   name: 'login',
   mixins: [withValidation()],
-  data() {
-    return {
-      email: '',
-      password: '',
-      message: ''
-    };
-  },
+  data: () => ({
+    email: '',
+    password: '',
+    message: ''
+  }),
   methods: {
     ...mapActions('auth', ['login']),
     submit() {
@@ -54,7 +50,7 @@ export default {
         if (!isValid) return;
         this.login(pick(this, ['email', 'password']))
           .then(user => {
-            if (user.role !== role.ADMIN) return this.$router.push('/');
+            if (user.role !== Role.Admin) return this.$router.push('/');
             document.location.replace(`${document.location.origin}/admin`);
           })
           .catch(() => (this.message = LOGIN_ERR_MESSAGE));

@@ -9,10 +9,10 @@ export const logout = () => {
   return auth.logout();
 };
 
-export const forgotPassword = (context, { email }) => {
+export const forgotPassword = (_context, { email }) => {
   return auth.forgotPassword(email);
 };
 
-export const resetPassword = (context, payload) => {
+export const resetPassword = (_context, payload) => {
   return auth.resetPassword(payload);
 };

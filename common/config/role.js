@@ -1,6 +1,6 @@
 'use strict';
 
 module.exports = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
+  Admin: 'ADMIN',
+  User: 'USER'
 };
