@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { delay } from 'bluebird';
+import delay from 'delay';
 import { mapActions } from 'vuex';
 import VInput from '@/common/components/form/VInput';
 
