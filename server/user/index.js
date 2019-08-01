@@ -10,13 +10,20 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 router
   .post('/login', authenticate('local'), normalizeEmail, ctrl.login)
-  .post('/forgotPassword', normalizeEmail, ctrl.forgotPassword)
-  .post('/resetPassword', normalizeEmail, ctrl.resetPassword)
-  .use(authenticate('jwt'))
-  .get('/', ctrl.list)
-  .post('/', ctrl.create)
-  .patch('/:id', ctrl.patch)
-  .delete('/:id', ctrl.destroy)
+  .post('/forgot-password', normalizeEmail, ctrl.forgotPassword)
+  .post('/reset-password', normalizeEmail, ctrl.resetPassword);
+
+router.use(authenticate('jwt'));
+
+router.route('/')
+  .get(ctrl.list)
+  .post(ctrl.create);
+
+router.route('/:id')
+  .patch(ctrl.patch)
+  .delete(ctrl.destroy);
+
+router
   .post('/:id/invite', ctrl.invite)
   .post('/import', upload.single('file'), ctrl.bulkImport);
 

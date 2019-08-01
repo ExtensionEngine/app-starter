@@ -1,14 +1,16 @@
+import path from 'path';
 import request from './request';
 
-const url = {
-  login: '/users/login',
-  forgotPassword: '/users/forgotPassword',
-  resetPassword: '/users/resetPassword'
+const urls = {
+  base: '/users',
+  login: () => path.join(urls.base, '/login'),
+  forgotPassword: () => path.join(urls.base, '/forgot-password'),
+  resetPassword: () => path.join(urls.base, '/reset-password')
 };
 
 function login(credentials) {
   return request.base
-    .post(url.login, credentials)
+    .post(urls.login(), credentials)
     .then(res => res.data.data)
     .then(({ token, user }) => {
       request.auth.token = token;
@@ -23,11 +25,11 @@ function logout() {
 }
 
 function forgotPassword(email) {
-  return request.post(url.forgotPassword, { email });
+  return request.post(urls.forgotPassword(), { email });
 }
 
 function resetPassword(body) {
-  return request.post(url.resetPassword, body);
+  return request.post(urls.resetPassword(), body);
 }
 
 export default {
