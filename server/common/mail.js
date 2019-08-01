@@ -1,11 +1,11 @@
 'use strict';
 
 const { email: config } = require('../config');
-const { parse: parseUrl } = require('url');
-const { promisify } = require('util');
 const email = require('emailjs');
 const logger = require('./logger')('mailer');
 const pick = require('lodash/pick');
+const { promisify } = require('util');
+const { URL } = require('url');
 
 const from = `${config.sender.name} <${config.sender.address}>`;
 const server = email.server.connect(config);
@@ -23,7 +23,7 @@ module.exports = {
 
 function invite(user, { origin }) {
   const href = resetUrl(origin, user);
-  const { hostname } = parseUrl(href);
+  const { hostname } = new URL(href);
   const recipient = user.email;
   const message = `
     An account has been created for you on ${hostname}.
