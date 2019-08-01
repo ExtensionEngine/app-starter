@@ -70,13 +70,10 @@ module.exports = {
   chainWebpack(config) {
     config.resolve.alias.merge(aliases);
     config.resolve.extensions.merge(extensions);
-
-    config
-      .plugin('dotenv')
-      .use(require.resolve('dotenv-webpack'));
   },
   envs: {
-    API_PATH: process.env.API_PATH
+    API_PATH: process.env.API_PATH,
+    AUTH_JWT_SCHEME: process.env.AUTH_JWT_SCHEME
   },
   devServer
 };

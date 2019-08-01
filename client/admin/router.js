@@ -1,4 +1,5 @@
 import get from 'lodash/get';
+import { navigate } from '@/common/navigation';
 import NotFound from '@/admin/components/common/NotFound';
 import { Role } from '@/../common/config';
 import Router from 'vue-router';
@@ -20,14 +21,12 @@ const router = new Router({
   }, fallbackRoute]
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
   const user = get(store.state, 'auth.user');
   const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
   const isNotAuthorized = user && user.role !== Role.Admin;
-  if (isNotAuthenticated || isNotAuthorized) return loadMainSpa();
+  if (isNotAuthenticated || isNotAuthorized) return navigate();
   next();
 });
-
-const loadMainSpa = () => location.replace(location.origin);
 
 export default router;
