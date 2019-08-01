@@ -19,7 +19,7 @@ module.exports = {
 function readConfig(config = process.env) {
   if (config.DATABASE_URI) return { url: config.DATABASE_URI };
   if (!config.DATABASE_NAME) {
-    throw new TypeError(`Invalid \`DATABASE_NAME\` provided: ${config.DATABASE_NAME}`);
+    throw new TypeError(`Invalid "DATABASE_NAME" provided: ${config.DATABASE_NAME}`);
   }
   return {
     database: config.DATABASE_NAME,
