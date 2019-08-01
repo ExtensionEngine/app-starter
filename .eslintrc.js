@@ -73,7 +73,7 @@ module.exports = {
         'el',
         'name',
         ['template', 'render', 'renderError'],
-        ['parent','functional', 'delimiters', 'comments'],
+        ['parent', 'functional', 'delimiters', 'comments'],
         'extends',
         'mixins',
         'inheritAttrs',
