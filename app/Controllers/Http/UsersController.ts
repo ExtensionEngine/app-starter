@@ -12,12 +12,20 @@ export default class UsersController {
 
   public async show(ctx) {
     const id = ctx.request.param('id');
-    return User.find(id);
+    return User.findOrFail(id);
   }
 
-  public async update() {
+  public async update(ctx) {
+    const id = ctx.request.param('id');
+    const { fullName } = ctx.request.only(['fullName']);
+    const user = await User.findOrFail(id);
+    user.fullName = fullName;
+    return user.save();
   }
 
-  public async destroy() {
+  public async destroy(ctx) {
+    const id = ctx.request.param('id');
+    const user = await User.findOrFail(id);
+    return user.delete();
   }
 }
