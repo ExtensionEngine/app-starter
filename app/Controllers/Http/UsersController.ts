@@ -5,13 +5,13 @@ export default class UsersController {
     return User.all();
   }
 
-  public async store({ request }) {
-    const { requestBody } = request;
-    return User.create(requestBody);
+  public async store(ctx) {
+    const data = ctx.request.only(['fullName']);
+    return User.create(data);
   }
 
-  public async show({ request }) {
-    const { id } = request.routeParams;
+  public async show(ctx) {
+    const id = ctx.request.param('id');
     return User.find(id);
   }
 
