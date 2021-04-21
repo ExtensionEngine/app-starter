@@ -1,14 +1,14 @@
 'use strict';
 
 const { email: config } = require('../config');
-const email = require('emailjs');
 const logger = require('./logger')('mailer');
 const pick = require('lodash/pick');
 const { promisify } = require('util');
+const { SMTPClient } = require('emailjs');
 const { URL } = require('url');
 
 const from = `${config.sender.name} <${config.sender.address}>`;
-const server = email.server.connect(config);
+const server = new SMTPClient(config);
 logger.info(getConfig(server), '📧  SMTP client created');
 
 const send = promisify(server.send.bind(server));
