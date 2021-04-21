@@ -36,7 +36,7 @@
   "dependencies": {
     "@mdi/font": "^5.9.55",
     "auto-bind": "^4.0.0",
-    "aws-sdk": "^2.503.0",
+    "aws-sdk": "^2.889.0",
     "axios": "^0.19.0",
     "bcrypt": "^3.0.6",
     "bluebird": "^3.5.5",
