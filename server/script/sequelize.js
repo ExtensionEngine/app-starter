@@ -35,6 +35,7 @@ const options = Object.assign({}, config, getOptions(argv));
 process.argv.push(...dargs(options));
 
 // Run sequelize cli.
+// eslint-disable-next-line require-sort/require-sort
 require('sequelize-cli/lib/sequelize');
 
 function setLogging({ config: configPath }, state) {
