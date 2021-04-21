@@ -1,10 +1,10 @@
 'use strict';
 
 const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
-const { User, Sequelize } = require('../database');
+const { Sequelize, User } = require('../database');
 const { Authenticator } = require('passport');
-const { auth: config } = require('../../config');
 const autobind = require('auto-bind');
+const { auth: config } = require('../../config');
 const LocalStrategy = require('passport-local');
 
 const { EmptyResultError } = Sequelize;
