@@ -43,7 +43,7 @@
     "body-parser": "^1.19.0",
     "bulma": "^0.7.5",
     "bunyan": "^1.8.12",
-    "change-case": "^3.1.0",
+    "change-case": "^4.1.2",
     "cors": "^2.8.5",
     "cuid": "^2.1.6",
     "delay": "^4.3.0",
