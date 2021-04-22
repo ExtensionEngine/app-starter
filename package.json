@@ -53,7 +53,7 @@
     "express": "^4.17.1",
     "express-async-errors": "^3.1.1",
     "express-history-api-fallback": "^2.2.1",
-    "fecha": "^3.0.3",
+    "fecha": "^4.2.1",
     "file-type": "^12.1.0",
     "focus-trap": "^5.0.2",
     "fs-blob-store": "^5.2.1",
