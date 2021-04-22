@@ -124,7 +124,7 @@ class User extends Model {
     await this.restoreOrBuild(users, { concurrency }).map((result, i) => {
       if (result.isFulfilled()) return this.invite(result.value(), options);
       const { message = 'Failed to import user.' } = result.reason();
-      errors.push({ ...users[i], message });
+      return errors.push({ ...users[i], message });
     }, { concurrency });
     return errors.length && errors;
   }
