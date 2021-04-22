@@ -30,9 +30,7 @@ class FsStore extends FsBlobStore {
   getFileUrl(key) {
     return getStream.buffer(FsBlobStore(this.path).createReadStream({ key }))
       .then(data => {
-        console.log('Data: ', data);
         const mimetype = fileType(data).mime;
-        console.log('Mimetype: ', mimetype);
         return `data:${mimetype};base64,${data.toString('base64')}`;
       });
   }
