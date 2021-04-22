@@ -1,18 +1,18 @@
 'use strict';
 
-const { auth: config = {} } = require('../config');
-const { Model, Sequelize, Op, UniqueConstraintError } = require('sequelize');
-const { Role } = require('../../common/config');
-const { sql } = require('../common/database/helpers');
+const { Model, Op, Sequelize, UniqueConstraintError } = require('sequelize');
 const bcrypt = require('bcrypt');
 const castArray = require('lodash/castArray');
+const { auth: config = {} } = require('../config');
 const find = require('lodash/find');
 const jwt = require('jsonwebtoken');
-const logger = require('../common/logger')();
 const mail = require('../common/mail');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const Promise = require('bluebird');
+const { Role } = require('../../common/config');
+const { sql } = require('../common/database/helpers');
+const logger = require('../common/logger')();
 
 class User extends Model {
   static fields(DataTypes) {
