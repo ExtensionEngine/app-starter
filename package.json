@@ -79,7 +79,7 @@
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.4.2",
+    "pg": "^8.6.0",
     "promise-queue": "^2.2.5",
     "s3-blob-store": "^3.2.0",
     "safe-require": "^1.0.3",
