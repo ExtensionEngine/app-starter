@@ -1,4 +1,4 @@
-import createFocusTrap from 'focus-trap';
+import { createFocusTrap } from 'focus-trap';
 
 export const withFocusTrap = (options = {}) => ({
   mounted() {
