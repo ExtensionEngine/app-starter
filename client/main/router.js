@@ -4,7 +4,7 @@ import get from 'lodash/get';
 import Home from '@/main/components';
 import Login from '@/main/components/auth/Login';
 import { navigate } from '@/common/navigation';
-import NotFound from '@/admin/components/common/NotFound';
+import NotFound from '@/common/components/NotFound';
 import ResetPassword from '@/main/components/auth/ResetPassword';
 import { Role } from '@/../common/config';
 import Router from 'vue-router';
@@ -17,28 +17,37 @@ Vue.use(Router);
 const fallbackRoute = { path: '*', component: NotFound };
 
 const router = new Router({
-  routes: [{
-    path: '/auth',
-    name: 'auth',
-    component: Auth,
-    children: [{
-      path: 'login',
-      name: 'login',
-      component: Login
-    }, {
-      path: 'forgot-password',
-      name: 'forgot-password',
-      component: ForgotPassword
-    }, {
-      path: 'reset-password/:token',
-      name: 'reset-password',
-      component: ResetPassword
-    }]
-  }, {
-    path: '/',
-    component: Home,
-    meta: { auth: true }
-  }, fallbackRoute]
+  routes: [
+    {
+      path: '/auth',
+      name: 'auth',
+      component: Auth,
+      children: [
+        {
+          path: 'login',
+          name: 'login',
+          component: Login
+        },
+        {
+          path: 'forgot-password',
+          name: 'forgot-password',
+          component: ForgotPassword
+        },
+        {
+          path: 'reset-password/:token',
+          name: 'reset-password',
+          component: ResetPassword
+        }
+      ]
+    },
+    {
+      path: '/',
+      name: 'home',
+      component: Home,
+      meta: { auth: true }
+    },
+    fallbackRoute
+  ]
 });
 
 router.beforeEach((to, _from, next) => {

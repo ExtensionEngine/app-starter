@@ -1,16 +1,14 @@
 <template>
-  <div class="auth-container">
+  <v-container class="auth-container">
     <div class="auth-panel">
       <div class="auth-header">
-        <h1>
-          <span class="has-text-weight-normal">APP</span>
-        </h1>
+        <h1>APP</h1>
       </div>
       <div class="auth-body">
         <router-view />
       </div>
     </div>
-  </div>
+  </v-container>
 </template>
 
 <style lang="scss" scoped>

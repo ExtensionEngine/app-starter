@@ -1,6 +1,6 @@
 import get from 'lodash/get';
 import { navigate } from '@/common/navigation';
-import NotFound from '@/admin/components/common/NotFound';
+import NotFound from '@/common/components//NotFound';
 import { Role } from '@/../common/config';
 import Router from 'vue-router';
 import store from './store';
@@ -13,12 +13,15 @@ Vue.use(Router);
 const fallbackRoute = { path: '*', component: NotFound };
 
 const router = new Router({
-  routes: [{
-    path: '/',
-    name: 'users',
-    component: Users,
-    meta: { auth: true }
-  }, fallbackRoute]
+  routes: [
+    {
+      path: '/',
+      name: 'users',
+      component: Users,
+      meta: { auth: true }
+    },
+    fallbackRoute
+  ]
 });
 
 router.beforeEach((to, _from, next) => {

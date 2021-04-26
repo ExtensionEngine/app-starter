@@ -2,11 +2,11 @@
   <v-app id="app">
     <sidebar :drawer.sync="drawer" />
     <navbar :drawer.sync="drawer" />
-    <v-content>
+    <v-main>
       <v-container fluid fill-height class="grey lighten-4">
         <router-view />
       </v-container>
-    </v-content>
+    </v-main>
   </v-app>
 </template>
 

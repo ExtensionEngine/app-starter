@@ -1,35 +1,51 @@
 <template>
   <div>
-    <div v-if="message">
-      <div class="notification is-warning">
-        {{ message }}
+    <v-alert v-if="message" text class="mb-5">
+      {{ message }}
+    </v-alert>
+    <validation-observer
+      v-else
+      ref="form"
+      @submit.prevent="$refs.form.handleSubmit(submit)"
+      tag="form"
+      novalidate>
+      <validation-provider
+        v-slot="{ errors }"
+        name="email"
+        rules="required|email">
+        <v-text-field
+          v-model="email"
+          :error-messages="errors"
+          type="email"
+          label="Email"
+          placeholder="Email"
+          prepend-inner-icon="mdi-email-outline"
+          outlined
+          class="required" />
+      </validation-provider>
+      <div>
+        <v-btn type="submit" block depressed rounded dark>
+          Send reset email
+        </v-btn>
+        <v-btn @click="$router.go(-1)" tag="a" text class="mt-7">
+          <v-icon class="pr-2">mdi-arrow-left</v-icon>Back
+        </v-btn>
       </div>
-      <div class="options">
-        <a @click="$router.go(-1)">Back</a>
-      </div>
-    </div>
-    <div v-else>
-      <form @submit.prevent="submit">
-        <v-input v-model="email" name="email" validate="required|email" />
-        <button type="submit" class="button">Send reset email</button>
-        <div class="options">
-          <a @click="$router.go(-1)">Back</a>
-        </div>
-      </form>
-    </div>
+    </validation-observer>
   </div>
 </template>
 
 <script>
-import delay from 'delay';
+import { delay } from 'bluebird';
 import { mapActions } from 'vuex';
-import VInput from '@/common/components/form/VInput';
+
+const getDefaultData = () => ({
+  email: '',
+  message: ''
+});
 
 export default {
-  data: () => ({
-    email: '',
-    message: null
-  }),
+  data: () => getDefaultData(),
   methods: {
     ...mapActions('auth', ['forgotPassword']),
     submit() {
@@ -41,27 +57,6 @@ export default {
         .then(() => this.$router.push('/'))
         .catch(() => (this.message = 'Oops! Something went wrong.'));
     }
-  },
-  components: { VInput }
+  }
 };
 </script>
-
-<style lang="scss" scoped>
-.well {
-  font-size: 16px;
-}
-
-.button {
-  margin-top: 5px;
-}
-
-.options {
-  padding: 10px 0;
-
-  a {
-    display: inline-block;
-    color: #444;
-    font-size: 14px;
-  }
-}
-</style>

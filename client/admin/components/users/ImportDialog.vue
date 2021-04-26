@@ -5,31 +5,51 @@
     persistent
     no-click-animation
     width="700">
-    <v-btn slot="activator" color="blue-grey" outline>
-      <v-icon>mdi-cloud-upload</v-icon>Import
-    </v-btn>
-    <v-form @submit.prevent="save">
+    <template #activator="{ on, attrs }">
+      <v-btn
+        v-on="on"
+        v-bind="attrs"
+        color="blue-grey"
+        outlined
+        class="mr-4">
+        <v-icon>mdi-cloud-upload</v-icon>Import
+      </v-btn>
+    </template>
+    <form @submit.prevent="save">
       <v-card class="pa-3">
         <v-card-title class="headline">Import Users</v-card-title>
         <v-card-text>
-          <label for="userImportInput">
-            <v-text-field
-              ref="fileName"
-              v-model="filename"
-              :error-messages="vErrors.collect('file')"
-              :disabled="importing"
-              prepend-icon="mdi-attachment"
-              label="Upload .xlsx or .csv file"
-              readonly
-              single-line />
-            <input
-              ref="fileInput"
-              v-validate="inputValidation"
-              @change="onFileSelected"
-              id="userImportInput"
-              name="file"
-              type="file">
-          </label>
+          <validation-provider
+            ref="fileProvider"
+            v-slot="{ errors }"
+            name="fileInput"
+            :rules="{ required: true, mimes }">
+            <label for="userImportInput">
+              <v-text-field
+                ref="fileName"
+                v-model="filename"
+                :error-messages="errors"
+                :disabled="importing"
+                prepend-icon="mdi-attachment"
+                label="Upload .xlsx or .csv file"
+                readonly
+                single-line />
+              <input
+                ref="fileInput"
+                @change="onFileSelected"
+                id="userImportInput"
+                name="file"
+                type="file"
+                class="file-input">
+            </label>
+          </validation-provider>
+          <v-alert
+            v-if="error"
+            transition="fade-transition"
+            dismissible text dense
+            class="mb-7 text-left">
+            {{ error }}
+          </v-alert>
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -48,7 +68,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-    </v-form>
+    </form>
   </v-dialog>
 </template>
 
@@ -56,9 +76,9 @@
 import api from '@/admin/api/user';
 import saveAs from 'save-as';
 import { withFocusTrap } from '@/common/focustrap';
-import { withValidation } from '@/common/validation';
 
 const el = vm => vm.$children[0].$refs.dialog;
+
 const inputFormats = {
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
   'text/csv': 'csv'
@@ -66,34 +86,30 @@ const inputFormats = {
 
 export default {
   name: 'import-dialog',
-  mixins: [withValidation(), withFocusTrap({ el })],
+  mixins: [withFocusTrap({ el })],
   data: () => ({
     showDialog: false,
     importing: false,
     filename: null,
     form: null,
+    error: null,
     serverErrorsReport: null
   }),
   computed: {
     importDisabled() {
-      return !this.filename || this.vErrors.any() || this.importing;
+      return !this.filename || this.importing;
     },
-    inputValidation: () => ({ required: true, mimes: Object.keys(inputFormats) })
+    mimes: () => Object.keys(inputFormats)
   },
   methods: {
-    onFileSelected(e) {
+    async onFileSelected(e) {
+      const { valid } = await this.$refs.fileProvider.validate(e);
+      if (!valid) return;
       this.form = new FormData();
       this.resetErrors();
       const [file] = e.target.files;
-      if (!file) {
-        this.filename = null;
-        return;
-      }
       this.filename = file.name;
-      return this.$validator.validateAll().then(isValid => {
-        if (!isValid) return;
-        this.form.append('file', file, file.name);
-      });
+      this.form.append('file', file, file.name);
     },
     close() {
       if (this.importing) return;
@@ -108,7 +124,7 @@ export default {
         this.importing = false;
         if (response.data.size) {
           this.$nextTick(() => this.$refs.fileName.focus());
-          this.vErrors.add({ field: 'file', msg: 'All users aren\'t imported' });
+          this.error = 'All users aren\'t imported';
           this.serverErrorsReport = response.data;
           return;
         }
@@ -116,7 +132,7 @@ export default {
         this.close();
       }).catch(err => {
         this.importing = false;
-        this.vErrors.add({ field: 'file', msg: 'Importing users failed.' });
+        this.error = 'Importing users failed.';
         this.$nextTick(() => this.$refs.fileName.focus());
         return Promise.reject(err);
       });
@@ -128,7 +144,8 @@ export default {
     },
     resetErrors() {
       this.serverErrorsReport = null;
-      this.vErrors.clear();
+      this.error = null;
+      this.$refs.form?.reset();
     }
   },
   watch: {
@@ -140,7 +157,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-form input {
+.file-input {
   display: none;
 }
 
@@ -160,10 +177,6 @@ export default {
   ::v-deep .mdi {
     transform: rotate(-90deg);
   }
-}
-
-.v-card__actions {
-  margin-top: 20px;
 }
 
 .loader-container {

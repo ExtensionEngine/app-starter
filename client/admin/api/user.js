@@ -1,12 +1,12 @@
 import { extractData, processParams } from '@/common/api/helpers';
-import path from 'path';
 import request from '@/common/api/request';
+import urljoin from 'url-join';
 
 const urls = {
   base: '/users',
-  resource: ({ id }) => path.join(urls.base, `${id}`),
-  invite: ({ id }) => path.join(urls.base, `${id}`, '/invite'),
-  import: () => path.join(urls.base, '/import')
+  resource: ({ id }) => urljoin(urls.base, `${id}`),
+  invite: ({ id }) => urljoin(urls.base, `${id}`, '/invite'),
+  import: () => urljoin(urls.base, '/import')
 };
 
 function fetch(params = {}) {
