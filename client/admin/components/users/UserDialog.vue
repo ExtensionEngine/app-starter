@@ -80,9 +80,6 @@ import humanize from 'humanize-string';
 import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 import { Role } from '@/../common/config';
-import { withFocusTrap } from '@/common/focustrap';
-
-const el = vm => vm.$children[0].$refs.dialog;
 
 const resetUser = () => {
   return {
@@ -95,7 +92,6 @@ const resetUser = () => {
 
 export default {
   name: 'user-dialog',
-  mixins: [withFocusTrap({ el })],
   props: {
     visible: { type: Boolean, default: false },
     userData: { type: Object, default: () => ({}) }
@@ -137,7 +133,6 @@ export default {
   },
   watch: {
     show(val) {
-      this.$nextTick(() => this.focusTrap.toggle(val));
       if (!val) return;
       this.$refs.form?.reset();
       if (!isEmpty(this.userData)) this.user = cloneDeep(this.userData);

@@ -75,9 +75,6 @@
 <script>
 import api from '@/admin/api/user';
 import saveAs from 'save-as';
-import { withFocusTrap } from '@/common/focustrap';
-
-const el = vm => vm.$children[0].$refs.dialog;
 
 const inputFormats = {
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
@@ -86,7 +83,6 @@ const inputFormats = {
 
 export default {
   name: 'import-dialog',
-  mixins: [withFocusTrap({ el })],
   data: () => ({
     showDialog: false,
     importing: false,
@@ -113,8 +109,8 @@ export default {
     },
     close() {
       if (this.importing) return;
+      if (this.$refs.fileInput) this.$refs.fileInput.value = null;
       this.filename = null;
-      this.$refs.fileInput.value = null;
       this.resetErrors();
       this.showDialog = false;
     },
@@ -146,11 +142,6 @@ export default {
       this.serverErrorsReport = null;
       this.error = null;
       this.$refs.form?.reset();
-    }
-  },
-  watch: {
-    showDialog(val) {
-      this.$nextTick(() => this.focusTrap.toggle(val));
     }
   }
 };
