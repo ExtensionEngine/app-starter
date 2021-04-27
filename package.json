@@ -14,11 +14,8 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "vue-cli-service serve",
-    "build": "del-cli node_modules/.cache/vue-loader && poi --prod",
+    "build": "vue-cli-service build",
     "clean": "del-cli dist/* !dist/.gitkeep",
-    "webpack:inspect-config": "poi --inspect-webpack",
-    "webpack:bundle-report": "poi --prod --bundle-report",
-    "webpack:stats": "poi --prod --print-stats",
     "dev:server": "nodemon -r dotenv/config ./server | bunyan",
     "db": "node ./server/script/sequelize",
     "db:reset": "npm run db drop && npm run db create && npm run db migrate",
@@ -29,7 +26,6 @@
     "lint": "npm run lint:js; npm run lint:scss",
     "debug": "nodemon --inspect-brk -r dotenv/config ./server | bunyan",
     "start": "NODE_ENV=production node -r dotenv/config ./server",
-    "bundle-report": "poi --prod -- --bundle-report",
     "test": "echo \"Error: no test specified\" && exit 1",
     "postshrinkwrap": "rewrite-lockfile package-lock.json"
   },
