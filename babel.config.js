@@ -3,6 +3,6 @@
 /** @type {import('@babel/core').TransformOptions} */
 module.exports = {
   presets: [
-    'poi/babel'
+    '@vue/cli-plugin-babel/preset'
   ]
 };

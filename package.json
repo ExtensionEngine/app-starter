@@ -13,7 +13,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev:client": "poi --serve",
+    "dev:client": "vue-cli-service serve",
     "build": "del-cli node_modules/.cache/vue-loader && poi --prod",
     "clean": "del-cli dist/* !dist/.gitkeep",
     "webpack:inspect-config": "poi --inspect-webpack",
@@ -102,13 +102,17 @@
     "@babel/eslint-plugin": "^7.13.16",
     "@extensionengine/eslint-config": "^2.0.0",
     "@extensionengine/stylelint-config": "^1.1.1",
-    "@poi/plugin-bundle-report": "^12.1.1",
-    "@poi/plugin-eslint": "^12.0.0",
-    "@types/poi": "^12.5.0",
+    "@vue/cli-plugin-babel": "^4.5.12",
+    "@vue/cli-plugin-eslint": "^4.5.12",
+    "@vue/cli-plugin-router": "^4.5.12",
+    "@vue/cli-plugin-vuex": "^4.5.12",
+    "@vue/cli-service": "^4.5.12",
+    "babel-eslint": "^10.1.0",
     "clean-webpack-plugin": "^3.0.0",
     "dargs": "^7.0.0",
     "del-cli": "^3.0.1",
     "emoji-strip": "^1.0.1",
+    "esbuild-loader": "^2.12.0",
     "eslint": "^7.24.0",
     "eslint-config-semistandard": "^15.0.1",
     "eslint-config-standard": "^16.0.2",
@@ -121,18 +125,27 @@
     "eslint-plugin-vue": "^7.9.0",
     "minimist": "^1.2.5",
     "nodemon": "^2.0.7",
-    "poi": "^12.7.1",
     "rewrite-lockfile": "^1.0.0",
     "sass": "^1.32.11",
     "sass-loader": "^10.0.1",
     "sequelize-cli": "^6.2.0",
     "split2": "^3.2.2",
     "stylelint": "^13.12.0",
-    "vue-template-compiler": "^2.6.10"
+    "vue-cli-plugin-vuetify": "^2.4.0",
+    "vue-loader": "^15.9.6",
+    "vue-template-compiler": "^2.6.10",
+    "vuetify-loader": "^1.7.2"
   },
   "engines": {
     "node": ">= 12",
     "npm": ">= 6",
     "postgres": ">= 9.4"
+  },
+  "vuePlugins": {
+    "service": [
+      "./build/plugins/envs",
+      "./build/plugins/clean-out-dir",
+      "./build/plugins/html-version-spec"
+    ]
   }
 }

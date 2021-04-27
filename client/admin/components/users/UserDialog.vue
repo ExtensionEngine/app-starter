@@ -134,7 +134,7 @@ export default {
   watch: {
     show(val) {
       if (!val) return;
-      this.$refs.form?.reset();
+      this.$refs.form && this.$refs.form.reset();
       if (!isEmpty(this.userData)) this.user = cloneDeep(this.userData);
     }
   }
