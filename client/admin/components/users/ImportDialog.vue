@@ -141,7 +141,7 @@ export default {
     resetErrors() {
       this.serverErrorsReport = null;
       this.error = null;
-      this.$refs.form?.reset();
+      this.$refs.form && this.$res.form.reset();
     }
   }
 };

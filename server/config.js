@@ -5,7 +5,7 @@ const yn = require('yn');
 
 module.exports = {
   hostname: process.env.HOSTNAME,
-  port: process.env.PORT,
+  port: process.env.SERVER_PORT,
   ip: process.env.IP,
   useHistoryApiFallback: process.env.HISTORY_API_FALLBACK,
   staticFolder: path.resolve(__dirname, '../dist'),
