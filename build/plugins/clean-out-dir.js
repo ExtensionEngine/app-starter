@@ -9,12 +9,13 @@ module.exports = (api, { pluginOptions } = {}) => {
 
   build.fn = function (args, _api, _options) {
     const clean = args.clean !== false;
-    api.chainWebpack(config => {
-      if (!clean) return;
-      config
-        .plugin('clean-out-dir')
-        .use(CleanWebpackPlugin, [cleanOutDir]);
-    });
+    if (clean) {
+      api.chainWebpack(config => {
+        config
+          .plugin('clean-out-dir')
+          .use(CleanWebpackPlugin, [cleanOutDir]);
+      });
+    }
     args.clean = false;
     return buildFn.apply(this, arguments);
   };
