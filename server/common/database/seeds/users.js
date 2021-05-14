@@ -1,7 +1,7 @@
 'use strict';
 
-const { auth: config = {} } = require('../../../config');
 const bcrypt = require('bcrypt');
+const { auth: config = {} } = require('../../../config');
 const { Role } = require('../../../../common/config');
 
 const hash = password => bcrypt.hashSync(password, config.saltRounds);

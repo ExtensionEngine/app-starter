@@ -1,20 +1,18 @@
 <template>
   <v-app-bar color="blue" app>
-    <router-link
-      :to="{ name: 'home' }"
-      class="app-brand text-decoration-none">
+    <router-link :to="{ name: 'home' }" class="app-brand text-decoration-none">
       App starter
     </router-link>
     <v-spacer />
     <v-menu
-      min-width="220px"
+      min-width="220"
       transition="slide-y-transition"
-      offset-y
-      z-index="1000">
+      z-index="1000"
+      offset-y>
       <template #activator="{ on }">
         <a v-on="on" class="navbar-link">
           <v-icon color="white" class="mr-1">mdi-account-circle</v-icon>
-          {{ user.email }}
+          {{ user.label }}
           <v-icon color="white">mdi-chevron-down</v-icon>
         </a>
       </template>
@@ -32,9 +30,7 @@ import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'main-navbar',
-  computed: {
-    ...mapState('auth', ['user'])
-  },
+  computed: mapState('auth', ['user']),
   methods: mapActions('auth', ['logout'])
 };
 </script>

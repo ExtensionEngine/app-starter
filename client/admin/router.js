@@ -13,15 +13,12 @@ Vue.use(Router);
 const fallbackRoute = { path: '*', component: NotFound };
 
 const router = new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'users',
-      component: Users,
-      meta: { auth: true }
-    },
-    fallbackRoute
-  ]
+  routes: [{
+    path: '/',
+    name: 'users',
+    component: Users,
+    meta: { auth: true }
+  }, fallbackRoute]
 });
 
 router.beforeEach((to, _from, next) => {

@@ -14,12 +14,12 @@
       <template #activator="{ on, attrs }">
         <v-btn
           v-on="on"
+          v-bind="attrs"
           color="primary"
           dark icon large
-          v-bind="attrs"
           class="mr-2">
-          <v-avatar size="42px" color="#eaeaea">
-            <span class="grey--text headline">{{ user.firstName[0] }}</span>
+          <v-avatar size="42" color="#eaeaea">
+            <span class="grey--text headline">{{ user.label[0] }}</span>
           </v-avatar>
         </v-btn>
       </template>

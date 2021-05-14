@@ -5,8 +5,8 @@ import urljoin from 'url-join';
 const urls = {
   base: '/users',
   resource: ({ id }) => urljoin(urls.base, `${id}`),
-  invite: ({ id }) => urljoin(urls.base, `${id}`, '/invite'),
-  import: () => urljoin(urls.base, '/import')
+  invite: ({ id }) => urljoin(urls.base, `${id}`, 'invite'),
+  import: () => urljoin(urls.base, 'import')
 };
 
 function fetch(params = {}) {

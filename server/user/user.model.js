@@ -3,6 +3,7 @@
 const { Model, Op, Sequelize, UniqueConstraintError } = require('sequelize');
 const bcrypt = require('bcrypt');
 const castArray = require('lodash/castArray');
+const compact = require('lodash/compact');
 const { auth: config = {} } = require('../config');
 const find = require('lodash/find');
 const jwt = require('jsonwebtoken');
@@ -14,11 +15,15 @@ const { Role } = require('../../common/config');
 const { sql } = require('../common/database/helpers');
 const logger = require('../common/logger')();
 
+const PROFILE_ATTRS = [
+  'id', 'firstName', 'lastName', 'fullName', 'label', 'email', 'role', 'createdAt'
+];
+
 class User extends Model {
-  static fields(DataTypes) {
+  static fields({ DATE, ENUM, STRING, VIRTUAL }) {
     return {
       email: {
-        type: DataTypes.STRING,
+        type: STRING,
         set(email) {
           this.setDataValue('email', email.toLowerCase());
         },
@@ -27,43 +32,54 @@ class User extends Model {
         unique: { msg: 'This email address is already in use.' }
       },
       password: {
-        type: DataTypes.STRING,
+        type: STRING,
         validate: { notEmpty: true, len: [5, 255] }
       },
       role: {
-        type: DataTypes.ENUM(Object.values(Role)),
+        type: ENUM(Object.values(Role)),
         allowNull: false,
         defaultValue: Role.User
       },
       token: {
-        type: DataTypes.STRING,
+        type: STRING,
         validate: { notEmpty: true, len: [10, 500] }
       },
       firstName: {
-        type: DataTypes.STRING,
+        type: STRING,
         field: 'first_name'
       },
       lastName: {
-        type: DataTypes.STRING,
+        type: STRING,
         field: 'last_name'
       },
+      fullName: {
+        type: VIRTUAL,
+        get() {
+          return compact([this.firstName, this.lastName]).join(' ') || null;
+        }
+      },
+      label: {
+        type: VIRTUAL,
+        get() {
+          return this.fullName || this.email;
+        }
+      },
       createdAt: {
-        type: DataTypes.DATE,
+        type: DATE,
         field: 'created_at'
       },
       updatedAt: {
-        type: DataTypes.DATE,
+        type: DATE,
         field: 'updated_at'
       },
       deletedAt: {
-        type: DataTypes.DATE,
+        type: DATE,
         field: 'deleted_at'
       },
       profile: {
-        type: DataTypes.VIRTUAL,
+        type: VIRTUAL,
         get() {
-          return pick(this,
-            ['id', 'firstName', 'lastName', 'email', 'role', 'createdAt']);
+          return pick(this, PROFILE_ATTRS);
         }
       }
     };

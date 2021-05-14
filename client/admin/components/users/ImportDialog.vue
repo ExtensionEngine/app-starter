@@ -153,7 +153,7 @@ export default {
 }
 
 .v-btn .v-icon {
-  padding-right: 6px;
+  padding-right: 0.375rem;
 }
 
 .v-text-field {

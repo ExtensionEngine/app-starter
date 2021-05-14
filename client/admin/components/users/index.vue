@@ -99,14 +99,13 @@ export default {
     fetch: throttle(async function (opts) {
       Object.assign(this.dataTable, opts);
       const params = { ...this.dataTable, filter: this.filter };
-      const result = await api.fetch(params);
-      this.users = result.items;
-      this.totalItems = result.total;
+      const { items, total } = await api.fetch(params);
+      this.users = items;
+      this.totalItems = total;
     }, 400),
     removeUser(user) {
-      const name = user.firstName + ' ' + user.lastName;
       Object.assign(this.confirmation, {
-        message: `Are you sure you want to remove user "${name}"?`,
+        message: `Are you sure you want to remove user "${user.label}"?`,
         action: () => api.remove(user),
         dialog: true
       });
@@ -117,9 +116,7 @@ export default {
       handler: 'fetch',
       immediate: true
     },
-    filter() {
-      this.fetch();
-    }
+    filter: 'fetch'
   },
   components: { ConfirmationDialog, ImportDialog, UserDialog }
 };

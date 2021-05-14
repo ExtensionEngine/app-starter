@@ -1,6 +1,6 @@
 <template>
   <v-navigation-drawer
-    @input="val => $emit('update:drawer', val)"
+    @input="$emit('update:drawer', $event)"
     :value="drawer"
     fixed app clipped
     class="pt-5 grey lighten-4">

@@ -23,16 +23,9 @@ export default {
     message: { type: String, default: 'Are you sure?' },
     action: { type: Function, default: () => true }
   },
-  data() {
-    return {
-      focusTrap: null
-    };
-  },
   computed: {
     show: {
-      get() {
-        return this.visible;
-      },
+      get: vm => vm.visible,
       set(value) {
         if (!value) this.close();
       }

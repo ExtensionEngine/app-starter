@@ -13,7 +13,7 @@
             @click="invite"
             :disabled="isLoading"
             :loading="isLoading"
-            :outline="true"
+            outlined
             color="blue-grey">
             Reinvite
           </v-btn>
@@ -35,8 +35,6 @@
             rules="required">
             <v-select
               v-model="user.role"
-              @focus="focusTrap.pause()"
-              @blur="focusTrap.unpause()"
               :items="roles"
               :error-messages="errors"
               label="Role"
@@ -81,14 +79,12 @@ import isEmpty from 'lodash/isEmpty';
 import map from 'lodash/map';
 import { Role } from '@/../common/config';
 
-const resetUser = () => {
-  return {
-    firstName: '',
-    lastName: '',
-    email: '',
-    role: null
-  };
-};
+const resetUser = () => ({
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: null
+});
 
 export default {
   name: 'user-dialog',
@@ -102,28 +98,23 @@ export default {
   }),
   computed: {
     show: {
-      get() {
-        return this.visible;
-      },
+      get: vm => vm.visible,
       set(value) {
         if (!value) this.close();
       }
     },
-    roles() {
-      return map(Role, it => ({ text: humanize(it), value: it }));
-    },
-    isNewUser() {
-      return !this.user.id;
-    }
+    roles: () => map(Role, it => ({ text: humanize(it), value: it })),
+    isNewUser: vm => !vm.user.id
   },
   methods: {
     close() {
       this.user = resetUser();
       this.$emit('update:visible', false);
     },
-    save() {
+    async save() {
       const action = this.isNewUser ? 'create' : 'update';
-      api[action](this.user).then(() => this.$emit(`${action}d`));
+      await api[action](this.user);
+      this.$emit(`${action}d`);
       this.close();
     },
     invite() {
@@ -133,9 +124,8 @@ export default {
   },
   watch: {
     show(val) {
-      if (!val) return;
-      this.$refs.form?.reset();
-      if (!isEmpty(this.userData)) this.user = cloneDeep(this.userData);
+      if (!val || isEmpty(this.userData)) return;
+      this.user = cloneDeep(this.userData);
     }
   }
 };

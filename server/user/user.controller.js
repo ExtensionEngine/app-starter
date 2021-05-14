@@ -79,7 +79,7 @@ function forgotPassword({ origin, body }, res) {
     .then(() => res.end());
 }
 
-function resetPassword({ body, params }, res) {
+function resetPassword({ body }, res) {
   const { password, token } = body;
   return User.findOne({ where: { token } })
     .then(user => user || createError(HttpStatus.NOT_FOUND, 'Invalid token!'))
