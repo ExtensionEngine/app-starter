@@ -92,9 +92,7 @@ export default {
     serverErrorsReport: null
   }),
   computed: {
-    importDisabled() {
-      return !this.filename || this.importing;
-    },
+    importDisabled: vm => !vm.filename || vm.importing,
     mimes: () => Object.keys(inputFormats)
   },
   methods: {
