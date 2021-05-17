@@ -1,17 +1,15 @@
 'use strict';
 
-const { Model, Op, Sequelize, UniqueConstraintError } = require('sequelize');
+const { Model, Op, Sequelize } = require('sequelize');
+const { restoreOrCreate, restoreOrCreateAll } = require('../common/database/restore');
 const bcrypt = require('bcrypt');
-const castArray = require('lodash/castArray');
 const compact = require('lodash/compact');
 const { auth: config = {} } = require('../config');
-const find = require('lodash/find');
 const jwt = require('jsonwebtoken');
 const mail = require('../common/mail');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const Promise = require('bluebird');
-const { restoreOrCreate } = require('../common/database/restore');
 const { Role } = require('../../common/config');
 const { sql } = require('../common/database/helpers');
 const logger = require('../common/logger')();
@@ -40,7 +38,7 @@ class User extends Model {
       role: {
         type: ENUM(Object.values(Role)),
         allowNull: false,
-        defaultValue: Role.User
+        defaultValue: Role.USER
       },
       token: {
         type: STRING,
@@ -129,6 +127,11 @@ class User extends Model {
     return restoreOrCreate(this, user, options);
   }
 
+  static async restoreOrCreateAll(users, options) {
+    const where = { email: map(users, 'email') };
+    return restoreOrCreateAll(this, users, where, options);
+  }
+
   static match(pattern) {
     if (!pattern) return User;
     return User.scope({ method: ['searchByPattern', pattern] });
@@ -139,34 +142,6 @@ class User extends Model {
     mail.invite(user, options).catch(err =>
       logger.error('Error: Sending invite email failed:', err.message));
     return user.save({ paranoid: false });
-  }
-
-  static async import(users, { concurrency = 16, ...options } = {}) {
-    const errors = [];
-    await this.restoreOrBuild(users, { concurrency }).map((result, i) => {
-      if (result.isFulfilled()) return this.invite(result.value(), options);
-      const { message = 'Failed to import user.' } = result.reason();
-      return errors.push({ ...users[i], message });
-    }, { concurrency });
-    return errors.length && errors;
-  }
-
-  static async restoreOrBuild(users, { concurrency = 16 } = {}) {
-    users = castArray(users);
-    const where = { email: map(users, 'email') };
-    const found = await User.findAll({ where, paranoid: false });
-    return Promise.map(users, userData => Promise.try(() => {
-      const user = find(found, { email: userData.email });
-      if (user && !user.deletedAt) {
-        const message = this.rawAttributes.email.unique.msg;
-        throw new UniqueConstraintError({ message });
-      }
-      if (user) {
-        user.setDataValue('deleteAt', null);
-        return user;
-      }
-      return this.build(userData);
-    }).reflect(), { concurrency });
   }
 
   async encryptPassword() {
@@ -196,7 +171,7 @@ class User extends Model {
   }
 
   isAdmin() {
-    return this.role === Role.Admin;
+    return this.role === Role.ADMIN;
   }
 }
 

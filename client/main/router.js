@@ -47,7 +47,7 @@ router.beforeEach((to, _from, next) => {
   const user = get(store.state, 'auth.user');
   const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
   if (isNotAuthenticated) return next({ name: 'login' });
-  if (user && user.role === Role.Admin) return navigate('/admin/');
+  if (user && user.role === Role.ADMIN) return navigate('/admin/');
   return next();
 });
 

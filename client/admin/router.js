@@ -24,7 +24,7 @@ const router = new Router({
 router.beforeEach((to, _from, next) => {
   const user = get(store.state, 'auth.user');
   const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
-  const isNotAuthorized = user && user.role !== Role.Admin;
+  const isNotAuthorized = user && user.role !== Role.ADMIN;
   if (isNotAuthenticated || isNotAuthorized) return navigate();
   next();
 });

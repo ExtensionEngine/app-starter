@@ -1,6 +1,7 @@
 'use strict';
 
 const { authenticate } = require('../common/auth');
+const { createSheet } = require('../common/helpers');
 const ctrl = require('./user.controller');
 const multer = require('multer');
 const router = require('express').Router();
@@ -25,7 +26,8 @@ router.route('/:id')
 
 router
   .post('/:id/invite', ctrl.invite)
-  .post('/import', upload.single('file'), ctrl.bulkImport);
+  .post('/import', upload.single('file'), ctrl.bulkImport, createSheet)
+  .get('/import/template', ctrl.getImportTemplate, createSheet);
 
 module.exports = {
   path: '/users',

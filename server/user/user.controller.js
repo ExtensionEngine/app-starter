@@ -3,9 +3,9 @@
 const { ACCEPTED, CONFLICT, NOT_FOUND } = require('http-status');
 const { Sequelize, sequelize, User } = require('../common/database');
 const { createError } = require('../common/errors');
-const Datasheet = require('./datasheet');
+const Datasheet = require('../common/datasheet');
+const { generateUsers } = require('../common/helpers');
 const map = require('lodash/map');
-const mime = require('mime');
 const pick = require('lodash/pick');
 
 const { Op } = Sequelize;
@@ -87,14 +87,20 @@ function resetPassword({ body }, res) {
     .then(() => res.end());
 }
 
-async function bulkImport({ body, file, origin }, res) {
+async function bulkImport(req, res, next) {
+  const { file, origin } = req;
   const users = (await Datasheet.load(file)).toJSON({ include: inputAttrs });
-  const errors = await User.import(users, { origin: origin });
-  if (!errors) return res.end();
-  const creator = 'APP_STARTER';
-  const format = body.format || mime.getExtension(file.mimetype);
-  const report = (new Datasheet({ columns, data: errors })).toWorkbook({ creator });
-  return report.send(res, { format });
+  const errors = await bulkCreate(users, { origin });
+  res.set('data-imported-count', users.length - errors.length);
+  if (!errors.length) return res.end();
+  const message = { header: 'Error', width: 30 };
+  req.sheet = { columns: { ...columns, message }, data: errors };
+  return next();
+}
+
+function getImportTemplate(req, _res, next) {
+  req.sheet = { columns, data: generateUsers() };
+  return next();
 }
 
 module.exports = {
@@ -106,5 +112,17 @@ module.exports = {
   login,
   invite,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getImportTemplate
 };
+
+async function bulkCreate(users, { concurrency = 16, ...options } = {}) {
+  const errors = [];
+  await User.restoreOrCreateAll(users, { concurrency, modelSearchKey: 'email' })
+    .map(([err, user], index) => {
+      if (!err && user) return User.invite(user, options);
+      const { message = 'Failed to import user.' } = err;
+      return errors.push({ ...users[index], message });
+    }, { concurrency });
+  return errors.length && errors;
+}

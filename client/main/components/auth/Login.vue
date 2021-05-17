@@ -77,7 +77,7 @@ export default {
       this.message = '';
       this.login({ email: this.email, password: this.password })
         .then(user => {
-          if (user.role !== Role.Admin) return this.$router.push('/');
+          if (user.role !== Role.ADMIN) return this.$router.push('/');
           document.location.replace(`${document.location.origin}/admin`);
         })
         .catch(() => (this.errorMessage = LOGIN_ERR_MESSAGE));

@@ -1,6 +1,6 @@
 'use strict';
 
-const capitalize = require('change-case').upperCaseFirst;
+const { capitalCase } = require('change-case');
 const find = require('lodash/find');
 const Promise = require('bluebird');
 const transform = require('lodash/transform');
@@ -27,7 +27,7 @@ async function restoreOrBuildAll(Model, items = [], where = {}, options = {}) {
   const results = await Promise.map(items, item => pTuple(() => {
     const model = find(found, processSearchKey(modelSearchKey, item));
     if (model && !model.deletedAt) {
-      const message = `${capitalize(name(Model))} already exists`;
+      const message = `${capitalCase(name(Model))} already exists`;
       throw new UniqueConstraintError({ message });
     }
     if (!model) return save ? Model.create(item) : Model.build(item);
