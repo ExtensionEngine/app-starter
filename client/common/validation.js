@@ -1,9 +1,26 @@
 import { alpha, email, is, max, mimes, min, required } from 'vee-validate/dist/rules';
 import { extend } from 'vee-validate';
 import forEach from 'lodash/forEach';
+import isURL from 'validator/lib/isURL';
 import { messages } from 'vee-validate/dist/locale/en.json';
 import snakeCase from 'lodash/snakeCase';
 import userApi from '@/admin/api/user';
+
+const nameFormat = {
+  validate: value => {
+    const hasValidUnicodeLetters = /^[\p{Letter}\s'-.]+$/u.test(value);
+    const hasPunctuationStreak = /['-.]{2,}/.test(value);
+    const hasValidBoundaries = !/^['-.].*|['.-]$/.test(value);
+    return hasValidUnicodeLetters && hasValidBoundaries && !hasPunctuationStreak;
+  },
+  message: 'The {_field_} field is not valid'
+};
+
+const url = {
+  params: ['protocols', 'require_valid_protocol', 'require_protocol'],
+  validate: (val, opts) => isURL(val, opts),
+  message: 'The {_field_} is not a valid URL'
+};
 
 const alphanumerical = {
   validate: value => (/\d/.test(value) && /[a-zA-Z]/.test(value)),
@@ -27,7 +44,9 @@ const rules = {
   max,
   min,
   mimes,
+  nameFormat,
   required,
+  url,
   uniqueEmail
 };
 
