@@ -1,71 +1,81 @@
 <template>
   <!-- eslint-disable vue/valid-v-slot -->
-  <v-layout justify-center>
-    <v-flex class="mt-5">
-      <v-toolbar color="#f5f5f5" flat>
-        <v-spacer />
+  <v-container fluid>
+    <v-row class="ma-5">
+      <v-col sm="4" md="5" lg="4">
+        <v-text-field
+          v-model="filter"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line hide-details clearable />
+        <v-checkbox
+          v-model="showArchived"
+          label="Show archived"
+          hide-details
+          class="my-2 archived-checkbox" />
+      </v-col>
+      <v-col sm="8" md="7" lg="8" class="d-flex justify-end">
         <import-dialog @imported="fetch(defaultPage)" />
-        <v-btn @click.stop="showUserDialog()" color="success" outlined>
-          Add user
+        <v-btn @click.stop="showUserDialog()" text>
+          <v-icon dense class="mr-1">mdi-plus</v-icon>Add user
         </v-btn>
-      </v-toolbar>
-      <div class="elevation-1 ml-2 mr-4">
-        <v-layout class="px-4 py-3 table-toolbar">
-          <v-flex lg3 offset-lg9>
-            <v-text-field
-              v-model="filter"
-              append-icon="mdi-magnify"
-              label="Search"
-              single-line
-              clearable />
-          </v-flex>
-        </v-layout>
-        <v-data-table
-          v-model="selectedUsers"
-          :headers="headers"
-          :items="users"
-          :server-items-length="totalItems"
-          :options.sync="dataTable"
-          :multi-sort="false"
-          show-select
-          class="user-table">
-          <template #item.createdAt="{ item }">
-            <td class="no-wrap">{{ item.createdAt | formatDate }}</td>
-          </template>
-          <template #item.actions="{ item }">
-            <v-icon @click="showUserDialog(item)" small>
-              mdi-pencil
+      </v-col>
+    </v-row>
+    <v-data-table
+      v-model="selectedUsers"
+      :headers="headers"
+      :items="users"
+      :server-items-length="totalItems"
+      :options.sync="dataTable"
+      show-select must-sort
+      class="ma-5 transparent">
+      <template #item.createdAt="{ item }">
+        {{ item.createdAt | formatDate }}
+      </template>
+      <template #item.actions="{ item }">
+        <div class="text-no-wrap text-center">
+          <v-btn
+            @click="showUserDialog(item)"
+            color="grey darken-3"
+            x-small icon>
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn
+            @click="archiveOrRestore(item)"
+            :disabled="user.id === item.id"
+            color="grey darken-3"
+            x-small icon>
+            <v-icon>
+              mdi-account-{{ item.deletedAt ? 'convert' : 'off' }}
             </v-icon>
-            <v-icon @click="removeUser(item)" small class="ml-2">
-              mdi-delete
-            </v-icon>
-          </template>
-        </v-data-table>
-      </div>
-      <user-dialog
-        @created="fetch(defaultPage)"
-        @updated="fetch(defaultPage)"
-        :visible.sync="userDialog"
-        :user-data="editedUser" />
-      <confirmation-dialog
-        @confirmed="fetch()"
-        :visible.sync="confirmation.dialog"
-        :action="confirmation.action"
-        :message="confirmation.message"
-        heading="Remove user" />
-    </v-flex>
-  </v-layout>
+          </v-btn>
+        </div>
+      </template>
+    </v-data-table>
+    <user-dialog
+      @created="fetch(defaultPage)"
+      @updated="fetch(defaultPage)"
+      :visible.sync="userDialog"
+      :user-data="editedUser" />
+    <confirmation-dialog
+      @confirmed="fetch()"
+      :visible.sync="confirmation.dialog"
+      :action="confirmation.action"
+      :message="confirmation.message"
+      heading="Remove user" />
+  </v-container>
 </template>
 
 <script>
 import api from '@/admin/api/user';
 import ConfirmationDialog from '../common/ConfirmationDialog';
+import humanize from 'humanize-string';
 import ImportDialog from './ImportDialog';
+import { mapState } from 'vuex';
 import throttle from 'lodash/throttle';
 import UserDialog from './UserDialog';
 
-const defaultPage = () => ({ page: 1, sortBy: ['createdAt'], sortDesc: [true] });
-
+const defaultPage = () => ({ sortBy: ['updatedAt'], sortDesc: [true], page: 1 });
 const headers = () => [
   { text: 'Email', value: 'email' },
   { text: 'Role', value: 'role' },
@@ -74,6 +84,10 @@ const headers = () => [
   { text: 'Date Created', value: 'createdAt' },
   { text: 'Actions', value: 'actions', align: 'center', sortable: false }
 ];
+const actions = user => ({
+  archive: () => api.remove(user),
+  restore: () => api.create(user)
+});
 
 export default {
   name: 'user-list',
@@ -85,9 +99,11 @@ export default {
     totalItems: 0,
     userDialog: false,
     editedUser: null,
+    showArchived: false,
     confirmation: { dialog: null }
   }),
   computed: {
+    ...mapState('auth', ['user']),
     headers,
     defaultPage
   },
@@ -98,26 +114,38 @@ export default {
     },
     fetch: throttle(async function (opts) {
       Object.assign(this.dataTable, opts);
-      const params = { ...this.dataTable, filter: this.filter };
-      const { items, total } = await api.fetch(params);
+      const params = { filter: this.filter, archived: this.showArchived };
+      const { items, total } = await api.fetch({ ...this.dataTable, params });
       this.users = items;
       this.totalItems = total;
     }, 400),
-    removeUser(user) {
-      Object.assign(this.confirmation, {
-        message: `Are you sure you want to remove user "${user.label}"?`,
-        action: () => api.remove(user),
+    archiveOrRestore(user) {
+      const { deletedAt, label } = user;
+      const action = deletedAt ? 'restore' : 'archive';
+      this.confirmation = {
+        heading: `${humanize(action)} user`,
+        message: `Are you sure you want to ${action} user "${label}"?`,
+        action: actions(user)[action],
         dialog: true
-      });
+      };
     }
   },
   watch: {
-    dataTable: {
-      handler: 'fetch',
-      immediate: true
-    },
-    filter: 'fetch'
+    dataTable: 'fetch',
+    filter: 'fetch',
+    showArchived: 'fetch'
   },
-  components: { ConfirmationDialog, ImportDialog, UserDialog }
+  components: {
+    ConfirmationDialog,
+    ImportDialog,
+    UserDialog
+  }
 };
 </script>
+
+<style lang="scss" scoped>
+.user-table ::v-deep .v-input--checkbox {
+  justify-content: center;
+  margin-top: 0;
+}
+</style>

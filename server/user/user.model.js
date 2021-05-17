@@ -11,12 +11,14 @@ const mail = require('../common/mail');
 const map = require('lodash/map');
 const pick = require('lodash/pick');
 const Promise = require('bluebird');
+const { restoreOrCreate } = require('../common/database/restore');
 const { Role } = require('../../common/config');
 const { sql } = require('../common/database/helpers');
 const logger = require('../common/logger')();
 
 const PROFILE_ATTRS = [
-  'id', 'firstName', 'lastName', 'fullName', 'label', 'email', 'role', 'createdAt'
+  'id', 'firstName', 'lastName', 'fullName', 'label', 'email',
+  'role', 'createdAt', 'deletedAt'
 ];
 
 class User extends Model {
@@ -121,6 +123,10 @@ class User extends Model {
         return { where };
       }
     };
+  }
+
+  static async restoreOrCreate(user, options) {
+    return restoreOrCreate(this, user, options);
   }
 
   static match(pattern) {
