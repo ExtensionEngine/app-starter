@@ -21,7 +21,7 @@ const devServer = {
     '/api': { target: serverUrl }
   },
   // Override using: `npm run dev:client -- --port <number>`
-  port: 8081,
+  port: config.reverseProxyPort,
   hot: true,
   hotEntries: ['admin', 'main']
 };

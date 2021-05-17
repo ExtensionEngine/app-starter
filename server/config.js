@@ -1,12 +1,21 @@
 'use strict';
 
+const isLocalhost = require('is-localhost');
 const path = require('path');
 const yn = require('yn');
 
+const hostname = process.env.HOSTNAME || 'localhost';
+const protocol = resolveProtocol(hostname);
+const port = resolvePort();
+const origin = resolveOrigin(hostname, protocol, port);
+
 module.exports = {
-  hostname: process.env.HOSTNAME,
-  port: process.env.PORT,
+  origin,
+  port,
+  hostname,
+  protocol,
   ip: process.env.IP,
+  reverseProxyPort: process.env.REVERSE_PROXY_PORT,
   useHistoryApiFallback: process.env.HISTORY_API_FALLBACK,
   staticFolder: path.resolve(__dirname, '../dist'),
   uploadLimit: '10mb',
@@ -49,3 +58,25 @@ module.exports = {
     importPath: process.env.IMPORTED_CONTENT
   }
 };
+
+function resolvePort() {
+  const { PORT, SERVER_PORT } = process.env;
+  return PORT || SERVER_PORT || 3000;
+}
+
+function resolveOrigin(hostname, protocol, port) {
+  return `${protocol}://${hostname}${resolveOriginPort(port)}`;
+}
+
+function resolveProtocol(hostname) {
+  const { PROTOCOL } = process.env;
+  if (PROTOCOL) return PROTOCOL;
+  return isLocalhost(hostname) ? 'http' : 'https';
+}
+
+function resolveOriginPort() {
+  const { REVERSE_PROXY_PORT } = process.env;
+  if (!REVERSE_PROXY_PORT) return `:${port}`;
+  if (REVERSE_PROXY_PORT === '80' || REVERSE_PROXY_PORT === '443') return '';
+  return `:${REVERSE_PROXY_PORT}`;
+}

@@ -2,50 +2,47 @@
 
 const TABLE_NAME = 'user';
 
-exports.up = (queryInterface, Sequelize) => queryInterface.createTable(TABLE_NAME, {
+exports.up = (qi, { DATE, ENUM, INTEGER, STRING }) => qi.createTable(TABLE_NAME, {
   id: {
-    type: Sequelize.INTEGER,
+    type: INTEGER,
     primaryKey: true,
     autoIncrement: true,
     allowNull: false
   },
   email: {
-    type: Sequelize.STRING,
+    type: STRING,
     allowNull: false,
     unique: true
   },
   password: {
-    type: Sequelize.STRING
+    type: STRING
   },
   role: {
-    type: Sequelize.ENUM('ADMIN', 'USER'),
+    type: ENUM('ADMIN', 'USER'),
     allowNull: false
   },
-  token: {
-    type: Sequelize.STRING(500)
-  },
   firstName: {
-    type: Sequelize.STRING,
+    type: STRING,
     field: 'first_name'
   },
   lastName: {
-    type: Sequelize.STRING,
+    type: STRING,
     field: 'last_name'
   },
   createdAt: {
-    type: Sequelize.DATE,
+    type: DATE,
     field: 'created_at',
     allowNull: false
   },
   updatedAt: {
-    type: Sequelize.DATE,
+    type: DATE,
     field: 'updated_at',
     allowNull: false
   },
   deletedAt: {
-    type: Sequelize.DATE,
+    type: DATE,
     field: 'deleted_at'
   }
 });
 
-exports.down = queryInterface => queryInterface.dropTable(TABLE_NAME);
+exports.down = qi => qi.dropTable(TABLE_NAME);

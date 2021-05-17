@@ -1,6 +1,6 @@
 'use strict';
 
-const { email: config } = require('../config');
+const { email: config, origin } = require('../config');
 const logger = require('./logger')('mailer');
 const pick = require('lodash/pick');
 const { promisify } = require('util');
@@ -13,7 +13,7 @@ logger.info(getConfig(server), '📧  SMTP client created');
 
 const send = promisify(server.send.bind(server));
 
-const resetUrl = (origin, user) => `${origin}/#/auth/reset-password/${user.token}`;
+const resetUrl = token => `${origin}/#/auth/reset-password/${token}`;
 
 module.exports = {
   send,
@@ -21,8 +21,8 @@ module.exports = {
   resetPassword
 };
 
-function invite(user, { origin }) {
-  const href = resetUrl(origin, user);
+function invite(user, token) {
+  const href = resetUrl(token);
   const { hostname } = new URL(href);
   const recipient = user.email;
   const message = `
@@ -38,8 +38,8 @@ function invite(user, { origin }) {
   });
 }
 
-function resetPassword(user, { origin }) {
-  const href = resetUrl(origin, user);
+function resetPassword(user, token) {
+  const href = resetUrl(token);
   const recipient = user.email;
   const message = `
     You requested password reset.

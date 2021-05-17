@@ -12,7 +12,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 router
   .post('/login', authenticate('local'), normalizeEmail, ctrl.login)
   .post('/forgot-password', normalizeEmail, ctrl.forgotPassword)
-  .post('/reset-password', normalizeEmail, ctrl.resetPassword);
+  .post('/reset-password', authenticate('token'), normalizeEmail, ctrl.resetPassword);
 
 router.use(authenticate('jwt'));
 
