@@ -12,7 +12,7 @@ module.exports = () => {
   return middleware;
 };
 
-function middleware(req, res, next) {
+function middleware(req, _res, next) {
   Object.defineProperty(req, 'origin', {
     get: () => `${req.protocol}://${hostname || req.get('host')}`
   });

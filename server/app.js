@@ -33,11 +33,11 @@ app.use(jsend);
 const isSuccessful = res => res.statusCode <= 400;
 const format = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
 app.use(morgan(format, {
-  skip: (req, res) => isSuccessful(res),
+  skip: (_req, res) => isSuccessful(res),
   stream: process.stderr
 }));
 app.use(morgan(format, {
-  skip: (req, res) => !isSuccessful(res),
+  skip: (_req, res) => !isSuccessful(res),
   stream: process.stdout
 }));
 

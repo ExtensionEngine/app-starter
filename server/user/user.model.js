@@ -2,6 +2,7 @@
 
 const { Model, Op, Sequelize } = require('sequelize');
 const { restoreOrCreate, restoreOrCreateAll } = require('../common/database/restore');
+const Audience = require('../common/auth/audience');
 const bcrypt = require('bcrypt');
 const compact = require('lodash/compact');
 const { auth: config = {} } = require('../config');
@@ -39,10 +40,6 @@ class User extends Model {
         type: ENUM(Object.values(Role)),
         allowNull: false,
         defaultValue: Role.USER
-      },
-      token: {
-        type: STRING,
-        validate: { notEmpty: true, len: [10, 500] }
       },
       firstName: {
         type: STRING,
@@ -137,9 +134,12 @@ class User extends Model {
     return User.scope({ method: ['searchByPattern', pattern] });
   }
 
-  static async invite(user, options) {
-    user.token = user.createToken({ expiresIn: '3 days' });
-    mail.invite(user, options).catch(err =>
+  static async invite(user) {
+    const token = user.createToken({
+      audience: Audience.Scope.Setup,
+      expiresIn: '5 days'
+    });
+    mail.invite(user, token).catch(err =>
       logger.error('Error: Sending invite email failed:', err.message));
     return user.save({ paranoid: false });
   }
@@ -157,17 +157,27 @@ class User extends Model {
     return isValid ? this : false;
   }
 
-  sendResetToken(options) {
-    this.token = this.createToken({ expiresIn: '5 days' });
-    mail.resetPassword(this, options).catch(err =>
-      logger.error('Error: Sending reset password email failed:', err.message));
-    return this.save();
+  sendResetToken() {
+    const token = this.createToken({
+      audience: Audience.Scope.Setup,
+      expiresIn: '2 days'
+    });
+    mail.resetPassword(this, token);
   }
 
   createToken(options = {}) {
     const payload = { id: this.id, email: this.email };
-    Object.assign(options, { issuer: config.issuer });
-    return jwt.sign(payload, config.secret, options);
+    Object.assign(options, {
+      issuer: config.issuer,
+      audience: options.audience || Audience.Scope.Access
+    });
+    return jwt.sign(payload, this.getTokenSecret(options.audience), options);
+  }
+
+  getTokenSecret(audience) {
+    const { secret } = config;
+    if (audience === Audience.Scope.Access) return secret;
+    return [secret, this.password, this.updatedAt.getTime()].join('');
   }
 
   isAdmin() {

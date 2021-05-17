@@ -27,7 +27,7 @@ function generateUsers() {
 }
 
 function createSheet({ sheet, body, file = {} }, res) {
-  const creator = 'Boutique';
+  const creator = 'APP STARTER';
   const report = (new Datasheet(sheet)).toWorkbook({ creator });
   const format = body.format || mime.getExtension(file.mimetype) || importTemplateFormat;
   return report.send(res, { format });

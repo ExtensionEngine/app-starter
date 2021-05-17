@@ -1,13 +1,13 @@
 'use strict';
 
 const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
-const { Sequelize, User } = require('../database');
+const Audience = require('./audience');
 const { Authenticator } = require('passport');
 const autobind = require('auto-bind');
 const { auth: config } = require('../../config');
+const jwt = require('jsonwebtoken');
 const LocalStrategy = require('passport-local');
-
-const { EmptyResultError } = Sequelize;
+const { User } = require('../database');
 
 const auth = new (class extends Authenticator {
   constructor() {
@@ -30,31 +30,41 @@ const localOptions = {
 const jwtOptions = {
   ...config,
   jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme(config.scheme),
-  secretOrKey: config.secret
+  secretOrKey: config.secret,
+  audience: Audience.Scope.Access
 };
 
-auth.use('local', new LocalStrategy(localOptions, (email, password, done) => {
-  const where = { email };
-  return User.findOne({ where, rejectOnEmpty: true })
-    .then(user => user.authenticate(password))
-    .then(user => done(null, user || false))
-    .catch(err => {
-      if (err instanceof EmptyResultError) return done(null, false);
-      return done(err);
-    });
+auth.use(new LocalStrategy(localOptions, (email, password, done) => {
+  return User.findOne({ where: { email } })
+  .then(user => user && user.authenticate(password))
+  .then(user => done(null, user || false))
+  .catch(err => done(err, false));
 }));
-auth.use('jwt', new JwtStrategy(jwtOptions, verify));
+
+auth.use('token', new JwtStrategy({
+  ...config.jwt,
+  audience: Audience.Scope.Setup,
+  jwtFromRequest: ExtractJwt.fromBodyField('token'),
+  secretOrKeyProvider
+}, verifyJWT));
+
+auth.use('jwt', new JwtStrategy(jwtOptions, verifyJWT));
 
 auth.serializeUser((user, done) => done(null, user));
 auth.deserializeUser((user, done) => done(null, user));
 
 module.exports = auth;
 
-function verify(payload, done) {
-  return User.findByPk(payload.id, { rejectOnEmpty: true })
-    .then(user => done(null, user))
-    .catch(err => {
-      if (err instanceof EmptyResultError) return done(null, false);
-      return done(err);
-    });
+function verifyJWT(payload, done) {
+  return User.findByPk(payload.id)
+    .then(user => done(null, user || false))
+    .catch(err => done(err, false));
+}
+
+function secretOrKeyProvider(_, rawToken, done) {
+  const { id } = jwt.decode(rawToken) || {};
+  return User.findByPk(id, { rejectOnEmpty: true })
+    .then(user => user.getTokenSecret())
+    .then(secret => done(null, secret))
+    .catch(err => done(err));
 }

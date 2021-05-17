@@ -1,7 +1,8 @@
 'use strict';
 
-const { ACCEPTED, CONFLICT, NOT_FOUND } = require('http-status');
+const { ACCEPTED, CONFLICT, NO_CONTENT, NOT_FOUND } = require('http-status');
 const { Sequelize, sequelize, User } = require('../common/database');
+const Audience = require('../common/auth/audience');
 const { createError } = require('../common/errors');
 const Datasheet = require('../common/datasheet');
 const { generateUsers } = require('../common/helpers');
@@ -31,11 +32,11 @@ async function list({ query: { email, role, filter }, options }, res) {
   return res.jsend.success({ items: map(rows, 'profile'), total: count });
 }
 
-async function create({ body, origin }, res) {
+async function create({ body }, res) {
   const options = { modelSearchKey: 'email' };
   const [err, user] = await User.restoreOrCreate(pick(body, inputAttrs), options);
   if (err) return createError(CONFLICT, 'User exists!');
-  await User.invite(user, { origin });
+  await User.invite(user);
   res.jsend.success(user.profile);
 }
 
@@ -56,35 +57,31 @@ async function destroy({ params }, res) {
 }
 
 function login({ user }, res) {
-  const token = user.createToken({ expiresIn: '5 days' });
-  const data = { token, user: user.profile };
-  res.json({ data });
+  const token = user.createToken({
+    expiresIn: '5 days',
+    audience: Audience.Scope.Access
+  });
+  res.jsend.success({ token, user: user.profile });
 }
 
-function invite({ params, origin }, res) {
+function invite({ params }, res) {
   return User.findByPk(params.id, { paranoid: false })
     .then(user => user || createError(NOT_FOUND, 'User does not exist!'))
-    .then(user => User.invite(user, { origin }))
+    .then(user => User.invite(user))
     .then(() => res.status(ACCEPTED).end());
 }
 
-function forgotPassword({ origin, body }, res) {
+function forgotPassword({ body }, res) {
   const { email } = body;
   return User.findOne({ where: { email } })
     .then(user => user || createError(NOT_FOUND, 'User not found!'))
-    .then(user => user.sendResetToken({ origin }))
+    .then(user => user.sendResetToken())
     .then(() => res.end());
 }
 
-function resetPassword({ body }, res) {
-  const { password, token } = body;
-  return User.findOne({ where: { token } })
-    .then(user => user || createError(NOT_FOUND, 'Invalid token!'))
-    .then(user => {
-      user.password = password;
-      return user.save();
-    })
-    .then(() => res.end());
+async function resetPassword({ body, user }, res) {
+  await user.update({ password: body.password });
+  return res.sendStatus(NO_CONTENT);
 }
 
 async function bulkImport(req, res, next) {
