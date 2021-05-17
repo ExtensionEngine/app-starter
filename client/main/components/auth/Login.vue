@@ -1,75 +1,87 @@
 <template>
   <div>
-    <div class="message">
-      <span v-if="message">{{ message }}</span>
-    </div>
-    <form @submit.prevent="submit">
-      <v-input
-        v-model="email"
-        autocomplete="email"
+    <v-alert
+      :value="!!errorMessage"
+      transition="fade-transition"
+      dismissible text dense
+      class="mb-7 text-left">
+      {{ errorMessage }}
+    </v-alert>
+    <validation-observer
+      ref="form"
+      @submit.prevent="$refs.form.handleSubmit(submit)"
+      tag="form"
+      novalidate>
+      <validation-provider
+        v-slot="{ errors }"
         name="email"
-        validate="required|email" />
-      <v-input
-        v-model="password"
-        autocomplete="current-password"
+        rules="required|email">
+        <v-text-field
+          v-model="email"
+          :error-messages="errors"
+          type="email"
+          name="email"
+          label="Email"
+          placeholder="Email"
+          autocomplete="username"
+          prepend-inner-icon="mdi-email-outline"
+          outlined
+          class="required mb-1" />
+      </validation-provider>
+      <validation-provider
+        v-slot="{ errors }"
         name="password"
-        type="password"
-        validate="required" />
-      <div class="options">
-        <router-link :to="{ name: 'forgot-password' }">
-          Forgot password ?
+        rules="required">
+        <v-text-field
+          v-model="password"
+          :error-messages="errors"
+          type="password"
+          name="password"
+          label="Password"
+          placeholder="Password"
+          prepend-inner-icon="mdi-lock-outline"
+          autocomplete="current-password"
+          outlined
+          class="required" />
+      </validation-provider>
+      <div class="mt-1 text-right">
+        <router-link
+          :to="{ name: 'forgot-password' }"
+          class="text-decoration-none text--primary">
+          Forgot password?
         </router-link>
-        <button class="button" type="submit">Login</button>
+        <v-btn type="submit" outlined text class="ml-3">
+          Log in
+        </v-btn>
       </div>
-    </form>
+    </validation-observer>
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import pick from 'lodash/pick';
 import { Role } from '@/../common/config';
-import VInput from '@/common/components/form/VInput';
-import { withValidation } from '@/common/validation';
 
-const LOGIN_ERR_MESSAGE = 'User email and password do not match';
+const LOGIN_ERR_MESSAGE = 'The email or password you entered is incorrect.';
 
 export default {
-  name: 'login',
-  mixins: [withValidation()],
+  name: 'user-login',
   data: () => ({
     email: '',
     password: '',
-    message: ''
+    errorMessage: ''
   }),
   methods: {
     ...mapActions('auth', ['login']),
     submit() {
       this.message = '';
-      this.$validator.validateAll().then(isValid => {
-        if (!isValid) return;
-        this.login(pick(this, ['email', 'password']))
-          .then(user => {
-            if (user.role !== Role.Admin) return this.$router.push('/');
-            document.location.replace(`${document.location.origin}/admin`);
-          })
-          .catch(() => (this.message = LOGIN_ERR_MESSAGE));
-      });
+      this.login({ email: this.email, password: this.password })
+        .then(user => {
+          if (user.role !== Role.ADMIN) return this.$router.push('/');
+          document.location.replace(`${document.location.origin}/admin`);
+        })
+        .catch(() => (this.errorMessage = LOGIN_ERR_MESSAGE));
     }
-  },
-  components: { VInput }
+  }
 };
 </script>
-
-<style lang="scss" scoped>
-.options {
-  padding: 5px 0 10px 0;
-  text-align: right;
-
-  a {
-    display: inline-block;
-    padding: 6px 20px;
-    color: #444;
-  }
-}
-</style>

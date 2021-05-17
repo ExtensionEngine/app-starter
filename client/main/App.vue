@@ -1,7 +1,9 @@
 <template>
-  <div id="app" class="system-font-stack">
-    <router-view />
-  </div>
+  <v-app id="app" class="system-font-stack">
+    <v-main>
+      <router-view class="view" />
+    </v-main>
+  </v-app>
 </template>
 
 <script>

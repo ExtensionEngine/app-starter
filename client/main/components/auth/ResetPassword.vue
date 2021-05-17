@@ -1,50 +1,75 @@
 <template>
   <div>
-    <div v-if="error" class="notification is-error">
-      <span>{{ error }}</span>
-    </div>
-    <form @submit.prevent="submit">
-      <v-input
-        v-model="password"
-        type="password"
+    <v-alert :value="!!error" text class="mb-5">
+      {{ error }}
+    </v-alert>
+    <validation-observer
+      ref="form"
+      @submit.prevent="$refs.form.handleSubmit(submit)"
+      tag="form"
+      novalidate>
+      <validation-provider
+        v-slot="{ errors }"
+        vid="password"
         name="password"
-        validate="required|alphanumerical|min:6" />
-      <v-input
-        v-model="passwordConfirmation"
-        :validate="{ rules: { required: true, is: password } }"
-        type="password"
-        name="passwordConfirmation" />
-      <button class="button" type="submit">
+        rules="required|alphanumerical|min:6">
+        <v-text-field
+          v-model="password"
+          :error-messages="errors"
+          type="password"
+          name="password"
+          label="Password"
+          placeholder="Password"
+          prepend-inner-icon="mdi-lock"
+          outlined
+          class="required mb-1" />
+      </validation-provider>
+      <validation-provider
+        v-slot="{ errors }"
+        vid="passwordConfirmation"
+        name="password"
+        rules="required|confirmed:password">
+        <v-text-field
+          v-model="passwordConfirmation"
+          :error-messages="errors"
+          type="password"
+          name="passwordConfirmation"
+          label="Re-enter password"
+          placeholder="Password confirmation"
+          prepend-inner-icon="mdi-lock-outline"
+          outlined
+          class="required" />
+      </validation-provider>
+      <v-btn
+        type="submit"
+        text outlined
+        class="my-1">
         Change password
-      </button>
-    </form>
+      </v-btn>
+    </validation-observer>
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
-import VInput from '@/common/components/form/VInput';
-import { withValidation } from '@/common/validation';
 
 export default {
-  mixins: [withValidation()],
   data: () => ({
-    error: null,
     password: '',
-    passwordConfirmation: ''
+    passwordConfirmation: '',
+    error: null
   }),
+  computed: {
+    token: vm => vm.$route.params.token
+  },
   methods: {
     ...mapActions('auth', ['resetPassword']),
     submit() {
-      const token = this.$route.params.token;
-      this.$validator.validateAll().then(isValid => {
-        if (!isValid) return;
-        return this.resetPassword({ password: this.password, token })
-          .then(() => this.$router.push('/'))
-          .catch(() => (this.error = 'An error has occurred!'));
-      });
+      const { token, password } = this;
+      return this.resetPassword({ password, token })
+        .then(() => this.$router.push('/'))
+        .catch(() => (this.error = 'An error has occurred!'));
     }
-  },
-  components: { VInput }
+  }
 };
 </script>

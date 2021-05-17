@@ -1,4 +1,5 @@
 import get from 'lodash/get';
+import head from 'lodash/head';
 
 export function extractData(res) {
   return res.data.data;
@@ -6,10 +7,12 @@ export function extractData(res) {
 
 export function processParams(opts) {
   const page = get(opts, 'page', 1);
-  const limit = get(opts, 'rowsPerPage', 100);
+  const limit = get(opts, 'itemsPerPage', 100);
+  const sortBy = head(opts.sortBy);
+  const sortOrder = head(opts.sortDesc);
   const params = {
-    sortBy: opts.sortBy || 'id',
-    sortOrder: opts.descending ? 'DESC' : 'ASC',
+    sortBy: sortBy || 'id',
+    sortOrder: sortOrder ? 'DESC' : 'ASC',
     offset: (page - 1) * limit,
     limit: limit === -1 ? null : limit
   };

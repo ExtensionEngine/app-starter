@@ -1,11 +1,10 @@
 'use strict';
 
-const { migrationsPath } = require('../../../sequelize.config');
-const { wrapAsyncMethods } = require('./helpers');
 const config = require('./config');
 const forEach = require('lodash/forEach');
 const Hooks = require('./hooks');
 const invoke = require('lodash/invoke');
+const { migrationsPath } = require('../../../sequelize.config');
 const logger = require('../logger')('db');
 const pick = require('lodash/pick');
 const pkg = require('../../../package.json');
@@ -13,8 +12,10 @@ const result = require('lodash/result');
 const semver = require('semver');
 const Sequelize = require('sequelize');
 const Umzug = require('umzug');
+const { wrapAsyncMethods } = require('./helpers');
 
 // Require models.
+// eslint-disable-next-line require-sort/require-sort
 const User = require('../../user/user.model');
 
 const isProduction = process.env.NODE_ENV === 'production';

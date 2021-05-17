@@ -1,18 +1,15 @@
 'use strict';
 
-const { promisify } = require('util');
-const bluebird = require('bluebird');
-const sequelize = require('sequelize');
-
-if (process.env.NODE_ENV !== 'production') {
-  sequelize.Promise.config({ longStackTraces: true });
-  bluebird.config({ longStackTraces: true });
-}
-
 const { ip, port } = require('./config');
 const app = require('./app');
+const bluebird = require('bluebird');
 const database = require('./common/database');
+const { promisify } = require('util');
 const logger = require('./common/logger')();
+
+if (process.env.NODE_ENV !== 'production') {
+  bluebird.config({ longStackTraces: true });
+}
 const runServer = promisify(app.listen.bind(app));
 
 const address = `http://${ip}:${port}`;

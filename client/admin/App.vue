@@ -2,11 +2,9 @@
   <v-app id="app">
     <sidebar :drawer.sync="drawer" />
     <navbar :drawer.sync="drawer" />
-    <v-content>
-      <v-container fluid fill-height class="grey lighten-4">
-        <router-view />
-      </v-container>
-    </v-content>
+    <v-main>
+      <router-view />
+    </v-main>
   </v-app>
 </template>
 
@@ -44,7 +42,7 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-.v-content {
+.v-main {
   background-color: #f5f5f5;
 }
 </style>

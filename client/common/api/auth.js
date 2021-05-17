@@ -1,17 +1,18 @@
-import path from 'path';
+import { extractData } from '@/common/api/helpers';
 import request from './request';
+import urljoin from 'url-join';
 
 const urls = {
   base: '/users',
-  login: () => path.join(urls.base, '/login'),
-  forgotPassword: () => path.join(urls.base, '/forgot-password'),
-  resetPassword: () => path.join(urls.base, '/reset-password')
+  login: () => urljoin(urls.base, 'login'),
+  forgotPassword: () => urljoin(urls.base, 'forgot-password'),
+  resetPassword: () => urljoin(urls.base, 'reset-password')
 };
 
 function login(credentials) {
   return request.base
     .post(urls.login(), credentials)
-    .then(res => res.data.data)
+    .then(extractData)
     .then(({ token, user }) => {
       request.auth.token = token;
       return user;

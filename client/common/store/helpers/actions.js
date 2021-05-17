@@ -35,7 +35,7 @@ export default function ($apiUrl) {
     });
   };
 
-  const remove = ({ state, commit }, model) => {
+  const remove = ({ commit }, model) => {
     if (!model.id && !model._version) {
       commit('remove', [model]);
       return Promise.resolve(true);

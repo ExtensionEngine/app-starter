@@ -5,7 +5,7 @@ const HttpStatus = require('http-status');
 const { Role } = require('../../../common/config');
 
 function authorize(...allowed) {
-  allowed.push(Role.Admin);
+  allowed.push(Role.ADMIN);
   return ({ user }, res, next) => {
     if (!user) return createError(HttpStatus.UNAUTHORIZED, 'Access restricted');
     if (!allowed.includes(user.role)) {

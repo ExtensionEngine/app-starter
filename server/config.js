@@ -10,6 +10,7 @@ module.exports = {
   useHistoryApiFallback: process.env.HISTORY_API_FALLBACK,
   staticFolder: path.resolve(__dirname, '../dist'),
   uploadLimit: '10mb',
+  importTemplateFormat: process.env.IMPORT_TEMPLATE_FORMAT || 'xlsx',
   cors: {
     allowedOrigins: [],
     allowedHeaders: []
