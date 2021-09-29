@@ -1,14 +1,13 @@
 'use strict';
 
-// Todo: Rewrite poi config in TS
-const config = require('./server/shared/config');
 const path = require('path');
+
 require('dotenv').config();
 
-const { AUTH_JWT_SCHEME } = process.env;
+const { IP, PORT, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
 
 const isProduction = process.env.NODE_ENV === 'production';
-const serverUrl = `http://${config.ip}:${config.port}`;
+const serverUrl = `http://${IP}:${PORT}`;
 
 const aliases = {
   '@': path.resolve(__dirname, './client')
@@ -23,7 +22,7 @@ const devServer = {
     '/api': { target: serverUrl }
   },
   // Override using: `npm run dev:client -- --port <number>`
-  port: 8081,
+  port: REVERSE_PROXY_PORT,
   hot: true,
   hotEntries: ['admin', 'main']
 };
