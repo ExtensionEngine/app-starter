@@ -2,7 +2,5 @@
 
 /** @type {import('@babel/core').TransformOptions} */
 module.exports = {
-  presets: [
-    'poi/babel'
-  ]
+  presets: ['poi/babel']
 };

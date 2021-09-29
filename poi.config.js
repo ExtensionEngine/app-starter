@@ -1,9 +1,11 @@
 'use strict';
 
+// Todo: Rewrite poi config in TS
+const config = require('./server/shared/config');
+const path = require('path');
 require('dotenv').config();
 
-const config = require('./server/config');
-const path = require('path');
+const { AUTH_JWT_SCHEME } = process.env;
 
 const isProduction = process.env.NODE_ENV === 'production';
 const serverUrl = `http://${config.ip}:${config.port}`;
@@ -72,8 +74,8 @@ module.exports = {
     config.resolve.extensions.merge(extensions);
   },
   envs: {
-    API_PATH: process.env.API_PATH,
-    AUTH_JWT_SCHEME: process.env.AUTH_JWT_SCHEME
+    API_PATH: '/api',
+    AUTH_JWT_SCHEME
   },
   devServer
 };

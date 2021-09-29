@@ -1,10 +1,19 @@
 'use strict';
 
-/** @type {import('eslint').Linter.Config} */
 module.exports = {
   root: true,
-  extends: '@extensionengine',
+  parser: '@typescript-eslint/parser',
+  extends: [
+    'plugin:@typescript-eslint/recommended',
+    '@extensionengine/eslint-config/base'
+  ],
+  plugins: ['jest', '@typescript-eslint'],
+  env: {
+    'jest/globals': true
+  },
   rules: {
-    'vue/component-definition-name-casing': ['error', 'kebab-case']
+    strict: 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    'sort-imports': 'off'
   }
 };
