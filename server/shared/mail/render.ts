@@ -1,14 +1,14 @@
 'use strict';
 
 import cheerio from 'cheerio';
-import { MailData } from './IMail';
 import fs from 'fs';
+import htmlToText from 'html-to-text';
+import { MailData } from './IMail';
 import map from 'lodash/map';
 import mapKeys from 'lodash/mapKeys';
 import mjml2html from 'mjml';
 import mustache from 'mustache';
 import { paramCase } from 'change-case';
-import htmlToText from 'html-to-text';
 
 function renderHtml(
   templatePath: string,

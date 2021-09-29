@@ -13,7 +13,6 @@ module.exports = {
   },
   rules: {
     strict: 'off',
-    '@typescript-eslint/no-explicit-any': 'off',
-    'sort-imports': 'off'
+    '@typescript-eslint/no-explicit-any': 'off'
   }
 };

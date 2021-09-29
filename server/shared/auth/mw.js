@@ -1,8 +1,8 @@
 'use strict';
 
-const { createError } = require('../errors');
-const HttpStatus = require('http-status');
-const { Role } = require('../../../common/config');
+import { createError } from '../errors';
+import HttpStatus from 'http-status';
+import { Role } from '../../../common/config';
 
 function authorize(...allowed) {
   allowed.push(Role.ADMIN);

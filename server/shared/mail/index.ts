@@ -1,11 +1,11 @@
+import IMail, { MailData } from './IMail';
 import nodemailer, { SentMessageInfo, Transporter } from 'nodemailer';
-import { IContainer } from 'bottlejs';
 import { renderHtml, renderText } from './render';
+import castArray from 'lodash/castArray';
+import { IContainer } from 'bottlejs';
 import joi from 'joi';
 import Logger from 'bunyan';
-import IMail, { MailData } from './IMail';
 import { MailConfig } from '../../config/mail';
-import castArray from 'lodash/castArray';
 import path from 'path';
 
 const dataSchema = joi.object({

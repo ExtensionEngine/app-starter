@@ -3,8 +3,8 @@ import { IContainer } from 'bottlejs';
 import IMail from '../shared/mail/IMail';
 import IUserService from './interfaces/service';
 import { ServerConfig } from '../config/server';
-import User from './model';
 import { URL } from 'url';
+import User from './model';
 
 class UserService implements IUserService {
   #mail: IMail;

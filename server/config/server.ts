@@ -1,6 +1,6 @@
 import IProcessEnv from '../types/processEnv';
-import joi from 'joi';
 import isLocalhost from 'is-localhost';
+import joi from 'joi';
 
 export interface ServerConfig {
   port: number,

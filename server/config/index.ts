@@ -1,11 +1,11 @@
+import auth, { AuthConfig } from './auth';
 import database, { DatabaseConfig } from './database';
 import environments, { Environment } from './environments';
+import mail, { MailConfig } from './mail';
 import server, { ServerConfig } from './server';
+import storage, { StorageConfig } from './storage';
 import IProcessEnv from '../types/processEnv';
 import joi from 'joi';
-import auth, { AuthConfig } from './auth';
-import storage, { StorageConfig } from './storage';
-import mail, { MailConfig } from './mail';
 
 export interface Config {
   environment: Environment,

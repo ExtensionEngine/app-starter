@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { QueryOrder, QueryFlag } from '@mikro-orm/core';
+import { QueryFlag, QueryOrder } from '@mikro-orm/core';
 
 export function parsePagination(req: Request, _: Response, next: NextFunction): void {
   const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;

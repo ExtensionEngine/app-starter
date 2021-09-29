@@ -1,5 +1,5 @@
 'use strict';
-
+/* eslint-disable */
 const { authenticate } = require('../common/auth');
 const { createSheet } = require('../common/helpers');
 const ctrl = require('./user.controller');

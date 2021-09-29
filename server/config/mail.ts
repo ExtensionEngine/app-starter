@@ -1,6 +1,6 @@
+import IProcessEnv from '../types/processEnv';
 import joi from 'joi';
 import yn from 'yn';
-import IProcessEnv from '../types/processEnv';
 
 type Sender = {
   name: string,

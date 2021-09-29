@@ -1,7 +1,7 @@
 'use strict';
 
-import miss from 'mississippi';
 import Joi from 'joi';
+import miss from 'mississippi';
 import path from 'path';
 import S3 from 'aws-sdk/clients/s3';
 import { validateConfig } from '../validation';

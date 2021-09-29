@@ -1,5 +1,5 @@
 'use strict';
-
+/* eslint-disable */
 const { getWorkspaceDomain, isAdmin, isStaff, isUrl } = require('../../common/utils');
 const { Model, Op, Sequelize } = require('../common/database/sqlize');
 const Audience = require('../common/auth/audience');

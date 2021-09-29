@@ -1,13 +1,13 @@
-import { Request, Response } from 'express';
 import { ACCEPTED, NO_CONTENT } from 'http-status';
+import { Request, Response } from 'express';
 import autobind from 'auto-bind';
 import { IContainer } from 'bottlejs';
 import IUserRepository from './interfaces/repository';
-import User from './model';
-import joi from 'joi';
 import IUserService from './interfaces/service';
-import userSchema from './validation';
+import joi from 'joi';
 import { Role } from './roles';
+import User from './model';
+import userSchema from './validation';
 
 const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
   [field]: { $ilike: `%${q}%` }

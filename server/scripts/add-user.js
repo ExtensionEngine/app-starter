@@ -1,12 +1,12 @@
 'use strict';
 
-const { getValidator, setLogging } = require('../common/database/helpers');
-const humanize = require('humanize-string');
-const isEmail = require('is-email-like');
-const map = require('lodash/map');
-const { prompt } = require('inquirer');
-const { Role } = require('../../common/config');
-const { User } = require('../common/database');
+import { getValidator, setLogging } from '../common/database/helpers';
+import humanize from 'humanize-string';
+import isEmail from 'is-email-like';
+import map from 'lodash/map';
+import { prompt } from 'inquirer';
+import { Role } from '../../common/config';
+import { User } from '../common/database';
 
 setLogging(User, false);
 

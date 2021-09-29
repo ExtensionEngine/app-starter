@@ -1,14 +1,14 @@
 import 'reflect-metadata';
 import * as dotenv from 'dotenv';
-import { parsePagination } from './middleware/pagination';
 import { Application, NextFunction, Request, Response } from 'express';
 import createConfig from './config';
 import Db from './shared/database';
-import Mail from './shared/mail';
 import ErrorHandler from './shared/error-handler';
 import { IContainer } from 'bottlejs';
 import IProgram from './types/program';
 import logger from './shared/logger';
+import Mail from './shared/mail';
+import { parsePagination } from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import user from './user';

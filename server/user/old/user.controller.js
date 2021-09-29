@@ -1,12 +1,12 @@
 'use strict';
 
-const { ACCEPTED, CONFLICT, NOT_FOUND } = require('http-status');
-const { Sequelize, sequelize, User } = require('../common/database');
-const { createError } = require('../common/errors');
-const Datasheet = require('../common/datasheet');
-const { generateUsers } = require('../common/helpers');
-const map = require('lodash/map');
-const pick = require('lodash/pick');
+import { ACCEPTED, CONFLICT, NOT_FOUND } from 'http-status';
+import { Sequelize, sequelize, User } from '../common/database';
+import { createError } from '../common/errors';
+import Datasheet from '../common/datasheet';
+import { generateUsers } from '../common/helpers';
+import map from 'lodash/map';
+import pick from 'lodash/pick';
 
 const { Op } = Sequelize;
 
