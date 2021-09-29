@@ -1,5 +1,5 @@
 import { Highlighter, MigrationsOptions } from '@mikro-orm/core';
-import IProcessEnv from '../types/processEnv';
+import IEnv from '../types/env';
 import joi from 'joi';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 
@@ -19,7 +19,7 @@ const schema = joi.object({
   password: joi.string().required()
 }).unknown();
 
-const createConfig = (env: IProcessEnv): DatabaseConfig => ({
+const createConfig = (env: IEnv): DatabaseConfig => ({
   dbName: env.DATABASE_NAME,
   user: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
@@ -32,6 +32,6 @@ const createConfig = (env: IProcessEnv): DatabaseConfig => ({
   highlighter: env.NODE_ENV === 'dev-local' && new SqlHighlighter()
 });
 
-export default (env: IProcessEnv): DatabaseConfig => {
+export default (env: IEnv): DatabaseConfig => {
   return joi.attempt(createConfig(env), schema);
 };

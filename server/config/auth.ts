@@ -1,4 +1,4 @@
-import IProcessEnv from '../types/processEnv';
+import IEnv from '../types/env';
 import joi from 'joi';
 
 export interface AuthConfig {
@@ -17,7 +17,7 @@ const schema = joi.object({
   corsAllowedOrigins: joi.array().items(joi.string().uri())
 });
 
-const createConfig = (env: IProcessEnv): AuthConfig => ({
+const createConfig = (env: IEnv): AuthConfig => ({
   scheme: env.AUTH_JWT_SCHEME || 'JWT',
   secret: env.AUTH_JWT_SECRET,
   issuer: env.AUTH_JWT_ISSUER,
@@ -25,7 +25,7 @@ const createConfig = (env: IProcessEnv): AuthConfig => ({
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });
 
-export default (env: IProcessEnv): AuthConfig => joi.attempt(createConfig(env), schema);
+export default (env: IEnv): AuthConfig => joi.attempt(createConfig(env), schema);
 
 function getCorsAllowedOrigins(origins: string): string[] {
   return origins

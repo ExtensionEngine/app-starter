@@ -8,7 +8,6 @@ import {
 import autobind from 'auto-bind';
 import { Config } from '../../config';
 import entities from './entities';
-import { IContainer } from 'bottlejs';
 import Logger from 'bunyan';
 import p from 'bluebird';
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
@@ -21,7 +20,8 @@ class Db {
   #logger: Logger;
   #provider?: DatabaseProvider;
 
-  constructor({ config, logger }: IContainer) {
+  constructor(config: Config, logger: Logger) {
+    console.log({ config, logger });
     this.#logger = logger;
     this.#config = config;
     this.#subscribers = [];

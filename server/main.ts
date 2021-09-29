@@ -26,8 +26,8 @@ function configure(provider: Provider): void {
   provider.factory('config', () => createConfig(process.env));
   provider.value('logger', logger);
   provider.registerMiddleware('errorHandler', ErrorHandler);
-  provider.registerService('db', Db);
-  provider.registerService('mail', Mail);
+  provider.service('db', Db, 'config', 'logger');
+  provider.service('mail', Mail, 'config', 'logger');
   provider.registerModule('user', user);
 }
 

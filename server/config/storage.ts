@@ -1,4 +1,4 @@
-import IProcessEnv from '../types/processEnv';
+import IEnv from '../types/env';
 import joi from 'joi';
 
 type Amazon = {
@@ -24,7 +24,7 @@ const schema = joi.object({
   provider: joi.string().required()
 });
 
-function createConfig(env: IProcessEnv): StorageConfig {
+function createConfig(env: IEnv): StorageConfig {
   const amazon: Amazon = {
     key: env.STORAGE_KEY,
     secret: env.STORAGE_SECRET,
@@ -39,4 +39,4 @@ function createConfig(env: IProcessEnv): StorageConfig {
   };
 }
 
-export default (env: IProcessEnv): StorageConfig => joi.attempt(createConfig(env), schema);
+export default (env: IEnv): StorageConfig => joi.attempt(createConfig(env), schema);

@@ -1,4 +1,4 @@
-import IProcessEnv from '../types/processEnv';
+import IEnv from '../types/env';
 import joi from 'joi';
 import yn from 'yn';
 
@@ -43,4 +43,4 @@ function createConfig(env: any): MailConfig {
   };
 }
 
-export default (env: IProcessEnv): MailConfig => joi.attempt(createConfig(env), schema);
+export default (env: IEnv): MailConfig => joi.attempt(createConfig(env), schema);

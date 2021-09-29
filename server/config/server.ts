@@ -1,4 +1,4 @@
-import IProcessEnv from '../types/processEnv';
+import IEnv from '../types/env';
 import isLocalhost from 'is-localhost';
 import joi from 'joi';
 
@@ -20,7 +20,7 @@ const schema = joi.object({
   importTemplateFormat: joi.string().default('xlsx')
 });
 
-function createConfig(env: IProcessEnv): ServerConfig {
+function createConfig(env: IEnv): ServerConfig {
   const { HOSTNAME, IMPORT_TEMPLATE_FORMAT, IP } = env;
   const protocol = resolveProtocol(HOSTNAME);
   const port = resolvePort();
@@ -35,7 +35,7 @@ function createConfig(env: IProcessEnv): ServerConfig {
   };
 }
 
-export default (env: IProcessEnv): ServerConfig => joi.attempt(createConfig(env), schema);
+export default (env: IEnv): ServerConfig => joi.attempt(createConfig(env), schema);
 
 function resolveProtocol(hostname): string {
   const { PROTOCOL } = process.env;

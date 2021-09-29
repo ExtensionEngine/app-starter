@@ -2,7 +2,7 @@ import IMail, { MailData } from './IMail';
 import nodemailer, { SentMessageInfo, Transporter } from 'nodemailer';
 import { renderHtml, renderText } from './render';
 import castArray from 'lodash/castArray';
-import { IContainer } from 'bottlejs';
+import { Config } from '../../config';
 import joi from 'joi';
 import Logger from 'bunyan';
 import { MailConfig } from '../../config/mail';
@@ -23,8 +23,15 @@ class Mail implements IMail {
   #log: Logger;
   #config: MailConfig
 
-  constructor({ config, logger }: IContainer) {
-    this.#transporter = nodemailer.createTransport(config.mail);
+  constructor(config: Config, logger: Logger) {
+    this.#transporter = nodemailer.createTransport({
+      host: config.mail.host,
+      port: config.mail.port,
+      auth: {
+        user: config.mail.user,
+        pass: config.mail.password
+      }
+    });
     this.#log = logger.child({ service: 'mail' });
     this.#config = config.mail;
   }
