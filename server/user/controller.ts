@@ -15,11 +15,11 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 
 class UserController {
   #repository: IUserRepository
-  #userService: IUserService
+  #service: IUserService
 
   constructor({ userRepository, userService }: IContainer) {
     this.#repository = userRepository;
-    this.#userService = userService;
+    this.#service = userService;
     autobind(this);
   }
 
@@ -66,7 +66,7 @@ class UserController {
   async invite({ params }: Request, res: Response): Promise<Response> {
     const id = Number(params.userId);
     const user = await this.#repository.findOne(id);
-    await this.#userService.invite(user);
+    await this.#service.invite(user);
     return res.status(ACCEPTED).send();
   }
 }
