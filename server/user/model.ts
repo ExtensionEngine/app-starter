@@ -34,9 +34,6 @@ class User extends BaseEntity {
   @Property()
   label: string
 
-  @Property()
-  token: string
-
   constructor(
     firstName: string,
     lastName: string,

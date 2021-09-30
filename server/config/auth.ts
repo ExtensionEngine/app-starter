@@ -12,7 +12,7 @@ export interface AuthConfig {
 const schema = joi.object({
   secret: joi.string().required(),
   scheme: joi.string().required(),
-  issuer: joi.string().empty(''),
+  issuer: joi.string().required(),
   saltRounds: joi.number().required(),
   corsAllowedOrigins: joi.array().items(joi.string().uri())
 });
