@@ -21,7 +21,6 @@ class Db {
   #provider?: DatabaseProvider;
 
   constructor(config: Config, logger: Logger) {
-    console.log({ config, logger });
     this.#logger = logger;
     this.#config = config;
     this.#subscribers = [];
