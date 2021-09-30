@@ -2,17 +2,19 @@
 
 module.exports = {
   root: true,
-  parser: '@typescript-eslint/parser',
-  extends: [
-    'plugin:@typescript-eslint/recommended',
-    '@extensionengine/eslint-config/base'
-  ],
-  plugins: ['jest', '@typescript-eslint'],
+  extends: ['@extensionengine/eslint-config/base'],
+  plugins: ['jest'],
   env: {
     'jest/globals': true
   },
-  rules: {
-    strict: 'off',
-    '@typescript-eslint/no-explicit-any': 'off'
-  }
+  overrides: [{
+    files: ['*.ts'],
+    parser: '@typescript-eslint/parser',
+    extends: ['plugin:@typescript-eslint/recommended'],
+    plugins: ['@typescript-eslint'],
+    rules: {
+      strict: 'off',
+      '@typescript-eslint/no-explicit-any': 'off'
+    }
+  }]
 };
