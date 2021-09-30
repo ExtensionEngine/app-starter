@@ -3,6 +3,7 @@
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
 import isEmail from 'is-email';
+import isEmpty from 'lodash/isEmpty';
 import main from '../main';
 import map from 'lodash/map';
 import { prompt } from 'inquirer';
@@ -20,15 +21,18 @@ const questions = [{
   type: 'password',
   mask: '*',
   name: 'password',
-  message: 'Enter password:'
+  message: 'Enter password:',
+  validate: required('password')
 }, {
   type: 'string',
   name: 'firstName',
-  message: 'Enter first name:'
+  message: 'Enter first name:',
+  validate: required('firstName')
 }, {
   type: 'string',
   name: 'lastName',
-  message: 'Enter last name:'
+  message: 'Enter last name:',
+  validate: required('lastName')
 }, {
   type: 'list',
   name: 'role',
@@ -51,4 +55,8 @@ function addUser(data) {
     .then(userId => logger.info(`User with ID: ${userId} created.`))
     .catch(err => logger.error(err.message) || 1)
     .then((code = 0) => process.exit(code));
+}
+
+function required(attribute) {
+  return input => isEmpty(input) && `"${attribute}" is required`;
 }
