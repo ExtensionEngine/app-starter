@@ -1,9 +1,9 @@
 'use strict';
 
+import { anyTldEmailSchema } from '../utils/validation';
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
-import isEmail from 'is-email';
-import isEmpty from 'lodash/isEmpty';
+import joi from 'joi';
 import main from '../main';
 import map from 'lodash/map';
 import { prompt } from 'inquirer';
@@ -12,27 +12,35 @@ import { RequestContext } from '@mikro-orm/core';
 import roles from '../user/roles';
 import User from '../user/model';
 
+const userSchema = {
+  email: anyTldEmailSchema.required(),
+  role: joi.string().allow(...Object.values(roles)).required(),
+  firstName: joi.required(),
+  lastName: joi.required(),
+  password: joi.required()
+};
+
 const questions = [{
   type: 'input',
   name: 'email',
   message: 'Enter email:',
-  validate: isEmail
+  validate: validate('email')
 }, {
   type: 'password',
   mask: '*',
   name: 'password',
   message: 'Enter password:',
-  validate: required('password')
+  validate: validate('password')
 }, {
   type: 'string',
   name: 'firstName',
   message: 'Enter first name:',
-  validate: required('firstName')
+  validate: validate('firstName')
 }, {
   type: 'string',
   name: 'lastName',
   message: 'Enter last name:',
-  validate: required('lastName')
+  validate: validate('lastName')
 }, {
   type: 'list',
   name: 'role',
@@ -57,6 +65,9 @@ function addUser(data) {
     .then((code = 0) => process.exit(code));
 }
 
-function required(attribute) {
-  return input => isEmpty(input) && `"${attribute}" is required`;
+function validate(attribute) {
+  return input => {
+    const { error, value } = userSchema[attribute].validate(input);
+    return error || Boolean(value);
+  };
 }

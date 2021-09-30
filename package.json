@@ -79,7 +79,6 @@
     "humanize-string": "^2.1.0",
     "inquirer": "^6.5.2",
     "into-stream": "^6.0.0",
-    "is-email": "^1.0.1",
     "is-localhost": "^0.0.2",
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
