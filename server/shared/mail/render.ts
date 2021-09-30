@@ -19,7 +19,7 @@ function renderHtml(
   const $ = cheerio.load(template, { xmlMode: true });
   const $style = $('mj-attributes');
   $style.append(getAttributes($, style));
-  const opts = { filePath: templatePath, minify: true };
+  const opts = { filePath: templatePath };
   const mustacheOutput = mustache.render($.html(), data);
   const output = mjml2html(mustacheOutput, opts).html;
   // NOTE: Additional `mustache.render` call handles mustache syntax within mjml
@@ -33,10 +33,7 @@ function renderText(templatePath: string, data: MailData): string {
   return mustache.render(template, { ...data, html });
 }
 
-export {
-  renderHtml,
-  renderText
-};
+export { renderHtml, renderText };
 
 function getAttributes($, style = {}) {
   return map(style, (declarations, name) => $('<mj-class>').attr({

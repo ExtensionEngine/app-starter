@@ -3,7 +3,6 @@ import { IContainer } from 'bottlejs';
 import IMail from '../shared/mail/IMail';
 import IUserService from './interfaces/service';
 import { ServerConfig } from '../config/server';
-import { URL } from 'url';
 import User from './model';
 
 class UserService implements IUserService {
@@ -25,7 +24,7 @@ class UserService implements IUserService {
     const { origin, hostname } = this.#serverConfig;
     const recipient = user.email;
     const recipientName = user.firstName;
-    const templateData = { href, origin, hostname: new URL(hostname), recipientName };
+    const templateData = { href, origin, hostname, recipientName };
     await this.#mail.send({
       to: recipient,
       subject: 'Invite',

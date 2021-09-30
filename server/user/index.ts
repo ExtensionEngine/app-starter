@@ -18,5 +18,5 @@ function createRouter({ userController }: IContainer): Router {
     .get('/:userId', userController.get)
     .patch('/:userId', userController.patch)
     .delete('/:userId', userController.remove)
-    .post('/:id/invite', userController.invite);
+    .post('/:userId/invite', userController.invite);
 }
