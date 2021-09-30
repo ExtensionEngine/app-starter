@@ -1,7 +1,5 @@
 import 'reflect-metadata';
-import * as dotenv from 'dotenv';
 import { Application, NextFunction, Request, Response } from 'express';
-import createConfig from './config';
 import Db from './shared/database';
 import ErrorHandler from './shared/error-handler';
 import { IContainer } from 'bottlejs';
@@ -13,8 +11,6 @@ import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import user from './user';
 
-dotenv.config();
-
 const program: IProgram = {
   configure,
   beforeStart,
@@ -23,7 +19,6 @@ const program: IProgram = {
 export default program;
 
 function configure(provider: Provider): void {
-  provider.factory('config', () => createConfig(process.env));
   provider.value('logger', logger);
   provider.registerMiddleware('errorHandler', ErrorHandler);
   provider.service('db', Db, 'config', 'logger');

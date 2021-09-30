@@ -1,4 +1,4 @@
-#!/usr/bin/env npx ts-node
+import configure from './configure';
 import createApp from './app';
 import createServer from './server';
 import main from '../main';
@@ -17,7 +17,7 @@ process.on('uncaughtException', error => {
 start();
 
 async function start() {
-  main.configure(provider);
+  configure(provider, main);
   provider.factory('app', container => createApp(container, main.registerRouters));
   provider.factory('server', createServer);
   await main.beforeStart(provider.container);
