@@ -11,6 +11,7 @@ import Mail from './shared/mail';
 import { parsePagination } from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
+import Storage from './shared/storage';
 import user from './user';
 import UserNotificationService from './user/notification.service';
 import UserSubscriber from './user/subscriber';
@@ -27,6 +28,7 @@ function configure(provider: Provider): void {
   provider.registerMiddleware('errorHandler', ErrorHandler);
   provider.service('db', Db, 'config', 'logger', 'userSubscriber');
   provider.service('mail', Mail, 'config', 'logger');
+  provider.service('storage', Storage, 'config');
   provider.service(
     'userNotificationService',
     UserNotificationService,
