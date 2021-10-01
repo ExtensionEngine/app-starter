@@ -25,7 +25,7 @@ class AuthService implements IAuthService {
     const payload = { id: user.id, email: user.email };
     const options = {
       issuer: this.#config.jwt.issuer,
-      audience: audience || Scope.Access,
+      audience: audience,
       expiresIn
     };
     return jwt.sign(payload, this.getTokenSecret(user, audience), options);

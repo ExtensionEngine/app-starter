@@ -37,11 +37,12 @@ async function beforeStart({ db }: IContainer): Promise<void> {
 }
 
 function registerRouters(app: Application, container: IContainer): void {
-  const { db, userRouter, authInitializeMiddleware } = container;
+  const { db, userRouter, authRouter, authInitializeMiddleware } = container;
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
   app.use(authInitializeMiddleware);
   app.use('/api', parsePagination);
+  app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }
