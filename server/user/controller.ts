@@ -1,9 +1,9 @@
 import { ACCEPTED, NO_CONTENT } from 'http-status';
 import { Request, Response } from 'express';
 import autobind from 'auto-bind';
+import IAuthService from '../auth/interfaces/service';
 import { IContainer } from 'bottlejs';
 import IUserRepository from './interfaces/repository';
-import IUserService from './interfaces/service';
 import joi from 'joi';
 import { NotFound } from 'http-errors';
 import { Role } from './roles';
@@ -16,11 +16,11 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 
 class UserController {
   #repository: IUserRepository
-  #service: IUserService
+  #authService: IAuthService
 
-  constructor({ userRepository, userService }: IContainer) {
+  constructor({ userRepository, authService }: IContainer) {
     this.#repository = userRepository;
-    this.#service = userService;
+    this.#authService = authService;
     autobind(this);
   }
 
@@ -68,23 +68,8 @@ class UserController {
     const id = Number(params.userId);
     const user = await this.#repository.findOne(id);
     if (!user) throw new NotFound('User not found');
-    await this.#service.invite(user);
+    await this.#authService.invite(user);
     return res.status(ACCEPTED).send();
-  }
-
-  async forgotPassword({ body }: Request, res: Response): Promise<Response> {
-    const { email } = body;
-    const user = await this.#repository.findOne({ email });
-    if (!user) throw new NotFound('User not found');
-    await this.#service.resetPassword(user);
-    return res.status(NO_CONTENT).send();
-  }
-
-  async resetPassword({ body, user }: Request, res: Response): Promise<Response> {
-    const { password } = body;
-    this.#repository.assign(user, { password });
-    await this.#repository.persistAndFlush(user);
-    return res.status(NO_CONTENT).send();
   }
 }
 

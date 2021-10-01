@@ -12,5 +12,7 @@ export default {
 
 function createRouter({ authController }: IContainer): Router {
   return App.Router()
-    .post('/login', authenticate('local'), authController.me);
+    .post('/login', authenticate('local'), authController.me)
+    .post('/forgot-password', authController.forgotPassword)
+    .post('/reset-password', authenticate('token'), authController.resetPassword);
 }

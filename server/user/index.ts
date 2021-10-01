@@ -3,19 +3,15 @@ import { authenticate } from '../auth/middleware';
 import Controller from './controller';
 import { IContainer } from 'bottlejs';
 import Repository from './repository';
-import Service from './service';
 
 export default {
   createRouter,
   Repository,
-  Controller,
-  Service
+  Controller
 };
 
 function createRouter({ userController }: IContainer): Router {
   return App.Router()
-    .post('/forgot-password', userController.forgotPassword)
-    .post('/reset-password', authenticate('token'), userController.resetPassword)
     .use(authenticate('jwt'))
     .get('/', userController.list)
     .post('/', userController.create)

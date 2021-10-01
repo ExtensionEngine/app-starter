@@ -3,7 +3,7 @@ import request from './request';
 import urljoin from 'url-join';
 
 const urls = {
-  base: '/users',
+  base: '/auth',
   login: () => urljoin(urls.base, 'login'),
   forgotPassword: () => urljoin(urls.base, 'forgot-password'),
   resetPassword: () => urljoin(urls.base, 'reset-password')
