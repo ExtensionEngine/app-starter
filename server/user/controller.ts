@@ -1,8 +1,8 @@
 import { ACCEPTED, NO_CONTENT } from 'http-status';
 import { Request, Response } from 'express';
 import autobind from 'auto-bind';
-import IAuthService from '../auth/interfaces/service';
 import { IContainer } from 'bottlejs';
+import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import joi from 'joi';
 import { NotFound } from 'http-errors';
@@ -15,12 +15,12 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 }));
 
 class UserController {
-  #repository: IUserRepository
-  #authService: IAuthService
+  #repository: IUserRepository;
+  #userNotificationService: IUserNotificationService;
 
-  constructor({ userRepository, authService }: IContainer) {
+  constructor({ userRepository, userNotificationService }: IContainer) {
     this.#repository = userRepository;
-    this.#authService = authService;
+    this.#userNotificationService = userNotificationService;
     autobind(this);
   }
 
@@ -68,7 +68,7 @@ class UserController {
     const id = Number(params.userId);
     const user = await this.#repository.findOne(id);
     if (!user) throw new NotFound('User not found');
-    await this.#authService.invite(user);
+    await this.#userNotificationService.invite(user);
     return res.status(ACCEPTED).send();
   }
 }

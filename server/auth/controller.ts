@@ -2,23 +2,26 @@ import { Request, Response } from 'express';
 import autobind from 'auto-bind';
 import IAuthService from './interfaces/service';
 import { IContainer } from 'bottlejs';
+import IUserNotificationService from '../user/interfaces/notification.service';
 import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
 import { NotFound } from 'http-errors';
 import Scope from './audience';
 
 class AuthController {
-  #userRepository: IUserRepository
-  #service: IAuthService
+  #userRepository: IUserRepository;
+  #authService: IAuthService;
+  #userNotificationService: IUserNotificationService;
 
-  constructor({ authService, userRepository }: IContainer) {
-    this.#service = authService;
+  constructor({ authService, userRepository, userNotificationService }: IContainer) {
+    this.#authService = authService;
     this.#userRepository = userRepository;
+    this.#userNotificationService = userNotificationService;
     autobind(this);
   }
 
   async me({ user }: Request, res: Response): Promise<Response> {
-    const token = this.#service.createToken(user, Scope.Access, '5 days');
+    const token = this.#authService.createToken(user, Scope.Access, '5 days');
     const data = { token, user };
     return res.json({ data });
   }
@@ -27,7 +30,7 @@ class AuthController {
     const { email } = body;
     const user = await this.#userRepository.findOne({ email });
     if (!user) throw new NotFound('User not found');
-    await this.#service.resetPassword(user);
+    await this.#userNotificationService.resetPassword(user);
     return res.status(NO_CONTENT).send();
   }
 

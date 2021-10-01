@@ -12,6 +12,7 @@ import { parsePagination } from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import user from './user';
+import UserNotificationService from './user/notification.service';
 import UserSubscriber from './user/subscriber';
 
 const program: IProgram = {
@@ -26,6 +27,11 @@ function configure(provider: Provider): void {
   provider.registerMiddleware('errorHandler', ErrorHandler);
   provider.service('db', Db, 'config', 'logger', 'userSubscriber');
   provider.service('mail', Mail, 'config', 'logger');
+  provider.service(
+    'userNotificationService',
+    UserNotificationService,
+    'config', 'mail', 'authService'
+  );
   provider.registerMiddleware('authInitializeMiddleware', authMiddleware.initialize);
   provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule('auth', auth);
