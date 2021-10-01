@@ -3,12 +3,12 @@ import isLocalhost from 'is-localhost';
 import joi from 'joi';
 
 export interface ServerConfig {
-  port: number,
-  protocol: string,
-  origin: string,
-  hostname: string,
-  ip: string,
-  importTemplateFormat: string
+  port: number;
+  protocol: string;
+  origin: string;
+  hostname: string;
+  ip: string;
+  importTemplateFormat: string;
 }
 
 const schema = joi.object({

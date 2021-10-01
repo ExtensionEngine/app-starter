@@ -1,5 +1,5 @@
 interface IEnv {
-  [key: string]: string | undefined
+  [key: string]: string | undefined;
 }
 
 export default IEnv;

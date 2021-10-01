@@ -8,13 +8,13 @@ type Sender = {
 }
 
 export interface MailConfig {
-  sender: Sender,
-  host: string,
-  port?: number,
-  user: string
-  password?: string,
-  ssl?: boolean,
-  tls?: boolean,
+  sender: Sender;
+  host: string;
+  port?: number;
+  user: string;
+  password?: string;
+  ssl?: boolean;
+  tls?: boolean;
 }
 
 const schema = joi.object({

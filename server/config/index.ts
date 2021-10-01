@@ -8,12 +8,12 @@ import IEnv from '../types/env';
 import joi from 'joi';
 
 export interface Config {
-  environment: Environment,
-  database: DatabaseConfig,
-  server: ServerConfig,
-  auth: AuthConfig,
-  storage: StorageConfig,
-  mail: MailConfig
+  environment: Environment;
+  database: DatabaseConfig;
+  server: ServerConfig;
+  auth: AuthConfig;
+  storage: StorageConfig;
+  mail: MailConfig;
 }
 
 const schema = joi.object({

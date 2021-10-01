@@ -8,9 +8,9 @@ type Jwt = {
 }
 
 export interface AuthConfig {
-  jwt: Jwt
-  saltRounds: number,
-  corsAllowedOrigins: string[],
+  jwt: Jwt;
+  saltRounds: number;
+  corsAllowedOrigins: string[];
 }
 
 const jwtSchema = joi.object().keys({

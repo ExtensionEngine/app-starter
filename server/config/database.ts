@@ -10,7 +10,7 @@ export interface DatabaseConfig {
   type: 'postgresql';
   migrations: MigrationsOptions;
   debug: boolean;
-  highlighter?: Highlighter
+  highlighter?: Highlighter;
 }
 
 const schema = joi.object({

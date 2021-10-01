@@ -1,21 +1,21 @@
 import IEnv from '../types/env';
 import joi from 'joi';
 
-type Amazon = {
+export type Amazon = {
   key: string,
   secret: string,
   region: string,
   bucket: string
 }
 
-type Filesystem = {
+export type Filesystem = {
   path: string
 }
 
 export interface StorageConfig {
-  amazon: Amazon,
-  filesystem: Filesystem
-  provider: string
+  amazon: Amazon;
+  filesystem: Filesystem;
+  provider: string;
 }
 
 const schema = joi.object({
