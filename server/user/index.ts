@@ -1,4 +1,5 @@
 import App, { Router } from 'express';
+import { authenticate } from '../auth/middleware';
 import Controller from './controller';
 import { IContainer } from 'bottlejs';
 import Repository from './repository';
@@ -13,6 +14,9 @@ export default {
 
 function createRouter({ userController }: IContainer): Router {
   return App.Router()
+    .post('/forgot-password', userController.forgotPassword)
+    .post('/reset-password', authenticate('token'), userController.resetPassword)
+    .use(authenticate('jwt'))
     .get('/', userController.list)
     .post('/', userController.create)
     .get('/:userId', userController.get)

@@ -20,10 +20,10 @@ class Db {
   #logger: Logger;
   #provider?: DatabaseProvider;
 
-  constructor(config: Config, logger: Logger) {
+  constructor(config: Config, logger: Logger, userSubscriber: EventSubscriber) {
     this.#logger = logger;
     this.#config = config;
-    this.#subscribers = [];
+    this.#subscribers = [userSubscriber];
     autobind(this);
   }
 

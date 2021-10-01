@@ -1,26 +1,36 @@
 import IEnv from '../types/env';
 import joi from 'joi';
 
-export interface AuthConfig {
+type Jwt = {
   secret: string,
   scheme: string,
-  issuer: string,
-  corsAllowedOrigins: string[],
-  saltRounds: number
+  issuer: string
 }
 
-const schema = joi.object({
+export interface AuthConfig {
+  jwt: Jwt
+  saltRounds: number,
+  corsAllowedOrigins: string[],
+}
+
+const jwtSchema = joi.object().keys({
   secret: joi.string().required(),
   scheme: joi.string().required(),
-  issuer: joi.string().required(),
+  issuer: joi.string().required()
+});
+
+const schema = joi.object({
+  jwt: jwtSchema,
   saltRounds: joi.number().required(),
   corsAllowedOrigins: joi.array().items(joi.string().uri())
 });
 
 const createConfig = (env: IEnv): AuthConfig => ({
-  scheme: env.AUTH_JWT_SCHEME || 'JWT',
-  secret: env.AUTH_JWT_SECRET,
-  issuer: env.AUTH_JWT_ISSUER,
+  jwt: {
+    scheme: env.AUTH_JWT_SCHEME || 'JWT',
+    secret: env.AUTH_JWT_SECRET,
+    issuer: env.AUTH_JWT_ISSUER
+  },
   saltRounds: parseInt(process.env.AUTH_SALT_ROUNDS, 10),
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });

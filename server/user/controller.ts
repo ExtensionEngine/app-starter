@@ -5,6 +5,7 @@ import { IContainer } from 'bottlejs';
 import IUserRepository from './interfaces/repository';
 import IUserService from './interfaces/service';
 import joi from 'joi';
+import { NotFound } from 'http-errors';
 import { Role } from './roles';
 import User from './model';
 import userSchema from './validation';
@@ -66,8 +67,24 @@ class UserController {
   async invite({ params }: Request, res: Response): Promise<Response> {
     const id = Number(params.userId);
     const user = await this.#repository.findOne(id);
+    if (!user) throw new NotFound('User not found');
     await this.#service.invite(user);
     return res.status(ACCEPTED).send();
+  }
+
+  async forgotPassword({ body }: Request, res: Response): Promise<Response> {
+    const { email } = body;
+    const user = await this.#repository.findOne({ email });
+    if (!user) throw new NotFound('User not found');
+    await this.#service.resetPassword(user);
+    return res.status(NO_CONTENT).send();
+  }
+
+  async resetPassword({ body, user }: Request, res: Response): Promise<Response> {
+    const { password } = body;
+    this.#repository.assign(user, { password });
+    await this.#repository.persistAndFlush(user);
+    return res.status(NO_CONTENT).send();
   }
 }
 
