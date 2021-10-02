@@ -1,11 +1,20 @@
 'use strict';
 
-import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
+import S3, {
+  ClientConfiguration,
+  CopyObjectRequest,
+  DeleteObjectRequest,
+  DeleteObjectsRequest,
+  GetObjectRequest,
+  HeadObjectRequest,
+  ListObjectsV2Request,
+  PutObjectRequest
+} from 'aws-sdk/clients/s3';
 import { Config } from '../../../config';
 import Joi from 'joi';
 import miss from 'mississippi';
 import path from 'path';
-import { Amazon as S3Config } from '../../../config/storage';
+import { validateConfig } from '../validation';
 
 const noop = () => null;
 const isNotFound = err => err.code === 'NoSuchKey';
@@ -19,12 +28,6 @@ const schema = Joi.object().keys({
   secret: Joi.string().required()
 });
 
-function validateConfig(config: S3Config, schema): S3Config {
-  return schema.validate(config, { stripUnknown: true }, err => {
-    if (err) throw new Error('Unsupported config structure');
-  });
-}
-
 type SignedUrlOptions = {
   Bucket: string
   Key: string,
@@ -33,10 +36,10 @@ type SignedUrlOptions = {
 
 class Amazon {
   #bucket: string;
-  #client: S3
+  #client: S3;
 
   constructor(config: Config) {
-    const amazonConfig: S3Config = validateConfig(config.storage.amazon, schema);
+    const amazonConfig = validateConfig(config.storage.amazon, schema);
 
     const s3Config: ClientConfiguration = {
       signatureVersion: 'v4',
@@ -62,7 +65,7 @@ class Amazon {
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
   getFile(key: string, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket, Key: key });
+    const params: GetObjectRequest = { Bucket: this.#bucket, Key: key, ...options };
     return this.#client.getObject(params).promise()
       .then(({ Body: data }) => data)
       .catch(err => {
@@ -73,41 +76,47 @@ class Amazon {
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
   createReadStream(key: string, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket, Key: key });
+    const params: GetObjectRequest = { Bucket: this.#bucket, Key: key, ...options };
     return this.#client.getObject(params).createReadStream();
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  saveFile(key, data, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket, Key: key, Body: data });
+  saveFile(key, data, options: PutObjectRequest) {
+    const params: PutObjectRequest = {
+      Bucket: this.#bucket, Key: key, Body: data, ...options
+    };
     return this.#client.putObject(params).promise();
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
   createWriteStream(key: string, options = {}) {
     const throughStream = miss.through();
-    const params = Object.assign(options, { Bucket: this.#bucket, Key: key, Body: throughStream });
+    const params: PutObjectRequest = {
+      Bucket: this.#bucket, Key: key, Body: throughStream, ...options
+    };
     this.#client.upload(params, noop);
     return throughStream;
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#copyObject-property
   copyFile(key: string, newKey: string, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket }, {
-      CopySource: this.path(`/${key}`),
-      Key: newKey
-    });
+    const params: CopyObjectRequest = Object.assign(options,
+      { Bucket: this.#bucket },
+      { CopySource: this.path(`/${key}`), Key: newKey }
+    );
     return this.#client.copyObject(params).promise();
   }
 
-  moveFile(key: string, newKey: string, options = {}) {
-    return this.copyFile(key, newKey, options)
-      .then(result => this.deleteFile(key).then(() => result));
+  async moveFile(key: string, newKey: string, options) {
+    const params: CopyObjectRequest = options || {};
+    const result = await this.copyFile(key, newKey, params);
+    await this.deleteFile(key);
+    return result;
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
   deleteFile(key: string, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket, Key: key });
+    const params: DeleteObjectRequest = { Bucket: this.#bucket, Key: key, ...options };
     return this.#client.deleteObject(params).promise();
   }
 
@@ -115,22 +124,23 @@ class Amazon {
   deleteFiles(keys: string[], options = {}) {
     const objects = keys.map(key => ({ Key: key }));
     if (!keys.length) return Promise.resolve();
-    const params = Object.assign(options, { Bucket: this.#bucket, Delete: { Objects: objects } });
+    const params: DeleteObjectsRequest = Object.assign(options, {
+      Bucket: this.#bucket,
+      Delete: { Objects: objects }
+    });
     return this.#client.deleteObjects(params).promise();
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  listFiles(key: string, options = {}) {
-    const params = Object.assign(options, { Bucket: this.#bucket, Prefix: key });
-    return this.#client
-      .listObjectsV2(params)
-      .promise()
-      .then(({ Contents: files }) => files.map(file => file.Key));
+  async listFiles(key: string, options = {}) {
+    const params: ListObjectsV2Request = { Bucket: this.#bucket, Prefix: key, ...options };
+    const { Contents: files } = await this.#client.listObjectsV2(params).promise();
+    return files.map(file => file.Key);
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
   fileExists(key: string, options = {}) {
-    const params = { Bucket: this.#bucket, Key: key, ...options };
+    const params: HeadObjectRequest = { Bucket: this.#bucket, Key: key, ...options };
     return this.#client.headObject(params).promise();
   }
 

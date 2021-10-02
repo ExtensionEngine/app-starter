@@ -3,35 +3,29 @@ import { Config } from '../../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';
 import fs from 'fs';
-import { Filesystem as IFilesystem } from '../../../config/storage';
 import Joi from 'joi';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
+import { validateConfig } from '../validation';
 
 const fsAsync = P.promisifyAll(fs);
 
 const isNotFound = err => err.code === 'ENOENT';
 const resolvePath = (str: string) => path.resolve(expandPath(str));
 
-function validateConfig(config: IFilesystem, schema): IFilesystem {
-  return schema.validate(config, { stripUnknown: true }, err => {
-    if (err) throw new Error('Unsupported config structure');
-  });
-}
-
 const schema = Joi.object().keys({
   path: Joi.string().required()
 });
 
 class FilesystemStorage {
-  #root: string;
+  #rootPath: string;
   #config: Config;
 
   constructor(config: Config) {
-    const filesystemConfig: IFilesystem = validateConfig(config.storage.filesystem, schema);
+    const filesystemConfig = validateConfig(config.storage.filesystem, schema);
     this.#config = config;
-    this.#root = resolvePath(filesystemConfig.path);
+    this.#rootPath = resolvePath(filesystemConfig.path);
   }
 
   static create(config) {
@@ -39,11 +33,11 @@ class FilesystemStorage {
   }
 
   path(...segments): string {
-    segments = [this.#root, ...segments];
+    segments = [this.#rootPath, ...segments];
     return path.join(...segments);
   }
 
-  getFile(key: string) {
+  getFile(key: string): Promise<Buffer> {
     return fsAsync.readFileAsync(this.path(key))
       .catch(err => {
         if (isNotFound(err)) return null;
@@ -51,17 +45,17 @@ class FilesystemStorage {
       });
   }
 
-  createReadStream(key: string, options = {}) {
+  createReadStream(key: string, options = {}): fs.ReadStream {
     return fsAsync.createReadStream(this.path(key), options);
   }
 
-  async saveFile(key: string, data) {
+  async saveFile(key: string, data): Promise<undefined> {
     const filePath = this.path(key);
     await mkdirp(path.dirname(filePath));
     return fsAsync.writeFileAsync(filePath, data);
   }
 
-  createWriteStream(key: string, options = {}) {
+  createWriteStream(key: string, options = {}): fs.WriteStream {
     const filepath = this.path(key);
     const dirname = path.dirname(filepath);
     // TODO: Replace with async mkdir
@@ -69,23 +63,24 @@ class FilesystemStorage {
     return fsAsync.createWriteStream(filepath, options);
   }
 
-  async copyFile(key: string, newKey: string, options) {
+  async copyFile(key: string, newKey: string, options): Promise<undefined> {
     const src = this.path(key);
     const dest = this.path(newKey);
     await mkdirp(path.dirname(dest));
     return fsAsync.copyFileAsync(src, dest, options);
   }
 
-  moveFile(key: string, newKey: string, options) {
-    return this.copyFile(key, newKey, options)
-      .then(file => this.deleteFile(key).then(() => file));
+  async moveFile(key: string, newKey: string, options): Promise<undefined> {
+    const file = await this.copyFile(key, newKey, options);
+    await this.deleteFile(key);
+    return file;
   }
 
-  deleteFile(key: string) {
+  deleteFile(key: string): Promise<undefined> {
     return fsAsync.unlinkAsync(this.path(key));
   }
 
-  deleteFiles(keys: string[]) {
+  deleteFiles(keys: string[]): Promise<undefined[]> {
     return P.map(keys, key => this.deleteFile(key));
   }
 
@@ -95,11 +90,11 @@ class FilesystemStorage {
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  fileExists(key: string) {
+  fileExists(key: string): boolean {
     return exists(this.path(key));
   }
 
-  getFileUrl(key: string) {
+  getFileUrl(key: string): Promise<string> {
     return P.resolve(`${this.#config.server.origin}/${key}`);
   }
 }
