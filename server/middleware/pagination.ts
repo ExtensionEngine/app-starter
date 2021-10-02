@@ -5,11 +5,11 @@ type orderBy = {
   [key: string]: QueryOrder
 }
 
-export type Pagination = {
-  limit: number,
-  offset: number,
-  orderBy: orderBy,
-  flags: QueryFlag[]
+export interface Pagination {
+  limit: number;
+  offset: number;
+  orderBy: orderBy;
+  flags: QueryFlag[];
 }
 
 export function parsePagination(req: Request, _: Response, next: NextFunction): void {
