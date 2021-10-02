@@ -11,8 +11,8 @@ import { validateConfig } from '../validation';
 
 const fsAsync = P.promisifyAll(fs);
 
-const isNotFound = err => err.code === 'ENOENT';
-const resolvePath = (str: string) => path.resolve(expandPath(str));
+const isNotFound = (err: any): boolean => err.code === 'ENOENT';
+const resolvePath = (str: string): string => path.resolve(expandPath(str));
 
 const schema = Joi.object().keys({
   path: Joi.string().required()
@@ -20,12 +20,12 @@ const schema = Joi.object().keys({
 
 class FilesystemStorage {
   #rootPath: string;
-  #config: Config;
+  #origin: string;
 
-  constructor(config: Config) {
-    const filesystemConfig = validateConfig(config.storage.filesystem, schema);
-    this.#config = config;
-    this.#rootPath = resolvePath(filesystemConfig.path);
+  constructor({ server, storage }: Config) {
+    const config = validateConfig(storage.filesystem, schema);
+    this.#origin = server.origin;
+    this.#rootPath = resolvePath(config.path);
   }
 
   static create(config) {
@@ -39,10 +39,7 @@ class FilesystemStorage {
 
   getFile(key: string): Promise<Buffer> {
     return fsAsync.readFileAsync(this.path(key))
-      .catch(err => {
-        if (isNotFound(err)) return null;
-        return Promise.reject(err);
-      });
+      .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
   createReadStream(key: string, options = {}): fs.ReadStream {
@@ -95,7 +92,7 @@ class FilesystemStorage {
   }
 
   getFileUrl(key: string): Promise<string> {
-    return P.resolve(`${this.#config.server.origin}/${key}`);
+    return P.resolve(`${this.#origin}/${key}`);
   }
 }
 

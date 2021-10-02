@@ -17,9 +17,7 @@ import path from 'path';
 import { validateConfig } from '../validation';
 
 const noop = () => null;
-const isNotFound = err => err.code === 'NoSuchKey';
-
-const DEFAULT_EXPIRATION_TIME = 3600; // seconds
+const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
 
 const schema = Joi.object().keys({
   region: Joi.string().required(),
@@ -146,7 +144,7 @@ class Amazon {
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getSignedUrl-property
   getFileUrl(key: string, options: SignedUrlOptions) {
-    const expires = options.expires || DEFAULT_EXPIRATION_TIME;
+    const expires = options?.expires || 3600;
     const params = Object.assign(options, { Bucket: this.#bucket, Key: key, Expires: expires });
     return this.#client.getSignedUrlPromise('getObject', params);
   }
