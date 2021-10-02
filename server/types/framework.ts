@@ -1,8 +1,10 @@
+import { Pagination } from '../middleware/pagination';
 import User from '../user/model';
 
 declare module 'express' {
   interface Request {
     user: User;
-    pagination;
+    targetUser: User;
+    pagination: Pagination;
   }
 }

@@ -6,7 +6,8 @@ const userSchema = joi.object({
   email: anyTldEmailSchema.required(),
   role: joi.string().allow(...Object.values(roles)).required(),
   firstName: joi.string().required(),
-  lastName: joi.string().required()
+  lastName: joi.string().required(),
+  password: joi.string()
 }).unknown();
 
 export default userSchema;

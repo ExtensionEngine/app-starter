@@ -1,6 +1,17 @@
 import { NextFunction, Request, Response } from 'express';
 import { QueryFlag, QueryOrder } from '@mikro-orm/core';
 
+type orderBy = {
+  [key: string]: QueryOrder
+}
+
+export type Pagination = {
+  limit: number,
+  offset: number,
+  orderBy: orderBy,
+  flags: QueryFlag[]
+}
+
 export function parsePagination(req: Request, _: Response, next: NextFunction): void {
   const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
   req.pagination = {

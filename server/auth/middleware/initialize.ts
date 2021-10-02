@@ -17,7 +17,7 @@ const options = {
 };
 
 type TokenPayload = { id: number };
-type AuthenticationCallback = (error: Error | null, user: User | string | boolean) => void;
+type AuthCallback = (error: Error | null, user: User | string | boolean) => void;
 
 class Initialize implements IMiddleware {
   #userRepository: IUserRepository;
@@ -46,11 +46,11 @@ class Initialize implements IMiddleware {
 
     passport.use('local', new LocalStrategy(options, this.verifyLocal));
 
-    passport.serializeUser((user: User, done: AuthenticationCallback) => done(null, user));
-    passport.deserializeUser((user: User, done: AuthenticationCallback) => done(null, user));
+    passport.serializeUser((user: User, done: AuthCallback) => done(null, user));
+    passport.deserializeUser((user: User, done: AuthCallback) => done(null, user));
   }
 
-  private verifyJWT({ id }: TokenPayload, done: AuthenticationCallback): Promise<void> {
+  private verifyJWT({ id }: TokenPayload, done: AuthCallback): Promise<void> {
     return this.#userRepository.findOne(id)
       .then(user => done(null, user))
       .catch(err => done(err, null));
@@ -59,7 +59,7 @@ class Initialize implements IMiddleware {
   private verifyLocal(
     email: string,
     password: string,
-    done: AuthenticationCallback
+    done: AuthCallback
   ): Promise<void> {
     return this.#userRepository.findOne({ email })
       .then(user => user && this.#authService.authenticate(user, password))
@@ -70,7 +70,7 @@ class Initialize implements IMiddleware {
   private secretOrKeyProvider(
     _req: Request,
     rawToken: string,
-    done: AuthenticationCallback
+    done: AuthCallback
   ): Promise<void> {
     const { payload } = jwt.decode(rawToken, { complete: true }) || {};
     return this.#userRepository.findOne(payload?.id)
