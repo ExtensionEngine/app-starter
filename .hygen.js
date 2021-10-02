@@ -1,9 +1,9 @@
+const { join, relative } = require('path');
 const kebabCase = require('lodash/kebabCase');
-const { relative } = require('path');
 
 module.exports = {
   helpers: {
-    getResourcePath: (resource, path) => `server/${path || kebabCase(resource)}`,
+    getResourcePath: (resource, path) => join('server', path || kebabCase(resource)),
     getBaseEntityPath: (from, to) => relative(from, to)
   }
 };
