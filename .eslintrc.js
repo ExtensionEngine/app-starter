@@ -2,10 +2,13 @@
 
 module.exports = {
   root: true,
-  extends: ['@extensionengine/eslint-config/base'],
+  extends: '@extensionengine',
   plugins: ['jest'],
   env: {
     'jest/globals': true
+  },
+  rules: {
+    'vue/component-definition-name-casing': ['error', 'kebab-case']
   },
   overrides: [{
     files: ['*.ts'],
