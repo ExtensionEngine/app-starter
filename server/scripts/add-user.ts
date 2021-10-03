@@ -56,11 +56,12 @@ prompt(questions)
     await RequestContext.createAsync(db.provider.em, () => addUser(data));
   });
 
-function addUser(data) {
+async function addUser({ firstName, lastName, email, role, password }) {
   const { db, logger } = provider.container;
   const em = db.provider.em.fork(false);
-  return em.nativeInsert(User, data)
-    .then(userId => logger.info(`User with ID: ${userId} created.`))
+  const user = new User(firstName, lastName, email, role, password);
+  return em.persistAndFlush(user)
+    .then(() => logger.info(`User with ID: ${user.id} created.`))
     .catch(err => logger.error(err.message) || 1)
     .then((code = 0) => process.exit(code));
 }
