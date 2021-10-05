@@ -11,14 +11,20 @@ class UserRepository implements IUserRepository {
     this.#dbProvider = db.provider;
   }
 
-  findOne(where: FilterQuery<User>, options?: FindOneOptions<User>): Promise<User | null> {
+  findOne(
+    where: FilterQuery<User>,
+    options?: FindOneOptions<User>
+  ): Promise<User | null> {
     const repository = this.#dbProvider.em.getRepository(User);
     return repository.findOne(where, options);
   }
 
-  find(where: FilterQuery<User>, options?: FindOptions<User>): Promise<User[]> {
+  findAndCount(
+    where: FilterQuery<User>,
+    options?: FindOptions<User>
+  ): Promise<[User[], number]> {
     const repository = this.#dbProvider.em.getRepository(User);
-    return repository.find(where, options);
+    return repository.findAndCount(where, options);
   }
 
   findAll(options?: FindOptions<User>): Promise<User[]> {

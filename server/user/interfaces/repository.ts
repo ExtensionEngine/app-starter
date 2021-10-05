@@ -11,7 +11,10 @@ interface IUserRepository {
     where: FilterQuery<User>,
     options?: FindOneOptions<User>
   ): Promise<User | null>;
-  find(where: FilterQuery<User>, options?: FindOptions<User>): Promise<User[]>;
+  findAndCount(
+    where: FilterQuery<User>,
+    options?: FindOptions<User>
+  ): Promise<[User[], number]>;
   findAll(options?: FindOptions<User>): Promise<User[]>;
   persistAndFlush(user: User | User[]): Promise<void>;
   removeAndFlush(user: User): Promise<void>;

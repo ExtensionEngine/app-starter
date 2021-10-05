@@ -39,8 +39,8 @@ class UserController {
       ...role && { role: role as Role },
       ...isArchived && { deletedAt: null }
     };
-    const data = await this.#repository.find(where, pagination);
-    return res.json({ data });
+    const [items, total] = await this.#repository.findAndCount(where, pagination);
+    return res.json({ items, total });
   }
 
   async get({ targetUser }: Request, res: Response): Promise<Response> {
