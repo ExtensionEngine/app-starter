@@ -48,12 +48,15 @@ class UserController {
     return res.json({ data: targetUser });
   }
 
-  async create({ body }: Request, res: Response): Promise<Response> {
+  async createOrRestore({ body }: Request, res: Response): Promise<Response> {
     joi.attempt(body, userSchema);
-    const { firstName, lastName, email, role, password } = body;
-    const data = new User(firstName, lastName, email, role, password);
-    await this.#repository.persistAndFlush(data);
-    return res.json({ data });
+    const { id, firstName, lastName, email, role, password } = body;
+    const user = id
+      ? await this.#repository.findOne(Number(id))
+      : new User(firstName, lastName, email, role, password);
+    if (id) this.#repository.assign(user, { deletedAt: null });
+    await this.#repository.persistAndFlush(user);
+    return res.json({ data: user });
   }
 
   async patch({ targetUser, body }: Request, res: Response): Promise<Response> {

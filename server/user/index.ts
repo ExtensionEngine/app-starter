@@ -20,7 +20,7 @@ function createRouter(provider: IContainer): Router {
   return App.Router()
     .use(authenticate('jwt'))
     .get('/', userController.list)
-    .post('/', userController.create)
+    .post('/', userController.createOrRestore)
     .param('userId', getTargetUserMiddleware)
     .get('/:userId', userController.get)
     .patch('/:userId', userController.patch)

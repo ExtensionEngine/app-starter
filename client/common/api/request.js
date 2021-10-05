@@ -53,9 +53,7 @@ client.interceptors.request.use(config => {
 });
 
 client.interceptors.response.use(res => res, err => {
-  if (!err.response || !err.response.status === HttpStatus.FORBIDDEN) {
-    throw err;
-  }
+  if (err.response.status !== HttpStatus.UNAUTHORIZED) throw err;
   client.auth.emit('error', err);
 });
 
