@@ -17,7 +17,7 @@ export interface Pagination {
 export function parsePagination(req: Request, _: Response, next: NextFunction): void {
   const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
   const paranoidKeywords = ['archived', 'deleted', 'destroyed'];
-  const isArchived = !paranoidKeywords.some(it => yn(req.query[it]));
+  const isArchived = paranoidKeywords.some(it => yn(req.query[it]));
   req.pagination = {
     limit: Number(limit) || 100,
     offset: Number(offset) || 0,
@@ -25,5 +25,6 @@ export function parsePagination(req: Request, _: Response, next: NextFunction): 
     flags: [QueryFlag.PAGINATE],
     isArchived
   };
+  console.log(req.pagination);
   next();
 }
