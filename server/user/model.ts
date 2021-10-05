@@ -29,7 +29,7 @@ class User extends BaseEntity {
   deletedAt: Date;
 
   @Property({ persist: false })
-  get fullName(): string {
+  get fullName(): string | null {
     return [this.firstName, this.lastName].filter(Boolean).join(' ') || null;
   }
 
