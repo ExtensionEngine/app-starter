@@ -33,12 +33,13 @@ class UserController {
   }
 
   async list({ query, pagination }: Request, res: Response): Promise<Response> {
-    const { role, email, filter, isArchived } = query;
+    const { role, email, filter } = query;
+    const { showArchived } = pagination;
     const where = {
       ...filter && { $or: createFilter(filter) },
       ...email && { email: email as string },
       ...role && { role: role as Role },
-      ...isArchived && { deletedAt: null }
+      ...!showArchived && { deletedAt: null }
     };
     const [items, total] = await this.#repository.findAndCount(where, pagination);
     return res.json({ data: { items, total } });
