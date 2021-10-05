@@ -80,12 +80,9 @@ class UserController {
 
   async bulkImport({ body = {}, file }: Request, res: Response): Promise<Response> {
     const { total, users, errors } = await this.#userImportService.bulkImport(file);
-    await P.each(users, async (it: User) => {
-      await P.delay(500);
-      return this.#userNotificationService.invite(it);
-    });
+    await P.each(users, async (it: User) => this.#userNotificationService.invite(it));
     res.set('data-imported-count', String(total.length - errors.length));
-    if (!errors) return res.send();
+    if (!errors.length) return res.send();
     const errorSheet = await this.#userImportService.getErrorSheet(errors);
     const format = body.format || mime.extension(file.mimetype);
     const report = await this.#userImportService.createReport(errorSheet);
