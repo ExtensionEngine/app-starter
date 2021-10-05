@@ -3,6 +3,7 @@ import { EventEmitter } from 'events';
 import HttpStatus from 'http-status';
 
 const authScheme = process.env.AUTH_JWT_SCHEME;
+
 const config = {
   baseURL: process.env.API_PATH,
   withCredentials: true,
