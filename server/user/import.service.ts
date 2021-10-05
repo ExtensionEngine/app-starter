@@ -51,8 +51,8 @@ class UserImportService implements IUserImportService {
       if (found) {
         return acc.errors.push({ ...users[idx], message: 'User already exists' });
       }
-      const { firstName, lastName, email, role, password } = item;
-      const user = new User(firstName, lastName, email, role, password);
+      const { firstName, lastName, email, role } = item;
+      const user = new User(firstName, lastName, email, role);
       return acc.users.push(user);
     }, { users: [], errors: [] });
     await this.#userRepository.persistAndFlush(results.users);

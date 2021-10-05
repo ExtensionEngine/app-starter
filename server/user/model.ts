@@ -39,7 +39,7 @@ class User extends BaseEntity {
     lastName: string,
     email: string,
     role: Role,
-    password: string
+    password?: string
   ) {
     super();
     this.firstName = firstName;
