@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import authContext from './context';
 import autobind from 'auto-bind';
 import IAuthService from './interfaces/service';
 import { IContainer } from 'bottlejs';
@@ -7,7 +8,6 @@ import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
 import { NotFound } from 'http-errors';
 import Scope from './audience';
-
 class AuthController {
   #userRepository: IUserRepository;
   #authService: IAuthService;
@@ -20,7 +20,8 @@ class AuthController {
     autobind(this);
   }
 
-  async me({ user }: Request, res: Response): Promise<Response> {
+  async me(_req: Request, res: Response): Promise<Response> {
+    const user = authContext.getCurrentUser();
     const token = this.#authService.createToken(user, Scope.Access, '5 days');
     const data = { token, user };
     return res.json({ data });
@@ -34,8 +35,9 @@ class AuthController {
     return res.status(NO_CONTENT).send();
   }
 
-  async resetPassword({ body, user }: Request, res: Response): Promise<Response> {
+  async resetPassword({ body }: Request, res: Response): Promise<Response> {
     const { password } = body;
+    const user = authContext.getCurrentUser();
     this.#userRepository.assign(user, { password });
     await this.#userRepository.persistAndFlush(user);
     return res.status(NO_CONTENT).send();
