@@ -5,7 +5,7 @@ import { IMiddleware } from '../../types/middleware';
 import IUserRepository from '../interfaces/repository';
 import { NotFound } from 'http-errors';
 
-class GetTargetUserMiddleware implements IMiddleware {
+class GetUserMiddleware implements IMiddleware {
   #userRepository: IUserRepository;
 
   constructor({ userRepository }: IContainer) {
@@ -16,9 +16,9 @@ class GetTargetUserMiddleware implements IMiddleware {
   async handle(req: Request, _: Response, next: NextFunction, id: string): Promise<void> {
     const user = await this.#userRepository.findOne(Number(id));
     if (!user) throw new NotFound('User not found');
-    req.targetUser = user;
+    req.user = user;
     next();
   }
 }
 
-export default GetTargetUserMiddleware;
+export default GetUserMiddleware;

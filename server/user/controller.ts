@@ -45,8 +45,8 @@ class UserController {
     return res.json({ data: { items, total } });
   }
 
-  async get({ targetUser }: Request, res: Response): Promise<Response> {
-    return res.json({ data: targetUser });
+  async get({ user }: Request, res: Response): Promise<Response> {
+    return res.json({ data: user });
   }
 
   async createOrRestore({ body }: Request, res: Response): Promise<Response> {
@@ -60,21 +60,21 @@ class UserController {
     return res.json({ data: user });
   }
 
-  async patch({ targetUser, body }: Request, res: Response): Promise<Response> {
+  async patch({ user, body }: Request, res: Response): Promise<Response> {
     const userData = joi.attempt(body, userSchema);
-    this.#repository.assign(targetUser, userData);
-    await this.#repository.persistAndFlush(targetUser);
-    return res.json({ data: targetUser });
+    this.#repository.assign(user, userData);
+    await this.#repository.persistAndFlush(user);
+    return res.json({ data: user });
   }
 
-  async remove({ targetUser }: Request, res: Response): Promise<Response> {
-    this.#repository.assign(targetUser, { deletedAt: new Date() });
-    await this.#repository.persistAndFlush(targetUser);
+  async remove({ user }: Request, res: Response): Promise<Response> {
+    this.#repository.assign(user, { deletedAt: new Date() });
+    await this.#repository.persistAndFlush(user);
     return res.status(NO_CONTENT).send();
   }
 
-  async invite({ targetUser }: Request, res: Response): Promise<Response> {
-    await this.#userNotificationService.invite(targetUser);
+  async invite({ user }: Request, res: Response): Promise<Response> {
+    await this.#userNotificationService.invite(user);
     return res.status(ACCEPTED).send();
   }
 

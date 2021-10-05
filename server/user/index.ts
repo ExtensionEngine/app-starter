@@ -16,12 +16,12 @@ export default {
 };
 
 function createRouter(provider: IContainer): Router {
-  const { userController, getTargetUserMiddleware } = provider;
+  const { userController, getUserMiddleware } = provider;
   return App.Router()
     .use(authenticate('jwt'))
     .get('/', userController.list)
     .post('/', userController.createOrRestore)
-    .param('userId', getTargetUserMiddleware)
+    .param('userId', getUserMiddleware)
     .get('/:userId', userController.get)
     .patch('/:userId', userController.patch)
     .delete('/:userId', userController.remove)

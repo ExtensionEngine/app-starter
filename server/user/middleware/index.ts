@@ -1,1 +1,1 @@
-export { default as GetTargetUserMiddleware } from './GetTargetUser';
+export { default as GetUserMiddleware } from './GetUser';

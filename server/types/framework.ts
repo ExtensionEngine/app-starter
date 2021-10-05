@@ -4,7 +4,7 @@ import User from '../user/model';
 
 declare module 'express' {
   interface Request {
-    targetUser: User;
+    user: User;
     pagination: Pagination;
     file: File
   }
