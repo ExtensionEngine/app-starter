@@ -25,6 +25,5 @@ export function parsePagination(req: Request, _: Response, next: NextFunction): 
     flags: [QueryFlag.PAGINATE],
     isArchived
   };
-  console.log(req.pagination);
   next();
 }
