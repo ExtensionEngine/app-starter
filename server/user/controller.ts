@@ -32,11 +32,12 @@ class UserController {
   }
 
   async list({ query, pagination }: Request, res: Response): Promise<Response> {
-    const { role, email, filter } = query;
+    const { role, email, filter, isArchived } = query;
     const where = {
       ...filter && { $or: createFilter(filter) },
       ...email && { email: email as string },
-      ...role && { role: role as Role }
+      ...role && { role: role as Role },
+      ...isArchived && { deletedAt: null }
     };
     const data = await this.#repository.find(where, pagination);
     return res.json({ data });
@@ -62,7 +63,8 @@ class UserController {
   }
 
   async remove({ targetUser }: Request, res: Response): Promise<Response> {
-    await this.#repository.removeAndFlush(targetUser);
+    this.#repository.assign(targetUser, { deletedAt: new Date() });
+    await this.#repository.persistAndFlush(targetUser);
     return res.status(NO_CONTENT).send();
   }
 
