@@ -41,7 +41,7 @@ class UserController {
       ...isArchived && { deletedAt: null }
     };
     const [items, total] = await this.#repository.findAndCount(where, pagination);
-    return res.json({ items, total });
+    return res.json({ data: { items, total } });
   }
 
   async get({ targetUser }: Request, res: Response): Promise<Response> {
