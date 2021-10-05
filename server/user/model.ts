@@ -28,11 +28,15 @@ class User extends BaseEntity {
   @Property({ nullable: true })
   deletedAt: Date;
 
-  @Property()
-  fullName: string
+  @Property({ persist: false })
+  get fullName(): string {
+    return [this.firstName, this.lastName].filter(Boolean).join(' ') || null;
+  }
 
-  @Property()
-  label: string
+  @Property({ persist: false })
+  get label(): string {
+    return this.fullName || this.email;
+  }
 
   constructor(
     firstName: string,
