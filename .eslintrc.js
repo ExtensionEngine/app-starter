@@ -1,4 +1,4 @@
-'use strict';
+'use-strict';
 
 module.exports = {
   root: true,
@@ -9,6 +9,9 @@ module.exports = {
   },
   rules: {
     'vue/component-definition-name-casing': ['error', 'kebab-case']
+  },
+  parserOptions: {
+    sourceType: 'module'
   },
   overrides: [{
     files: ['*.ts'],
