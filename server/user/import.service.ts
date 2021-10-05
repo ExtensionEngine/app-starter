@@ -9,7 +9,6 @@ import IUserRepository from './interfaces/repository';
 import transform from 'lodash/transform';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
-import { Workbook } from 'exceljs';
 
 export type Sheet = {
   name: string,
@@ -68,7 +67,7 @@ class UserImportService implements IUserImportService {
     return { name: 'Template', columns, data: generateUsers() };
   }
 
-  createReport(sheet: Sheet): Workbook {
+  createReport(sheet: Sheet): any {
     const creator = 'App Starter';
     const report = (new Datasheet(sheet)).toWorkbook({ creator });
     return report;

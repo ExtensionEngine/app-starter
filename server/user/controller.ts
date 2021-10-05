@@ -2,6 +2,7 @@ import { ACCEPTED, NO_CONTENT } from 'http-status';
 import { Request, Response } from 'express';
 import autobind from 'auto-bind';
 import { IContainer } from 'bottlejs';
+import IUserImportService from './interfaces/import.service';
 import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import joi from 'joi';
@@ -18,7 +19,7 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 class UserController {
   #repository: IUserRepository;
   #userNotificationService: IUserNotificationService;
-  #userImportService;
+  #userImportService: IUserImportService;
 
   constructor({
     userRepository,
