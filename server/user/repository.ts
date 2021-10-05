@@ -21,6 +21,11 @@ class UserRepository implements IUserRepository {
     return repository.find(where, options);
   }
 
+  findAll(options?: FindOptions<User>): Promise<User[]> {
+    const repository = this.#dbProvider.em.getRepository(User);
+    return repository.findAll(options);
+  }
+
   persistAndFlush(user: User | User[]): Promise<void> {
     const repository = this.#dbProvider.em.getRepository(User);
     return repository.persistAndFlush(user);

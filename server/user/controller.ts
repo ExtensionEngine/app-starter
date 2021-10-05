@@ -5,6 +5,8 @@ import { IContainer } from 'bottlejs';
 import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import joi from 'joi';
+import mime from 'mime-types';
+import P from 'bluebird';
 import { Role } from './roles';
 import User from './model';
 import userSchema from './validation';
@@ -16,10 +18,16 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 class UserController {
   #repository: IUserRepository;
   #userNotificationService: IUserNotificationService;
+  #userImportService;
 
-  constructor({ userRepository, userNotificationService }: IContainer) {
+  constructor({
+    userRepository,
+    userNotificationService,
+    userImportService
+  }: IContainer) {
     this.#repository = userRepository;
     this.#userNotificationService = userNotificationService;
+    this.#userImportService = userImportService;
     autobind(this);
   }
 
@@ -61,6 +69,26 @@ class UserController {
   async invite({ targetUser }: Request, res: Response): Promise<Response> {
     await this.#userNotificationService.invite(targetUser);
     return res.status(ACCEPTED).send();
+  }
+
+  async bulkImport({ body = {}, file }: Request, res: Response): Promise<Response> {
+    const { total, users, errors } = await this.#userImportService.bulkImport(file);
+    await P.each(users, async (it: User) => {
+      await P.delay(500);
+      return this.#userNotificationService.invite(it);
+    });
+    res.set('data-imported-count', String(total.length - errors.length));
+    if (!errors) return res.send();
+    const errorSheet = await this.#userImportService.getErrorSheet(errors);
+    const format = body.format || mime.extension(file.mimetype);
+    const report = await this.#userImportService.createReport(errorSheet);
+    return report.send(res, { format });
+  }
+
+  async getImportTemplate(_req: Request, res: Response): Promise<Response> {
+    const sheet = this.#userImportService.getImportTemplate();
+    const report = await this.#userImportService.createReport(sheet);
+    return report.send(res, { format: this.#userImportService.templateFormat });
   }
 }
 

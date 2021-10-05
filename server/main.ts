@@ -13,6 +13,7 @@ import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import Storage from './shared/storage';
 import user from './user';
+import UserImportService from './user/import.service';
 import UserNotificationService from './user/notification.service';
 import UserSubscriber from './user/subscriber';
 
@@ -34,6 +35,7 @@ function configure(provider: Provider): void {
     UserNotificationService,
     'config', 'mail', 'authService'
   );
+  provider.service('userImportService', UserImportService, 'config', 'userRepository');
   provider.registerMiddleware('authInitializeMiddleware', authMiddleware.initialize);
   provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule('auth', auth);

@@ -1,3 +1,4 @@
+import { File } from 'multer';
 import { Pagination } from '../middleware/pagination';
 import User from '../user/model';
 
@@ -6,5 +7,6 @@ declare module 'express' {
     user: User;
     targetUser: User;
     pagination: Pagination;
+    file: File
   }
 }

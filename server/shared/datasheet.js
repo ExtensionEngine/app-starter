@@ -1,3 +1,4 @@
+
 import { camelCase } from 'change-case';
 import intoStream from 'into-stream';
 import { Workbook } from 'exceljs';
@@ -49,7 +50,7 @@ class Datasheet extends Worksheet {
     } else if (Array.isArray(exclude) && exclude.length) {
       filter = key => !(exclude.includes(key));
     } else {
-      filter = key => true;
+      filter = () => true;
     }
     const headers = [];
     this.getRow(1).eachCell((cell, i) => {
@@ -96,7 +97,7 @@ class Datasheet extends Worksheet {
   }
 }
 
-module.exports = Datasheet;
+export default Datasheet;
 
 function getLastOrderNo(sheets) {
   return Math.max(...sheets.map(it => it ? it.orderNo : 0));
