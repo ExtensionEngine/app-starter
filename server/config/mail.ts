@@ -10,14 +10,17 @@ export interface MailConfig {
   sender: Sender;
   provider: string;
   host: string;
-  port?: number;
+  port: number;
   user: string;
   password?: string;
 }
 
 const schema = joi.object({
   provider: joi.string().valid('ses', 'mailtrap').required(),
-  sender: joi.object(),
+  sender: joi.object({
+    name: joi.string(),
+    address: joi.string()
+  }),
   host: joi.string().hostname().when('provider', {
     not: 'ses',
     then: joi.required()
@@ -27,19 +30,16 @@ const schema = joi.object({
   password: joi.string()
 });
 
-function createConfig(env: IEnv): MailConfig {
-  const sender: Sender = {
+const createConfig = (env: IEnv): MailConfig => ({
+  sender: {
     name: env.EMAIL_SENDER_NAME,
     address: env.EMAIL_SENDER_ADDRESS
-  };
-  return {
-    sender,
-    provider: env.EMAIL_PROVIDER,
-    user: env.EMAIL_USER,
-    password: env.EMAIL_PASSWORD,
-    host: env.EMAIL_HOST,
-    port: Number(env.EMAIL_PORT)
-  };
-}
+  },
+  provider: env.EMAIL_PROVIDER,
+  user: env.EMAIL_USER,
+  password: env.EMAIL_PASSWORD,
+  host: env.EMAIL_HOST,
+  port: Number(env.EMAIL_PORT)
+});
 
 export default (env: IEnv): MailConfig => joi.attempt(createConfig(env), schema);
