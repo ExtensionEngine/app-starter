@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { QueryFlag, QueryOrder } from '@mikro-orm/core';
+import autobind from 'auto-bind';
+import { IMiddleware } from '../types/middleware';
 import yn from 'yn';
 
 type orderBy = {
@@ -14,16 +16,24 @@ export interface Pagination {
   showArchived: boolean
 }
 
-export function parsePagination(req: Request, _: Response, next: NextFunction): void {
-  const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
-  const paranoidKeywords = ['archived', 'deleted', 'destroyed'];
-  const showArchived = paranoidKeywords.some(it => yn(req.query[it]));
-  req.pagination = {
-    limit: Number(limit) || 100,
-    offset: Number(offset) || 0,
-    orderBy: { [String(sortBy)]: QueryOrder[String(sortOrder)] },
-    flags: [QueryFlag.PAGINATE],
-    showArchived
-  };
-  next();
+class ParsePaginationMiddleware implements IMiddleware {
+  constructor() {
+    autobind(this);
+  }
+
+  async handle(req: Request, _: Response, next: NextFunction): Promise<void> {
+    const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
+    const paranoidKeywords = ['archived', 'deleted', 'destroyed'];
+    const showArchived = paranoidKeywords.some(it => yn(req.query[it]));
+    req.pagination = {
+      limit: Number(limit) || 100,
+      offset: Number(offset) || 0,
+      orderBy: { [String(sortBy)]: QueryOrder[String(sortOrder)] },
+      flags: [QueryFlag.PAGINATE],
+      showArchived
+    };
+    next();
+  }
 }
+
+export default ParsePaginationMiddleware;

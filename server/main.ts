@@ -8,7 +8,7 @@ import { IContainer } from 'bottlejs';
 import IProgram from './types/program';
 import logger from './shared/logger';
 import Mail from './shared/mail';
-import { parsePagination } from './middleware/pagination';
+import parsePaginationMiddleware from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import Storage from './shared/storage';
@@ -37,6 +37,7 @@ function configure(provider: Provider): void {
   );
   provider.service('userImportService', UserImportService, 'config', 'userRepository');
   provider.registerMiddleware('authInitializeMiddleware', authMiddleware.initialize);
+  provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
   provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule('auth', auth);
   provider.registerModule('user', user);
@@ -47,12 +48,17 @@ async function beforeStart({ db }: IContainer): Promise<void> {
 }
 
 function registerRouters(app: Application, container: IContainer): void {
-  const { db, userRouter, authRouter, authInitializeMiddleware } = container;
+  const {
+    db,
+    userRouter,
+    authRouter,
+    authInitializeMiddleware,
+    parsePaginationMiddleware
+  } = container;
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
-  app.use(authInitializeMiddleware);
-  app.use('/api', parsePagination);
+  app.use(authInitializeMiddleware, parsePaginationMiddleware);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }
