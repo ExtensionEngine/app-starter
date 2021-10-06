@@ -18,11 +18,16 @@ export interface StorageConfig {
   provider: string;
 }
 
-const schema = joi.object({
-  amazon: joi.object(),
-  filesystem: joi.object(),
+const schema = {
+  amazon: joi.object({
+    key: joi.string().required(),
+    secret: joi.string().required(),
+    region: joi.string().required(),
+    bucket: joi.string().required()
+  }),
+  filesystem: joi.object({ path: joi.string().required() }),
   provider: joi.string().valid('filesystem', 'amazon').required()
-});
+};
 
 const createConfig = (env: IEnv): StorageConfig => ({
   amazon: {
@@ -35,4 +40,9 @@ const createConfig = (env: IEnv): StorageConfig => ({
   provider: env.STORAGE_PROVIDER
 });
 
-export default (env: IEnv): StorageConfig => joi.attempt(createConfig(env), schema);
+export default (env: IEnv): StorageConfig => {
+  const config = createConfig(env);
+  const { error, value: provider } = schema.provider.validate(config.provider);
+  if (error) throw error;
+  return joi.attempt(config[provider], schema[provider]);
+};
