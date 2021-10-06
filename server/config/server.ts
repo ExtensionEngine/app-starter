@@ -21,39 +21,37 @@ const schema = joi.object({
 });
 
 function createConfig(env: IEnv): ServerConfig {
-  const { HOSTNAME, IMPORT_TEMPLATE_FORMAT, IP } = env;
-  const protocol = resolveProtocol(HOSTNAME);
-  const port = resolvePort();
-  const origin = resolveOrigin(HOSTNAME, protocol, port);
+  const protocol = resolveProtocol(env);
+  const port = resolvePort(env);
+  const origin = resolveOrigin(env, protocol, port);
   return {
-    hostname: HOSTNAME,
-    ip: IP,
+    hostname: env.HOSTNAME,
+    ip: env.IP,
     port,
     protocol,
     origin,
-    importTemplateFormat: IMPORT_TEMPLATE_FORMAT
+    importTemplateFormat: env.IMPORT_TEMPLATE_FORMAT
   };
 }
 
 export default (env: IEnv): ServerConfig => joi.attempt(createConfig(env), schema);
 
-function resolveProtocol(hostname): string {
-  const { PROTOCOL } = process.env;
+function resolveProtocol({ PROTOCOL, HOSTNAME }: IEnv): string {
   if (PROTOCOL) return PROTOCOL;
-  return isLocalhost(hostname) ? 'http' : 'https';
+  return isLocalhost(HOSTNAME) ? 'http' : 'https';
 }
 
-function resolvePort(): number {
-  const { PORT, SERVER_PORT } = process.env;
+function resolvePort({ PORT, SERVER_PORT }: IEnv): number {
   return Number(PORT || SERVER_PORT || 3000);
 }
 
-function resolveOrigin(hostname = 'localhost', protocol = 'http', port = 3000): string {
-  return `${protocol}://${hostname}${resolveOriginPort(port)}`;
+function resolveOrigin(env: IEnv, protocol = 'http', port = 3000): string {
+  const hostname = env.HOSTNAME || 'localhost';
+  const originPort = resolveOriginPort(env, port);
+  return `${protocol}://${hostname}${originPort}`;
 }
 
-function resolveOriginPort(port): string {
-  const { REVERSE_PROXY_PORT } = process.env;
+function resolveOriginPort({ REVERSE_PROXY_PORT }: IEnv, port): string {
   if (!REVERSE_PROXY_PORT) return `:${port}`;
   if (REVERSE_PROXY_PORT === '80' || REVERSE_PROXY_PORT === '443') return '';
   return `:${REVERSE_PROXY_PORT}`;

@@ -31,7 +31,7 @@ const createConfig = (env: IEnv): AuthConfig => ({
     secret: env.AUTH_JWT_SECRET,
     issuer: env.AUTH_JWT_ISSUER
   },
-  saltRounds: parseInt(process.env.AUTH_SALT_ROUNDS, 10),
+  saltRounds: parseInt(env.AUTH_SALT_ROUNDS, 10),
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });
 

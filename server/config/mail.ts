@@ -1,6 +1,5 @@
 import IEnv from '../types/env';
 import joi from 'joi';
-import yn from 'yn';
 
 type Sender = {
   name: string,
@@ -9,37 +8,37 @@ type Sender = {
 
 export interface MailConfig {
   sender: Sender;
+  provider: string;
   host: string;
   port?: number;
   user: string;
   password?: string;
-  ssl?: boolean;
-  tls?: boolean;
 }
 
 const schema = joi.object({
+  provider: joi.string().valid('ses', 'mailtrap').required(),
   sender: joi.object(),
-  host: joi.string().hostname(),
+  host: joi.string().hostname().when('provider', {
+    not: 'ses',
+    then: joi.required()
+  }),
   port: joi.number().port(),
   user: joi.string(),
-  password: joi.string(),
-  ssl: joi.boolean(),
-  tls: joi.boolean()
+  password: joi.string()
 });
 
-function createConfig(env: any): MailConfig {
+function createConfig(env: IEnv): MailConfig {
   const sender: Sender = {
     name: env.EMAIL_SENDER_NAME,
     address: env.EMAIL_SENDER_ADDRESS
   };
   return {
     sender,
-    user: process.env.EMAIL_USER,
-    password: process.env.EMAIL_PASSWORD,
-    host: process.env.EMAIL_HOST,
-    port: Number(process.env.EMAIL_PORT),
-    ssl: yn(process.env.EMAIL_SSL),
-    tls: yn(process.env.EMAIL_TLS)
+    provider: env.EMAIL_PROVIDER,
+    user: env.EMAIL_USER,
+    password: env.EMAIL_PASSWORD,
+    host: env.EMAIL_HOST,
+    port: Number(env.EMAIL_PORT)
   };
 }
 

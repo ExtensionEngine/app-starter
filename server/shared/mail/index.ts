@@ -1,6 +1,7 @@
+import * as providers from './providers';
 import IMail, { MailData } from './IMail';
-import nodemailer, { SentMessageInfo, Transporter } from 'nodemailer';
 import { renderHtml, renderText } from './render';
+import { SentMessageInfo, Transporter } from 'nodemailer';
 import castArray from 'lodash/castArray';
 import { Config } from '../../config';
 import joi from 'joi';
@@ -24,14 +25,8 @@ class Mail implements IMail {
   #config: MailConfig
 
   constructor(config: Config, logger: Logger) {
-    this.#transporter = nodemailer.createTransport({
-      host: config.mail.host,
-      port: config.mail.port,
-      auth: {
-        user: config.mail.user,
-        pass: config.mail.password
-      }
-    });
+    const { provider } = config.mail;
+    this.#transporter = providers[provider](config);
     this.#log = logger.child({ service: 'mail' });
     this.#config = config.mail;
   }
