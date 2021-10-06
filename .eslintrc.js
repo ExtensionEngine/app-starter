@@ -1,4 +1,4 @@
-'use-strict';
+'use strict';
 
 module.exports = {
   root: true,
@@ -10,14 +10,14 @@ module.exports = {
   rules: {
     'vue/component-definition-name-casing': ['error', 'kebab-case']
   },
-  parserOptions: {
-    sourceType: 'module'
-  },
   overrides: [{
     files: ['*.ts'],
-    parser: '@typescript-eslint/parser',
     extends: ['plugin:@typescript-eslint/recommended'],
     plugins: ['@typescript-eslint'],
+    parser: '@typescript-eslint/parser',
+    parserOptions: {
+      sourceType: 'module'
+    },
     rules: {
       strict: 'off',
       '@typescript-eslint/no-explicit-any': 'off'
