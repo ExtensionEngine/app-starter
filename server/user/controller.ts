@@ -79,14 +79,20 @@ class UserController {
   }
 
   async bulkImport({ body = {}, file }: Request, res: Response): Promise<Response> {
-    const { total, users, errors } = await this.#userImportService.bulkImport(file);
-    await P.each(users, (it: User) => this.#userNotificationService.invite(it));
-    res.set('data-imported-count', String(total.length - errors.length));
-    if (!errors.length) return res.send();
-    const errorSheet = await this.#userImportService.getErrorSheet(errors);
-    const format = body.format || mime.extension(file.mimetype);
-    const report = await this.#userImportService.createReport(errorSheet);
-    return report.send(res, { format });
+    const { users, tuples } = await this.#userImportService.bulkImport(file);
+    const errors = await P.reduce(tuples, (errs: any, [err, user], idx) => {
+      const { message = 'Failed to import user.' } = err;
+      if (!err && user) this.#userNotificationService.invite(user)
+      else errs.push({ ...users[idx], message });
+      return errs;
+    }, []);
+    // res.set('data-imported-count', String(users.length - errors.length));
+    // if (!errors.length) return res.send();
+    // const errorSheet = await this.#userImportService.getErrorSheet(errors);
+    // const format = body.format || mime.extension(file.mimetype);
+    // const report = await this.#userImportService.createReport(errorSheet);
+    // return report.send(res, { format });
+    return res.json({ data: errors });
   }
 
   async getImportTemplate(_req: Request, res: Response): Promise<Response> {

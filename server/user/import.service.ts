@@ -2,11 +2,9 @@ import autobind from 'auto-bind';
 import { Config } from '../config';
 import Datasheet from '../shared/datasheet';
 import { File } from 'multer';
-import find from 'lodash/find';
 import { generateUsers } from '../shared/helpers';
 import IUserImportService from './interfaces/import.service';
-import IUserRepository from './interfaces/repository';
-import transform from 'lodash/transform';
+import map from 'lodash/map';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
 
@@ -28,11 +26,11 @@ const columns = {
 
 class UserImportService implements IUserImportService {
   #config: Config;
-  #userRepository: IUserRepository;
+  #restoreService;
 
-  constructor(config: Config, userRepository: IUserRepository) {
+  constructor(config: Config, restoreService) {
     this.#config = config;
-    this.#userRepository = userRepository;
+    this.#restoreService = restoreService;
     autobind(this);
   }
 
@@ -44,18 +42,10 @@ class UserImportService implements IUserImportService {
     const inputAttrs = ['email', 'role', 'firstName', 'lastName'];
     const loadedFile = await Datasheet.load(file);
     const users = loadedFile.toJSON({ include: inputAttrs });
-    const dbUsers = await this.#userRepository.findAll();
-    const results = transform(users, (acc, item, idx) => {
-      const found = find(dbUsers, { email: item.email });
-      if (found) {
-        return acc.errors.push({ ...users[idx], message: 'User already exists' });
-      }
-      const { firstName, lastName, email, role } = item;
-      const user = new User(firstName, lastName, email, role);
-      return acc.users.push(user);
-    }, { users: [], errors: [] });
-    await this.#userRepository.persistAndFlush(results.users);
-    return { total: users, ...results };
+    const where = { email: map(users, 'email') };
+    const args = ['User', User, users, where, { modelSearchKey: 'email' }];
+    const tuples = await this.#restoreService.restoreOrCreateAll(...args);
+    return { users, tuples };
   }
 
   getErrorSheet(errors: UserDTO[]): Sheet {

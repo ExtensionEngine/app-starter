@@ -16,6 +16,7 @@ import user from './user';
 import UserImportService from './user/import.service';
 import UserNotificationService from './user/notification.service';
 import UserSubscriber from './user/subscriber';
+import RestoreService from './shared/restore';
 
 const program: IProgram = {
   configure,
@@ -30,12 +31,17 @@ function configure(provider: Provider): void {
   provider.service('db', Db, 'config', 'logger', 'userSubscriber');
   provider.service('mail', Mail, 'config', 'logger');
   provider.service('storage', Storage, 'config');
+  provider.service('restoreService', RestoreService, 'db');
   provider.service(
     'userNotificationService',
     UserNotificationService,
     'config', 'mail', 'authService'
   );
-  provider.service('userImportService', UserImportService, 'config', 'userRepository');
+  provider.service(
+    'userImportService',
+    UserImportService,
+    'config', 'restoreService'
+  );
   provider.registerMiddleware('authInitializeMiddleware', authMiddleware.initialize);
   provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
   provider.service('userSubscriber', UserSubscriber, 'config');
