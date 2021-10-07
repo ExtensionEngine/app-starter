@@ -17,44 +17,37 @@ Vue.use(Router);
 const fallbackRoute = { path: '*', component: NotFound };
 
 const router = new Router({
-  routes: [
-    {
-      path: '/auth',
-      name: 'auth',
-      component: Auth,
-      children: [
-        {
-          path: 'login',
-          name: 'login',
-          component: Login
-        },
-        {
-          path: 'forgot-password',
-          name: 'forgot-password',
-          component: ForgotPassword
-        },
-        {
-          path: 'reset-password/:token',
-          name: 'reset-password',
-          component: ResetPassword
-        }
-      ]
-    },
-    {
-      path: '/',
-      name: 'home',
-      component: Home,
-      meta: { auth: true }
-    },
-    fallbackRoute
-  ]
+  routes: [{
+    path: '/auth',
+    name: 'auth',
+    component: Auth,
+    children: [{
+      path: 'login',
+      name: 'login',
+      component: Login
+    }, {
+      path: 'forgot-password',
+      name: 'forgot-password',
+      component: ForgotPassword
+    }, {
+      path: 'reset-password/:token',
+      name: 'reset-password',
+      component: ResetPassword
+    }]
+  }, {
+    path: '/',
+    name: 'home',
+    component: Home,
+    meta: { auth: true }
+  },
+  fallbackRoute]
 });
 
 router.beforeEach((to, _from, next) => {
   const user = get(store.state, 'auth.user');
   const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
   if (isNotAuthenticated) return next({ name: 'login' });
-  if (user && user.role === Role.Admin) return navigate('/admin/');
+  if (user && user.role === Role.ADMIN) return navigate('/admin/');
   return next();
 });
 

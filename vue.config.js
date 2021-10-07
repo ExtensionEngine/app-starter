@@ -2,12 +2,17 @@
 
 require('dotenv').config();
 
-const config = require('./server/config');
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const path = require('path');
 
-const serverUrl = `http://${config.ip}:${config.port}`;
+const { IP, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
+
+const PORT = process.env.PORT || process.env.SERVER_PORT;
+
+const serverUrl = `http://${IP}:${PORT}`;
+
 const extensions = ['.vue'];
+
 const aliases = {
   '@': path.resolve(__dirname, './client')
 };
@@ -19,7 +24,7 @@ const devServer = {
   proxy: {
     '/api': { target: serverUrl, ws: false }
   },
-  port: 8081
+  port: Number(REVERSE_PROXY_PORT)
 };
 
 module.exports = {
@@ -28,8 +33,8 @@ module.exports = {
       cleanOnceBeforeBuildPatterns: ['**/*', '!.gitkeep']
     },
     envs: {
-      API_PATH: process.env.API_PATH,
-      AUTH_JWT_SCHEME: process.env.AUTH_JWT_SCHEME
+      API_PATH: '/api',
+      AUTH_JWT_SCHEME
     }
   },
   pages: {
@@ -60,7 +65,5 @@ module.exports = {
       .end();
   },
   devServer,
-  transpileDependencies: [
-    'vuetify'
-  ]
+  transpileDependencies: ['vuetify']
 };

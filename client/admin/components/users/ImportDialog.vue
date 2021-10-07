@@ -1,78 +1,62 @@
 <template>
-  <v-dialog
-    v-model="showDialog"
-    v-hotkey="{ esc: close }"
-    persistent
-    no-click-animation
-    width="700">
-    <template #activator="{ on, attrs }">
-      <v-btn
-        v-on="on"
-        v-bind="attrs"
-        color="blue-grey"
-        outlined
-        class="mr-4">
-        <v-icon>mdi-cloud-upload</v-icon>Import
+  <admin-dialog
+    v-model="visible"
+    @click:outside="close"
+    width="600"
+    header-icon="mdi-cloud-upload">
+    <template #activator="{ on }">
+      <v-btn v-on="on" color="primary" text>
+        <v-icon dense class="mr-1">mdi-cloud-upload</v-icon>Import users
       </v-btn>
     </template>
-    <form @submit.prevent="save">
-      <v-card class="pa-3">
-        <v-card-title class="headline">Import Users</v-card-title>
-        <v-card-text>
-          <validation-provider
-            ref="fileProvider"
-            v-slot="{ errors }"
-            name="fileInput"
-            :rules="{ required: true, mimes }">
-            <label for="userImportInput">
-              <v-text-field
-                ref="fileName"
-                v-model="filename"
-                :error-messages="errors"
-                :disabled="importing"
-                prepend-icon="mdi-attachment"
-                label="Upload .xlsx or .csv file"
-                readonly
-                single-line />
-              <input
-                ref="fileInput"
-                @change="onFileSelected"
-                id="userImportInput"
-                name="file"
-                type="file"
-                class="file-input">
-            </label>
-          </validation-provider>
-          <v-alert
-            v-if="error"
-            transition="fade-transition"
-            dismissible text dense
-            class="mb-7 text-left">
-            {{ error }}
-          </v-alert>
-        </v-card-text>
-        <v-card-actions>
+    <template #header>Import Users</template>
+    <template #body>
+      <validation-observer
+        v-if="visible"
+        ref="form"
+        v-slot="{ invalid }"
+        @submit.prevent="$refs.form.handleSubmit(submit)"
+        tag="form"
+        novalidate>
+        <validation-provider
+          v-slot="{ errors }"
+          :rules="inputValidation"
+          name="file"
+          slim>
+          <v-file-input
+            v-model="file"
+            :accept="acceptedFiles"
+            :error-messages="errors"
+            :disabled="importing"
+            prepend-icon="mdi-attachment"
+            label="Upload .xlsx or .csv file" />
+        </validation-provider>
+        <div class="d-flex my-2">
+          <v-btn @click="downloadTemplateFile" color="primary" text>
+            Download Template
+          </v-btn>
           <v-spacer />
           <v-fade-transition>
             <v-btn
               v-show="serverErrorsReport"
               @click="downloadErrorsFile"
-              color="error">
-              <v-icon>mdi-cloud-download</v-icon>Errors
+              color="error"
+              text>
+              <v-icon class="mr-1">mdi-cloud-download</v-icon>Errors
             </v-btn>
           </v-fade-transition>
-          <v-btn @click="close">Cancel</v-btn>
-          <v-btn :disabled="importDisabled" color="success" type="submit">
-            <span v-if="!importing">Import</span>
-            <v-icon v-else>mdi-loading mdi-spin</v-icon>
+          <v-btn @click="close" text>Cancel</v-btn>
+          <v-btn :disabled="invalid" :loading="importing" type="submit" text>
+            Import
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </form>
-  </v-dialog>
+        </div>
+      </validation-observer>
+    </template>
+  </admin-dialog>
 </template>
 
 <script>
+import AdminDialog from '@/admin/components/common/Dialog';
 import api from '@/admin/api/user';
 import saveAs from 'save-as';
 
@@ -84,80 +68,62 @@ const inputFormats = {
 export default {
   name: 'import-dialog',
   data: () => ({
-    showDialog: false,
+    visible: false,
     importing: false,
-    filename: null,
+    file: null,
     form: null,
-    error: null,
     serverErrorsReport: null
   }),
   computed: {
-    importDisabled() {
-      return !this.filename || this.importing;
-    },
-    mimes: () => Object.keys(inputFormats)
+    inputValidation: () => ({ required: true, mimes: Object.keys(inputFormats) }),
+    acceptedFiles: () => Object.keys(inputFormats)
   },
   methods: {
-    async onFileSelected(e) {
-      const { valid } = await this.$refs.fileProvider.validate(e);
-      if (!valid) return;
-      this.form = new FormData();
-      this.resetErrors();
-      const [file] = e.target.files;
-      this.filename = file.name;
-      this.form.append('file', file, file.name);
-    },
     close() {
       if (this.importing) return;
-      if (this.$refs.fileInput) this.$refs.fileInput.value = null;
-      this.filename = null;
-      this.resetErrors();
-      this.showDialog = false;
+      this.file = null;
+      this.serverErrorsReport = null;
+      this.visible = false;
     },
-    save() {
+    submit() {
       this.importing = true;
-      return api.bulkImport(this.form).then(response => {
+      const { file } = this;
+      this.form = new FormData();
+      this.form.append('file', file, file.name);
+      return api.bulkImport(this.form).then(({ data, count }) => {
         this.importing = false;
-        if (response.data.size) {
-          this.$nextTick(() => this.$refs.fileName.focus());
-          this.error = 'All users aren\'t imported';
-          this.serverErrorsReport = response.data;
-          return;
-        }
-        this.$emit('imported');
-        this.close();
+        if (count) this.$emit('imported');
+        if (!data.size) return this.close();
+        const message = `${count} users were successfully imported.`;
+        this.$refs.form.setErrors({ file: [message] });
+        this.serverErrorsReport = data;
       }).catch(err => {
         this.importing = false;
-        this.error = 'Importing users failed.';
-        this.$nextTick(() => this.$refs.fileName.focus());
+        const message = 'Importing users failed.';
+        this.$refs.form.setErrors({ file: [message] });
         return Promise.reject(err);
       });
     },
     downloadErrorsFile() {
       const extension = inputFormats[this.serverErrorsReport.type];
       saveAs(this.serverErrorsReport, `Errors.${extension}`);
-      this.$refs.fileName.focus();
     },
-    resetErrors() {
-      this.serverErrorsReport = null;
-      this.error = null;
-      this.$refs.form && this.$res.form.reset();
+    async downloadTemplateFile() {
+      const { data } = await api.getImportTemplate();
+      saveAs(data, `Template.${inputFormats[data.type]}`);
     }
-  }
+  },
+  components: { AdminDialog }
 };
 </script>
 
 <style lang="scss" scoped>
-.file-input {
+.v-form input {
   display: none;
 }
 
-.v-btn .v-icon {
-  padding-right: 6px;
-}
-
-.v-text-field {
-  ::v-deep .v-text-field__slot {
+.v-text-field ::v-deep {
+  .v-text-field__slot {
     cursor: pointer;
 
     input {
@@ -165,13 +131,8 @@ export default {
     }
   }
 
-  ::v-deep .mdi {
+  .mdi {
     transform: rotate(-90deg);
   }
-}
-
-.loader-container {
-  display: flex;
-  justify-content: center;
 }
 </style>
