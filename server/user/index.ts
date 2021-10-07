@@ -18,7 +18,7 @@ export default {
 function createRouter(provider: IContainer): Router {
   const { userController, getUserMiddleware } = provider;
   return App.Router()
-    // .use(authenticate('jwt'))
+    .use(authenticate('jwt'))
     .get('/', userController.list)
     .post('/', userController.createOrRestore)
     .param('userId', getUserMiddleware)
