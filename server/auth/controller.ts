@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import AudienceScope from './audience';
 import authContext from './context';
 import autobind from 'auto-bind';
 import IAuthService from './interfaces/service';
@@ -7,7 +8,6 @@ import IUserNotificationService from '../user/interfaces/notification.service';
 import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
 import { NotFound } from 'http-errors';
-import Scope from './audience';
 class AuthController {
   #userRepository: IUserRepository;
   #authService: IAuthService;
@@ -22,7 +22,7 @@ class AuthController {
 
   async me(_req: Request, res: Response): Promise<Response> {
     const user = authContext.getCurrentUser();
-    const token = this.#authService.createToken(user, Scope.Access, '5 days');
+    const token = this.#authService.createToken(user, AudienceScope.Access, '5 days');
     const data = { token, user };
     return res.json({ data });
   }

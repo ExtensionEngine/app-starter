@@ -1,4 +1,4 @@
-import Scope, { Audience } from './audience';
+import AudienceScope, { Audience } from './audience';
 import { AuthConfig } from '../config/auth';
 import autobind from 'auto-bind';
 import bcrypt from 'bcrypt';
@@ -17,17 +17,13 @@ class AuthService implements IAuthService {
 
   getTokenSecret({ id, updatedAt }: User, audience?: Audience) : string {
     const { secret } = this.#config.jwt;
-    if (audience === Scope.Access) return secret;
+    if (audience === AudienceScope.Access) return secret;
     return [secret, id, updatedAt.getTime()].join('');
   }
 
   createToken(user: User, audience: Audience, expiresIn: string): string {
     const payload = { id: user.id, email: user.email };
-    const options = {
-      issuer: this.#config.jwt.issuer,
-      audience: audience,
-      expiresIn
-    };
+    const options = { issuer: this.#config.jwt.issuer, audience, expiresIn };
     return jwt.sign(payload, this.getTokenSecret(user, audience), options);
   }
 

@@ -1,5 +1,6 @@
 import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { NextFunction, Request, Response } from 'express';
+import AudienceScope from '../audience';
 import autobind from 'auto-bind';
 import IAuthService from '../interfaces/service';
 import { IContainer } from 'bottlejs';
@@ -8,7 +9,6 @@ import IUserRepository from '../../user/interfaces/repository';
 import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 import passport from 'passport';
-import Scope from '../audience';
 import User from '../../user/model';
 
 const options = {
@@ -32,14 +32,14 @@ class Initialize implements IMiddleware {
 
     passport.use('jwt', new JwtStrategy({
       ...auth.jwt,
-      audience: Scope.Access,
+      audience: AudienceScope.Access,
       jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme(auth.jwt.scheme),
       secretOrKey: auth.jwt.secret
     }, this.verifyJWT));
 
     passport.use('token', new JwtStrategy({
       ...auth.jwt,
-      audience: Scope.Setup,
+      audience: AudienceScope.Setup,
       jwtFromRequest: ExtractJwt.fromBodyField('token'),
       secretOrKeyProvider: this.secretOrKeyProvider
     }, this.verifyJWT));
