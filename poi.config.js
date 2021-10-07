@@ -1,9 +1,12 @@
+'use strict';
 
 const path = require('path');
 
 require('dotenv').config();
 
-const { IP, PORT, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
+const { IP, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
+
+const PORT = process.env.PORT || process.env.SERVER_PORT;
 
 const isProduction = process.env.NODE_ENV === 'production';
 const serverUrl = `http://${IP}:${PORT}`;
