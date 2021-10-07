@@ -86,13 +86,12 @@ class UserController {
       else errs.push({ ...users[idx], message });
       return errs;
     }, []);
-    // res.set('data-imported-count', String(users.length - errors.length));
-    // if (!errors.length) return res.send();
-    // const errorSheet = await this.#userImportService.getErrorSheet(errors);
-    // const format = body.format || mime.extension(file.mimetype);
-    // const report = await this.#userImportService.createReport(errorSheet);
-    // return report.send(res, { format });
-    return res.json({ data: errors });
+    res.set('data-imported-count', String(users.length - errors.length));
+    if (!errors.length) return res.send();
+    const errorSheet = await this.#userImportService.getErrorSheet(errors);
+    const format = body.format || mime.extension(file.mimetype);
+    const report = await this.#userImportService.createReport(errorSheet);
+    return report.send(res, { format });
   }
 
   async getImportTemplate(_req: Request, res: Response): Promise<Response> {
