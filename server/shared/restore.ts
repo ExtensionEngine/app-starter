@@ -22,11 +22,22 @@ const getOrderedAttributeValues = (ModelName, dbProvider, item) => {
 }
 
 type Options = {
-  concurrency: number,
-  modelSearchKey: string,
+  concurrency?: number,
+  modelSearchKey?: string,
 }
 
-class RestoreService {
+export interface IRestoreService {
+  restoreOrCreateAll(
+    ModelName: string,
+    Model,
+    items: any[],
+    where:  FilterQuery<any>,
+    options: Options
+  ): Promise<any[] | any>;
+  restoreOrCreate(ModelName, Model, item, options): Promise<any>;
+}
+
+class RestoreService implements IRestoreService {
   #dbProvider: DatabaseProvider;
 
   constructor(db: Db) {

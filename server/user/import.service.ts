@@ -7,6 +7,7 @@ import IUserImportService from './interfaces/import.service';
 import map from 'lodash/map';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
+import { IRestoreService } from '../shared/restore';
 
 export type Sheet = {
   name: string,
@@ -26,9 +27,9 @@ const columns = {
 
 class UserImportService implements IUserImportService {
   #config: Config;
-  #restoreService;
+  #restoreService: IRestoreService;
 
-  constructor(config: Config, restoreService) {
+  constructor(config: Config, restoreService: IRestoreService) {
     this.#config = config;
     this.#restoreService = restoreService;
     autobind(this);
@@ -43,8 +44,13 @@ class UserImportService implements IUserImportService {
     const loadedFile = await Datasheet.load(file);
     const users = loadedFile.toJSON({ include: inputAttrs });
     const where = { email: map(users, 'email') };
-    const args = ['User', User, users, where, { modelSearchKey: 'email' }];
-    const tuples = await this.#restoreService.restoreOrCreateAll(...args);
+    const tuples = await this.#restoreService.restoreOrCreateAll(
+      'User',
+      User,
+      users,
+      where,
+      { modelSearchKey: 'email' }
+    );
     return { users, tuples };
   }
 
