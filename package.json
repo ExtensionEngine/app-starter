@@ -15,7 +15,8 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "poi --serve",
-    "build": "del-cli node_modules/.cache/vue-loader && poi --prod",
+    "build:client": "del-cli node_modules/.cache/vue-loader && poi --prod",
+    "build": "tsc",
     "clean": "del-cli dist/* !dist/.gitkeep",
     "webpack:inspect-config": "poi --inspect-webpack",
     "webpack:bundle-report": "poi --prod --bundle-report",
