@@ -5,8 +5,9 @@ import { File } from 'multer';
 import find from 'lodash/find';
 import { generateUsers } from '../shared/helpers';
 import IUserImportService from './interfaces/import.service';
+import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
-import transform from 'lodash/transform';
+import P from 'bluebird';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
 
@@ -29,10 +30,16 @@ const columns = {
 class UserImportService implements IUserImportService {
   #config: Config;
   #userRepository: IUserRepository;
+  #userNotificationService: IUserNotificationService;
 
-  constructor(config: Config, userRepository: IUserRepository) {
+  constructor(
+    config: Config,
+    userRepository: IUserRepository,
+    userNotificationService: IUserNotificationService
+  ) {
     this.#config = config;
     this.#userRepository = userRepository;
+    this.#userNotificationService = userNotificationService;
     autobind(this);
   }
 
@@ -45,17 +52,20 @@ class UserImportService implements IUserImportService {
     const loadedFile = await Datasheet.load(file);
     const users = loadedFile.toJSON({ include: inputAttrs });
     const dbUsers = await this.#userRepository.findAll();
-    const results = transform(users, (acc, item, idx) => {
+    const results = await P.reduce(users, async (acc: any, item: User, idx) => {
       const found = find(dbUsers, { email: item.email });
       if (found) {
-        return acc.errors.push({ ...users[idx], message: 'User already exists' });
+        acc.errors.push({ ...users[idx], message: 'User already exists' });
+        return acc;
       }
       const { firstName, lastName, email, role } = item;
       const user = new User(firstName, lastName, email, role);
-      return acc.users.push(user);
+      await this.#userNotificationService.invite(user)
+      acc.users.push(user);
+      return acc;
     }, { users: [], errors: [] });
     await this.#userRepository.persistAndFlush(results.users);
-    return { total: users, ...results };
+    return { totalUsers: users, error: results.error };
   }
 
   getErrorSheet(errors: UserDTO[]): Sheet {

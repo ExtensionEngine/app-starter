@@ -1,6 +1,8 @@
 import IModule, { MiddlewareConstructor } from '../types/module';
 import Bottle from 'bottlejs';
 
+Bottle.config = { strict: true };
+
 class Provider extends Bottle {
   registerModule(module: IModule): void {
     module.load(provider);

@@ -35,7 +35,11 @@ function configure(provider: Provider): void {
     UserNotificationService,
     'config', 'mail', 'authService'
   );
-  provider.service('userImportService', UserImportService, 'config', 'userRepository');
+  provider.service(
+    'userImportService',
+    UserImportService,
+    'config', 'userRepository', 'userNotificationService'
+  );
   provider.registerMiddleware(
     'authInitializeMiddleware',
     authMiddleware.initialize,

@@ -6,7 +6,6 @@ import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import joi from 'joi';
 import mime from 'mime-types';
-import P from 'bluebird';
 import { Role } from './roles';
 import User from './model';
 import userSchema from './validation';
@@ -79,9 +78,8 @@ class UserController {
   }
 
   async bulkImport({ body = {}, file }: Request, res: Response): Promise<Response> {
-    const { total, users, errors } = await this.#userImportService.bulkImport(file);
-    await P.each(users, (it: User) => this.#userNotificationService.invite(it));
-    res.set('data-imported-count', String(total.length - errors.length));
+    const { totalUsers, errors } = await this.#userImportService.bulkImport(file);
+    res.set('data-imported-count', String(totalUsers.length - errors.length));
     if (!errors.length) return res.send();
     const errorSheet = await this.#userImportService.getErrorSheet(errors);
     const format = body.format || mime.extension(file.mimetype);
