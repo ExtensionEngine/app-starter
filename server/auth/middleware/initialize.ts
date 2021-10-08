@@ -3,13 +3,13 @@ import { NextFunction, Request, Response } from 'express';
 import AudienceScope from '../audience';
 import autobind from 'auto-bind';
 import IAuthService from '../interfaces/service';
-import { IContainer } from 'bottlejs';
 import { IMiddleware } from '../../types/middleware';
 import IUserRepository from '../../user/interfaces/repository';
 import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 import passport from 'passport';
 import User from '../../user/model';
+import { Config } from '../../config';
 
 const options = {
   usernameField: 'email',
@@ -18,12 +18,17 @@ const options = {
 
 type TokenPayload = { id: number };
 type AuthCallback = (error: Error | null, user: User | string | boolean) => void;
+type SecretOrKeyCallback = (error: Error, secretOrKey?: string | Buffer) => void
 
 class Initialize implements IMiddleware {
   #userRepository: IUserRepository;
   #authService: IAuthService;
 
-  constructor({ config, userRepository, authService }: IContainer) {
+  constructor(
+    config: Config,
+    userRepository: IUserRepository,
+    authService: IAuthService
+  ) {
     this.#userRepository = userRepository;
     this.#authService = authService;
     autobind(this);
@@ -70,7 +75,7 @@ class Initialize implements IMiddleware {
   private secretOrKeyProvider(
     _req: Request,
     rawToken: string,
-    done: AuthCallback
+    done: SecretOrKeyCallback
   ): Promise<void> {
     const { payload } = jwt.decode(rawToken, { complete: true }) || {};
     return this.#userRepository.findOne(payload?.id)

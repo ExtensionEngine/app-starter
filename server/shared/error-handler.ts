@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import autobind from 'auto-bind';
 import { HttpError } from 'http-errors';
-import { IContainer } from 'bottlejs';
 import { IErrorMiddleware } from '../types/middleware';
 import Logger from 'bunyan';
 import { ValidationError } from 'joi';
@@ -9,7 +8,7 @@ import { ValidationError } from 'joi';
 class ErrorHandler implements IErrorMiddleware {
   #logger: Logger;
 
-  constructor({ logger }: IContainer) {
+  constructor(logger: Logger) {
     this.#logger = logger;
     autobind(this);
   }

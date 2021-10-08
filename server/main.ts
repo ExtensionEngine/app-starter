@@ -26,7 +26,7 @@ export default program;
 
 function configure(provider: Provider): void {
   provider.value('logger', logger);
-  provider.registerMiddleware('errorHandler', ErrorHandler);
+  provider.registerMiddleware('errorHandler', ErrorHandler, 'logger');
   provider.service('db', Db, 'config', 'logger', 'userSubscriber');
   provider.service('mail', Mail, 'config', 'logger');
   provider.service('storage', Storage, 'config');
@@ -36,11 +36,15 @@ function configure(provider: Provider): void {
     'config', 'mail', 'authService'
   );
   provider.service('userImportService', UserImportService, 'config', 'userRepository');
-  provider.registerMiddleware('authInitializeMiddleware', authMiddleware.initialize);
+  provider.registerMiddleware(
+    'authInitializeMiddleware',
+    authMiddleware.initialize,
+    'config', 'userRepository', 'authService'
+  );
   provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
   provider.service('userSubscriber', UserSubscriber, 'config');
-  provider.registerModule('auth', auth);
-  provider.registerModule('user', user);
+  provider.registerModule(auth);
+  provider.registerModule(user);
 }
 
 async function beforeStart({ db }: IContainer): Promise<void> {

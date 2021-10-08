@@ -1,17 +1,12 @@
+import { Provider } from '../framework/provider';
 import { IErrorMiddleware, IMiddleware } from '../types/middleware';
-import { IContainer } from 'bottlejs';
-import { RouterFactory } from './router';
 
-export type ServiceConstructor<T> = { new(container: IContainer): T };
+type ServiceConstructor<T> = { new(...args: any[]): T };
+
 export type MiddlewareConstructor = ServiceConstructor<IMiddleware | IErrorMiddleware>;
 
 interface IModule {
-  createRouter?: RouterFactory;
-  Controller?: { new(container: IContainer): any };
-  Repository?: { new(container: IContainer): any };
-  Service?: { new(container: IContainer): any };
-  middleware?: { [name: string]: MiddlewareConstructor };
-  modules?: { [name: string]: IModule };
+  load(provider: Provider): void;
 }
 
 export default IModule;

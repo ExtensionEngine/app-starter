@@ -13,7 +13,11 @@ class AuthController {
   #authService: IAuthService;
   #userNotificationService: IUserNotificationService;
 
-  constructor({ authService, userRepository, userNotificationService }: IContainer) {
+  constructor(
+    authService: IAuthService,
+    userRepository: IUserRepository,
+    userNotificationService: IUserNotificationService
+  ) {
     this.#authService = authService;
     this.#userRepository = userRepository;
     this.#userNotificationService = userNotificationService;

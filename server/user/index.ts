@@ -1,31 +1,22 @@
-import * as middleware from './middleware';
-import App, { Router } from 'express';
-import { authenticate } from '../auth/middleware';
 import Controller from './controller';
-import { IContainer } from 'bottlejs';
-import multer from 'multer';
+import * as middlewares from './middleware';
+import { Provider } from '../framework/provider';
 import Repository from './repository';
+import createRouter from './router';
+import forEach from 'lodash/forEach';
+import camelCase from 'lodash/camelCase';
 
-const upload = multer({ storage: multer.memoryStorage() });
+export default { load };
 
-export default {
-  createRouter,
-  Repository,
-  Controller,
-  middleware
+function load(provider: Provider): void {
+  provider.service('userRouter', createRouter, 'userController', 'getUserMiddleware');
+  provider.service('userRepository', Repository, 'db');
+  provider.service(
+    'userController',
+    Controller,
+    'userRepository', 'userNotificationService', 'userImportService'
+  );
+  forEach(middlewares, (Middleware, name) => {
+    provider.registerMiddleware(camelCase(name), Middleware, 'userRepository');
+  });
 };
-
-function createRouter(provider: IContainer): Router {
-  const { userController, getUserMiddleware } = provider;
-  return App.Router()
-    .use(authenticate('jwt'))
-    .get('/', userController.list)
-    .post('/', userController.createOrRestore)
-    .param('userId', getUserMiddleware)
-    .get('/:userId', userController.get)
-    .patch('/:userId', userController.patch)
-    .delete('/:userId', userController.remove)
-    .post('/:userId/invite', userController.invite)
-    .post('/import', upload.single('file'), userController.bulkImport)
-    .get('/import/template', userController.getImportTemplate);
-}

@@ -6,11 +6,12 @@ import IAuthService from './interfaces/service';
 import { IContainer } from 'bottlejs';
 import jwt from 'jsonwebtoken';
 import User from '../user/model';
+import { Config } from '../config';
 
 class AuthService implements IAuthService {
   #config: AuthConfig;
 
-  constructor({ config }: IContainer) {
+  constructor(config: Config) {
     this.#config = config.auth;
     autobind(this);
   }
