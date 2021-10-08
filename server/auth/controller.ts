@@ -3,7 +3,6 @@ import AudienceScope from './audience';
 import authContext from './context';
 import autobind from 'auto-bind';
 import IAuthService from './interfaces/service';
-import { IContainer } from 'bottlejs';
 import IUserNotificationService from '../user/interfaces/notification.service';
 import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
