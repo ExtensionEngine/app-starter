@@ -10,7 +10,7 @@ import {
 } from '@mikro-orm/core';
 import BaseEntity from '<%= h.getBaseEntityPath(
   h.getResourcePath(resource, path),
-  'src/shared/database/base.entity'
+  'server/shared/database/base-entity'
 ) %>';
 
 @Entity()

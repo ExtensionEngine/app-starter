@@ -7,15 +7,14 @@ import {
   FindOneOptions,
   FindOptions
 } from '@mikro-orm/core';
+import Db, { DatabaseProvider } from '../shared/database';
 import <%= Resource = h.capitalize(resource) %> from './model';
 import I<%= Resource %>Repository from './interfaces/repository';
-import { IContainer } from 'bottlejs';
-import { DatabaseProvider } from '../shared/database';
 
 class <%= Resource %>Repository implements I<%= Resource %>Repository {
   #dbProvider: DatabaseProvider;
 
-  constructor({ db }: IContainer) {
+  constructor(db: Db) {
     this.#dbProvider = db.provider;
   }
 
