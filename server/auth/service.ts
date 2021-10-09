@@ -3,7 +3,6 @@ import { AuthConfig } from '../config/auth';
 import autobind from 'auto-bind';
 import bcrypt from 'bcrypt';
 import IAuthService from './interfaces/service';
-import { IContainer } from 'bottlejs';
 import jwt from 'jsonwebtoken';
 import User from '../user/model';
 import { Config } from '../config';
