@@ -2,7 +2,7 @@
   "include": ["server/**/*.ts"],
   "compilerOptions": {
     "rootDir": "./server",
-    "outDir": "./dist",
+    "outDir": "./dist/server",
     "target": "ES6",
     "module": "CommonJS",
     "moduleResolution": "Node",

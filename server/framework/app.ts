@@ -13,7 +13,7 @@ function createApp(
 ): Application {
   const { errorHandler, config } = container;
   const app = express();
-  app.use(express.static(path.join(__dirname, 'public')));
+  app.use(express.static(path.join(__dirname, '../../dist/client')));
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: false }));
   app.use(cors({ origin: config.auth.corsAllowedOrigins, credentials: true }));

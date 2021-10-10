@@ -66,7 +66,7 @@ module.exports = {
     }
   },
   output: {
-    dir: 'dist',
+    dir: 'dist/client',
     sourceMap: !isProduction
   },
   plugins,
