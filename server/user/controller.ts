@@ -81,16 +81,16 @@ class UserController {
     const { totalUsers, errors } = await this.#userImportService.bulkImport(file);
     res.set('data-imported-count', String(totalUsers.length - errors.length));
     if (!errors.length) return res.send();
-    const errorSheet = await this.#userImportService.getErrorSheet(errors);
+    const errorSheetData = await this.#userImportService.getErrorSheetData(errors);
     const format = body.format || mime.extension(file.mimetype);
-    const report = await this.#userImportService.createReport(errorSheet);
-    return report.send(res, { format });
+    const sheet = await this.#userImportService.createSheet(errorSheetData);
+    return sheet.send(res, { format });
   }
 
   async getImportTemplate(_req: Request, res: Response): Promise<Response> {
-    const sheet = this.#userImportService.getImportTemplate();
-    const report = await this.#userImportService.createReport(sheet);
-    return report.send(res, { format: this.#userImportService.templateFormat });
+    const sheetData = this.#userImportService.getImportTemplate();
+    const sheet = await this.#userImportService.createSheet(sheetData);
+    return sheet.send(res, { format: this.#userImportService.templateFormat });
   }
 }
 

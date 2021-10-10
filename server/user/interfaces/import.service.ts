@@ -1,13 +1,13 @@
 
 import { File } from 'multer';
-import { Sheet } from '../import.service';
+import { SheetData } from '../import.service';
 import { UserDTO } from './dtos';
 
 interface IUserImportService {
   bulkImport(file: File): Promise<any>;
-  getErrorSheet(errors: UserDTO[]): Sheet;
-  getImportTemplate(): Sheet;
-  createReport(sheet: Sheet): any;
+  getErrorSheetData(errors: UserDTO[]): SheetData;
+  getImportTemplate(): SheetData;
+  createSheet(sheetData: SheetData): any;
   get templateFormat(): string;
 }
 

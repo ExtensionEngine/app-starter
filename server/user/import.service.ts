@@ -11,7 +11,7 @@ import P from 'bluebird';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
 
-export type Sheet = {
+export type SheetData = {
   name: string,
   columns: {
     [key: string]: { header: string, width: number }
@@ -68,18 +68,18 @@ class UserImportService implements IUserImportService {
     return { totalUsers: users, error: results.error };
   }
 
-  getErrorSheet(errors: UserDTO[]): Sheet {
+  getErrorSheetData(errors: UserDTO[]): SheetData {
     const message = { header: 'Error', width: 30 };
     return { name: 'Errors', columns: { ...columns, message }, data: errors };
   }
 
-  getImportTemplate(): Sheet {
+  getImportTemplate(): SheetData {
     return { name: 'Template', columns, data: generateUsers() };
   }
 
-  createReport(sheet: Sheet): any {
+  createSheet(sheetData: SheetData): any {
     const creator = 'App Starter';
-    const report = (new Datasheet(sheet)).toWorkbook({ creator });
+    const report = (new Datasheet(sheetData)).toWorkbook({ creator });
     return report;
   }
 }
