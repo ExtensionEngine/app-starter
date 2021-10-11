@@ -14,8 +14,7 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 export type DatabaseProvider = MikroORM<PostgreSqlDriver>;
 
-const isDev = ['dev', 'development', 'dev-local']
-  .some(it => it === process.env.NODE_ENV);
+const isDevLocal = process.env.NODE_ENV === 'dev-local';
 
 class Db {
   #config: Config;
@@ -43,7 +42,7 @@ class Db {
       subscribers: this.#subscribers,
       entities
     });
-    if (isDev) await this.migrate();
+    if (isDevLocal) await this.migrate();
     return this.provider;
   }
 

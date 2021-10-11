@@ -15,7 +15,7 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "poi --serve",
-    "build:client": "del-cli node_modules/.cache/vue-loader && poi --prod",
+    "build:client": "rimraf dist/client && del-cli node_modules/.cache/vue-loader && poi --prod",
     "build:server": "rimraf dist/server && tsc",
     "clean": "del-cli dist/* !dist/.gitkeep",
     "webpack:inspect-config": "poi --inspect-webpack",

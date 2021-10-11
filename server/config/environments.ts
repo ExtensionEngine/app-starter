@@ -1,7 +1,6 @@
 const environments = [
   'production',
   'staging',
-  'dev',
   'development',
   'dev-local',
   'test'
