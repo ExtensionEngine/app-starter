@@ -26,9 +26,9 @@
       </validation-provider>
       <validation-provider
         v-slot="{ errors }"
+        :validate="{ rules: { required: true, is: password } }"
         vid="passwordConfirmation"
-        name="password"
-        rules="required|confirmed:password">
+        name="password">
         <v-text-field
           v-model="passwordConfirmation"
           :error-messages="errors"
