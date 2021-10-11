@@ -22,7 +22,7 @@
     "webpack:bundle-report": "poi --prod --bundle-report",
     "webpack:stats": "poi --prod --print-stats",
     "prestart": "npm run build:server",
-    "start": "node dist/server/framework/start",
+    "start": "NODE_ENV=production node dist/server/framework/start",
     "start:watch": "tsnd server/framework/start",
     "start:debug": "tsnd --inspect -- server/framework/start",
     "lint": "eslint server",
