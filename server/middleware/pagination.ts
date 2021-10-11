@@ -13,7 +13,7 @@ export interface Pagination {
   offset: number;
   orderBy: orderBy;
   flags: QueryFlag[];
-  showArchived: boolean
+  showArchived: boolean;
 }
 
 class ParsePaginationMiddleware implements IMiddleware {

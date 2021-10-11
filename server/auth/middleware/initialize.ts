@@ -18,7 +18,7 @@ const options = {
 
 type TokenPayload = { id: number };
 type AuthCallback = (error: Error | null, user: User | string | boolean) => void;
-type SecretOrKeyCallback = (error: Error, secretOrKey?: string | Buffer) => void
+type SecretOrKeyCallback = (error: Error, secretOrKey?: string | Buffer) => void;
 
 class Initialize implements IMiddleware {
   #userRepository: IUserRepository;

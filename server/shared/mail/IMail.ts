@@ -9,7 +9,7 @@ export type MailData = {
 }
 
 interface IMail {
-  send(data: MailData): Promise<SentMessageInfo>
+  send(data: MailData): Promise<SentMessageInfo>;
 }
 
 export default IMail;

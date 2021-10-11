@@ -7,6 +7,7 @@ import IUserNotificationService from '../user/interfaces/notification.service';
 import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
 import { NotFound } from 'http-errors';
+
 class AuthController {
   #userRepository: IUserRepository;
   #authService: IAuthService;

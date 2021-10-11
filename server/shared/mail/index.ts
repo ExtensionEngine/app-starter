@@ -22,7 +22,7 @@ const templatesDir = path.join(__dirname, './templates/');
 class Mail implements IMail {
   #transporter: Transporter
   #log: Logger;
-  #config: MailConfig
+  #config: MailConfig;
 
   constructor(config: Config, logger: Logger) {
     const { provider } = config.mail;
