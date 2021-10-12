@@ -4,7 +4,7 @@ import environments, { Environment } from './environments';
 import mail, { MailConfig } from './mail';
 import server, { ServerConfig } from './server';
 import storage, { StorageConfig } from './storage';
-import IEnv from '../types/env';
+import Env from '../types/env';
 import joi from 'joi';
 
 export interface Config {
@@ -25,7 +25,7 @@ const schema = joi.object({
   mail: joi.object()
 });
 
-const createConfig = (env: IEnv) => ({
+const createConfig = (env: Env) => ({
   environment: env.NODE_ENV,
   database: database(env),
   server: server(env),
@@ -34,4 +34,4 @@ const createConfig = (env: IEnv) => ({
   mail: mail(env)
 });
 
-export default (env: IEnv): Config => joi.attempt(createConfig(env), schema);
+export default (env: Env): Config => joi.attempt(createConfig(env), schema);
