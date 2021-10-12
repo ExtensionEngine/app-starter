@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import autobind from 'auto-bind';
-import { HttpError } from 'http-errors';
 import { ErrorMiddleware } from '../types/middleware';
+import { HttpError } from 'http-errors';
 import Logger from 'bunyan';
 import { ValidationError } from 'joi';
 

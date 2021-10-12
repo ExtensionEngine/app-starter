@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import { SetRequestContext as SetAuthRequestContext } from './auth/middleware';
 import { Application, NextFunction, Request, Response } from 'express';
 import auth from './auth';
 import Db from './shared/database';
@@ -62,8 +61,7 @@ function registerRouters(app: Application, container: IContainer): void {
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
-  app.use(setAuthRequestContextMiddleware)
-  app.use(parsePaginationMiddleware);
+  app.use(setAuthRequestContextMiddleware, parsePaginationMiddleware);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }

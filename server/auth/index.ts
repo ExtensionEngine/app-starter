@@ -19,4 +19,4 @@ function load(provider: Provider): void {
     SetRequestContext,
     'authService'
   );
-};
+}
