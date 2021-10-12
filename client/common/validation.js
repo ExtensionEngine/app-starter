@@ -1,4 +1,13 @@
-import { alpha, email, is, max, mimes, min, required } from 'vee-validate/dist/rules';
+import {
+  alpha,
+  confirmed,
+  email,
+  is,
+  max,
+  mimes,
+  min,
+  required
+} from 'vee-validate/dist/rules';
 import { extend } from 'vee-validate';
 import forEach from 'lodash/forEach';
 import isURL from 'validator/lib/isURL';
@@ -39,6 +48,7 @@ const uniqueEmail = {
 const rules = {
   alpha,
   alphanumerical,
+  confirmed,
   email,
   is,
   max,
