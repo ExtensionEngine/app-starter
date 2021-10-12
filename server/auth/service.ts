@@ -17,10 +17,7 @@ class AuthService implements IAuthService {
   #config: AuthConfig;
   #userRepository: IUserRepository;
 
-  constructor(
-    config: Config,
-    userRepository: IUserRepository
-  ) {
+  constructor(config: Config, userRepository: IUserRepository) {
     this.#userRepository = userRepository;
     this.#config = config.auth;
     autobind(this);
