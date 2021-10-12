@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import * as authMiddleware from './auth/middleware';
+import { SetRequestContext as SetAuthRequestContext } from './auth/middleware';
 import { Application, NextFunction, Request, Response } from 'express';
 import auth from './auth';
 import Db from './shared/database';
@@ -22,6 +22,7 @@ const program: IProgram = {
   beforeStart,
   registerRouters
 };
+
 export default program;
 
 function configure(provider: Provider): void {
@@ -40,11 +41,6 @@ function configure(provider: Provider): void {
     UserImportService,
     'config', 'userRepository', 'userNotificationService'
   );
-  provider.registerMiddleware(
-    'authInitializeMiddleware',
-    authMiddleware.initialize,
-    'config', 'userRepository', 'authService'
-  );
   provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
   provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule(auth);
@@ -60,13 +56,14 @@ function registerRouters(app: Application, container: IContainer): void {
     db,
     userRouter,
     authRouter,
-    authInitializeMiddleware,
+    setAuthRequestContextMiddleware,
     parsePaginationMiddleware
   } = container;
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
-  app.use(authInitializeMiddleware, parsePaginationMiddleware);
+  app.use(setAuthRequestContextMiddleware)
+  app.use(parsePaginationMiddleware);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }
