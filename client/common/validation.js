@@ -1,5 +1,4 @@
 import {
-  alpha,
   confirmed,
   email,
   is,
@@ -46,7 +45,6 @@ const uniqueEmail = {
 };
 
 const rules = {
-  alpha,
   alphanumerical,
   confirmed,
   email,

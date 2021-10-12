@@ -1,6 +1,10 @@
 import '@/common/validation';
 
-import { ValidationObserver, ValidationProvider } from 'vee-validate';
+import {
+  setInteractionMode,
+  ValidationObserver,
+  ValidationProvider
+} from 'vee-validate';
 import App from './App';
 import router from './router';
 import store from './store';
@@ -11,6 +15,7 @@ import VueVisible from 'vue-visible';
 
 Vue.component('validation-observer', ValidationObserver);
 Vue.component('validation-provider', ValidationProvider);
+setInteractionMode('passive');
 
 Vue.filter('truncate', truncate);
 
