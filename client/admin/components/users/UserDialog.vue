@@ -118,14 +118,15 @@ export default {
       this.user = resetUser();
       this.$emit('update:visible', false);
     },
-    save() {
+    async save() {
       const action = this.isNewUser ? 'create' : 'update';
-      api[action](this.user).then(() => this.$emit(`${action}d`));
+      await api[action](this.user);
+      this.$emit(`${action}d`);
       this.close();
     },
     invite() {
       this.isLoading = true;
-      api.invite(this.user).finally(() => (this.isLoading = false));
+      return api.invite(this.user).finally(() => { this.isLoading = false; });
     }
   },
   watch: {
