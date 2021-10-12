@@ -13,7 +13,7 @@ export interface Pagination {
   offset: number;
   orderBy: orderBy;
   flags: QueryFlag[];
-  showArchived: boolean
+  showArchived: boolean;
 }
 
 class ParsePaginationMiddleware implements IMiddleware {
@@ -23,8 +23,8 @@ class ParsePaginationMiddleware implements IMiddleware {
 
   async handle(req: Request, _: Response, next: NextFunction): Promise<void> {
     const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
-    const paranoidKeywords = ['archived', 'deleted', 'destroyed'];
-    const showArchived = paranoidKeywords.some(it => yn(req.query[it]));
+    const archivedKeywords = ['archived', 'deleted', 'destroyed'];
+    const showArchived = archivedKeywords.some(it => yn(req.query[it]));
     req.pagination = {
       limit: Number(limit) || 100,
       offset: Number(offset) || 0,

@@ -28,8 +28,8 @@ const createConfig = (env: IEnv): DatabaseConfig => ({
     path: `${process.cwd()}/server/shared/database/migrations`,
     disableForeignKeys: false
   },
-  debug: env.NODE_ENV === 'dev-local',
-  highlighter: env.NODE_ENV === 'dev-local' && new SqlHighlighter()
+  debug: env.NODE_ENV !== 'production',
+  highlighter: env.NODE_ENV !== 'production' && new SqlHighlighter()
 });
 
 export default (env: IEnv): DatabaseConfig => {

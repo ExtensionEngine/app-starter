@@ -1,46 +1,22 @@
-import IModule, {
-  MiddlewareConstructor,
-  ServiceConstructor
-} from '../types/module';
+import IModule, { MiddlewareConstructor } from '../types/module';
 import Bottle from 'bottlejs';
-import camelCase from 'lodash/camelCase';
-import forEach from 'lodash/forEach';
+
+Bottle.config = { strict: true };
 
 class Provider extends Bottle {
-  registerModule(name: string, module: IModule): void {
-    const {
-      createRouter,
-      Controller,
-      Repository,
-      Service,
-      middleware,
-      modules
-    } = module;
-    if (middleware) {
-      forEach(middleware, (Middleware, name) => {
-        this.registerMiddleware(camelCase(name), Middleware);
-      });
-    }
-    if (Repository) this.registerRepository(`${name}Repository`, Repository);
-    if (modules) forEach(modules, (module, name) => this.registerModule(name, module));
-    if (Service) this.registerService(`${name}Service`, Service);
-    this.registerService(`${name}Controller`, Controller);
-    this.factory(`${name}Router`, createRouter);
+  registerModule(module: IModule): void {
+    module.load(provider);
   }
 
-  registerMiddleware(name: string, Middleware: MiddlewareConstructor): void {
-    this.factory(name, container => {
-      const middleware = new Middleware(container);
+  registerMiddleware(
+    name: string,
+    Middleware: MiddlewareConstructor,
+    ...args: string[]
+  ): void {
+    this.serviceFactory(name, (...deps: any[]) => {
+      const middleware = new Middleware(...deps);
       return middleware.handle;
-    });
-  }
-
-  registerService(name: string, Service: ServiceConstructor<any>): void {
-    this.factory(name, container => new Service(container));
-  }
-
-  registerRepository(name: string, Repository: IModule['Repository']): void {
-    this.factory(name, container => new Repository(container));
+    }, ...args);
   }
 }
 

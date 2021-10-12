@@ -14,6 +14,8 @@ import { PostgreSqlDriver } from '@mikro-orm/postgresql';
 
 export type DatabaseProvider = MikroORM<PostgreSqlDriver>;
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 class Db {
   #config: Config;
   #subscribers: EventSubscriber[]
@@ -40,8 +42,7 @@ class Db {
       subscribers: this.#subscribers,
       entities
     });
-    const isDev = process.env.NODE_ENV === 'dev-local';
-    if (isDev) await this.migrate();
+    if (!isProduction) await this.migrate();
     return this.provider;
   }
 
@@ -58,7 +59,7 @@ class Db {
 
   async migrate(): Promise<void> {
     const migrator = this.#provider.getMigrator();
-    return migrator.up()
+    await migrator.up()
       .then(() => this.#logger.info('Migrations up!'))
       .catch(async () => {
         this.#logger.error('Migrating failed!');

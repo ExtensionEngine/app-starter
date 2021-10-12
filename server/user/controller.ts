@@ -1,13 +1,11 @@
 import { ACCEPTED, NO_CONTENT } from 'http-status';
 import { Request, Response } from 'express';
 import autobind from 'auto-bind';
-import { IContainer } from 'bottlejs';
 import IUserImportService from './interfaces/import.service';
 import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import joi from 'joi';
 import mime from 'mime-types';
-import P from 'bluebird';
 import { Role } from './roles';
 import User from './model';
 import userSchema from './validation';
@@ -17,16 +15,16 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 }));
 
 class UserController {
-  #repository: IUserRepository;
+  #userRepository: IUserRepository;
   #userNotificationService: IUserNotificationService;
   #userImportService: IUserImportService;
 
-  constructor({
-    userRepository,
-    userNotificationService,
-    userImportService
-  }: IContainer) {
-    this.#repository = userRepository;
+  constructor(
+    userRepository: IUserRepository,
+    userNotificationService: IUserNotificationService,
+    userImportService: IUserImportService
+  ) {
+    this.#userRepository = userRepository;
     this.#userNotificationService = userNotificationService;
     this.#userImportService = userImportService;
     autobind(this);
@@ -41,7 +39,7 @@ class UserController {
       ...role && { role: role as Role },
       ...!showArchived && { deletedAt: null }
     };
-    const [items, total] = await this.#repository.findAndCount(where, pagination);
+    const [items, total] = await this.#userRepository.findAndCount(where, pagination);
     return res.json({ data: { items, total } });
   }
 
@@ -53,23 +51,24 @@ class UserController {
     joi.attempt(body, userSchema);
     const { id, firstName, lastName, email, role, password } = body;
     const user = id
-      ? await this.#repository.findOne(Number(id))
+      ? await this.#userRepository.findOne(Number(id))
       : new User(firstName, lastName, email, role, password);
-    if (id) this.#repository.assign(user, { deletedAt: null });
-    await this.#repository.persistAndFlush(user);
+    if (id) this.#userRepository.assign(user, { deletedAt: null });
+    await this.#userRepository.persistAndFlush(user);
+    await this.#userNotificationService.invite(user);
     return res.json({ data: user });
   }
 
   async patch({ user, body }: Request, res: Response): Promise<Response> {
     const userData = joi.attempt(body, userSchema);
-    this.#repository.assign(user, userData);
-    await this.#repository.persistAndFlush(user);
+    this.#userRepository.assign(user, userData);
+    await this.#userRepository.persistAndFlush(user);
     return res.json({ data: user });
   }
 
   async remove({ user }: Request, res: Response): Promise<Response> {
-    this.#repository.assign(user, { deletedAt: new Date() });
-    await this.#repository.persistAndFlush(user);
+    this.#userRepository.assign(user, { deletedAt: new Date() });
+    await this.#userRepository.persistAndFlush(user);
     return res.status(NO_CONTENT).send();
   }
 
@@ -79,20 +78,19 @@ class UserController {
   }
 
   async bulkImport({ body = {}, file }: Request, res: Response): Promise<Response> {
-    const { total, users, errors } = await this.#userImportService.bulkImport(file);
-    await P.each(users, (it: User) => this.#userNotificationService.invite(it));
-    res.set('data-imported-count', String(total.length - errors.length));
+    const { totalUsers, errors } = await this.#userImportService.bulkImport(file);
+    res.set('data-imported-count', String(totalUsers.length - errors.length));
     if (!errors.length) return res.send();
-    const errorSheet = await this.#userImportService.getErrorSheet(errors);
+    const errorSheetData = await this.#userImportService.getErrorSheetData(errors);
     const format = body.format || mime.extension(file.mimetype);
-    const report = await this.#userImportService.createReport(errorSheet);
-    return report.send(res, { format });
+    const sheet = await this.#userImportService.createSheet(errorSheetData);
+    return sheet.send(res, { format });
   }
 
   async getImportTemplate(_req: Request, res: Response): Promise<Response> {
-    const sheet = this.#userImportService.getImportTemplate();
-    const report = await this.#userImportService.createReport(sheet);
-    return report.send(res, { format: this.#userImportService.templateFormat });
+    const sheetData = this.#userImportService.getImportTemplate();
+    const sheet = await this.#userImportService.createSheet(sheetData);
+    return sheet.send(res, { format: this.#userImportService.templateFormat });
   }
 }
 

@@ -5,12 +5,11 @@ import { Request, Response } from 'express';
 import autobind from 'auto-bind';
 import <%= Resource = h.capitalize(resource) %> from './model';
 import I<%= Resource = h.capitalize(resource) %>Repository from './interfaces/repository';
-import { IContainer } from 'bottlejs';
 
 class <%= Resource %>Controller {
   #repository: I<%= Resource %>Repository;
 
-  constructor({ <%= resource %>Repository }: IContainer) {
+  constructor(<%= resource %>Repository: I<%= Resource %>Repository) {
     this.#repository = <%= resource %>Repository;
     autobind(this);
   }

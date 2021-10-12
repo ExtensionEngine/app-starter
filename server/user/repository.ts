@@ -1,13 +1,12 @@
 import { EntityData, FilterQuery, FindOneOptions, FindOptions } from '@mikro-orm/core';
-import { DatabaseProvider } from '../shared/database';
-import { IContainer } from 'bottlejs';
+import Db, { DatabaseProvider } from '../shared/database';
 import IUserRepository from './interfaces/repository';
 import User from './model';
 
 class UserRepository implements IUserRepository {
   #dbProvider: DatabaseProvider;
 
-  constructor({ db }: IContainer) {
+  constructor(db: Db) {
     this.#dbProvider = db.provider;
   }
 

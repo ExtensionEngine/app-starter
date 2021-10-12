@@ -1,21 +1,15 @@
 ---
 to: "<%= `${h.getResourcePath(resource, path)}/index.ts` %>"
 ---
-import App, { Router } from 'express';
 import Controller from './controller';
-import { IContainer } from 'bottlejs';
+import { Provider } from '../framework/provider';
 import Repository from './repository';
+import createRouter from './router';
 
-export default {
-  createRouter,
-  Controller,
-  Repository
+export default { load };
+
+function load(provider: Provider): void {
+  provider.service('<%= resource %>Router', createRouter, '<%= resource %>Controller');
+  provider.service('<%= resource %>Repository', Repository, 'db');
+  provider.service('<%= resource %>Controller', Controller, '<%= resource %>Repository');
 };
-
-function createRouter({ <%= resource %>Controller }: IContainer): Router {
-  return App.Router()
-    .get('/', <%= resource %>Controller.getAll)
-    .get('/:<%= resource %>Id', <%= resource %>Controller.get)
-    .post('/', <%= resource %>Controller.post)
-    .patch('/:<%= resource %>Id', <%= resource %>Controller.patch);
-}
