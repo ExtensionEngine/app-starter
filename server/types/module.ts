@@ -1,5 +1,5 @@
-import { Provider } from '../framework/provider';
 import { IErrorMiddleware, IMiddleware } from '../types/middleware';
+import { Provider } from '../framework/provider';
 
 type ServiceConstructor<T> = { new(...args: any[]): T };
 

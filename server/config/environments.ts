@@ -1,6 +1,6 @@
 const environments = [
   'production',
-  'development',
+  'development'
 ] as const;
 
 export type Environment = typeof environments[number];

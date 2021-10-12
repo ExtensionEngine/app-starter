@@ -1,4 +1,3 @@
-'use strict';
 import { Config } from '../../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';

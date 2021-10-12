@@ -1,5 +1,5 @@
-import { EntityData, FilterQuery, FindOneOptions, FindOptions } from '@mikro-orm/core';
 import Db, { DatabaseProvider } from '../shared/database';
+import { EntityData, FilterQuery, FindOneOptions, FindOptions } from '@mikro-orm/core';
 import IUserRepository from './interfaces/repository';
 import User from './model';
 

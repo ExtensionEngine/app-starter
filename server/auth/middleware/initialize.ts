@@ -2,6 +2,7 @@ import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
 import { NextFunction, Request, Response } from 'express';
 import AudienceScope from '../audience';
 import autobind from 'auto-bind';
+import { Config } from '../../config';
 import IAuthService from '../interfaces/service';
 import { IMiddleware } from '../../types/middleware';
 import IUserRepository from '../../user/interfaces/repository';
@@ -9,7 +10,6 @@ import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
 import passport from 'passport';
 import User from '../../user/model';
-import { Config } from '../../config';
 
 const options = {
   usernameField: 'email',

@@ -60,7 +60,7 @@ class UserImportService implements IUserImportService {
       }
       const { firstName, lastName, email, role } = item;
       const user = new User(firstName, lastName, email, role);
-      await this.#userNotificationService.invite(user)
+      await this.#userNotificationService.invite(user);
       acc.users.push(user);
       return acc;
     }, { users: [], errors: [] });
