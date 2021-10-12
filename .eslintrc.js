@@ -11,7 +11,7 @@ module.exports = {
     'vue/component-definition-name-casing': ['error', 'kebab-case']
   },
   overrides: [{
-    files: ['*.ts', '/server/*.js'],
+    files: ['*.ts', 'server/**/*.js'],
     parser: '@typescript-eslint/parser',
     extends: ['plugin:@typescript-eslint/recommended'],
     plugins: ['@typescript-eslint'],
