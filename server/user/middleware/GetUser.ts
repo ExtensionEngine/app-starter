@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import autobind from 'auto-bind';
-import { Middleware } from '../../types/middleware';
 import IUserRepository from '../interfaces/repository';
+import { Middleware } from '../../types/middleware';
 import { NotFound } from 'http-errors';
 
 class GetUserMiddleware implements Middleware {

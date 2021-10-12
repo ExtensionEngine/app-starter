@@ -1,5 +1,5 @@
-import { RequestHandler } from 'express';
 import { Audience } from '../audience';
+import { RequestHandler } from 'express';
 import User from '../../user/model';
 
 interface IAuthService {

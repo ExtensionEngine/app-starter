@@ -1,16 +1,16 @@
-import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
-import { Request, RequestHandler, Response, NextFunction } from 'express';
-import autobind from 'auto-bind';
-import bcrypt from 'bcrypt';
-import LocalStrategy from 'passport-local';
-import jwt from 'jsonwebtoken';
-import passport from 'passport';
 import AudienceScope, { Audience } from './audience';
 import { AuthCallback, SecretOrKeyCallback, TokenPayload } from './types';
+import { ExtractJwt, Strategy as JwtStrategy } from 'passport-jwt';
+import { Request, RequestHandler } from 'express';
 import { AuthConfig } from '../config/auth';
+import autobind from 'auto-bind';
+import bcrypt from 'bcrypt';
 import { Config } from '../config';
 import IAuthService from './interfaces/service';
 import IUserRepository from '../user/interfaces/repository';
+import jwt from 'jsonwebtoken';
+import LocalStrategy from 'passport-local';
+import passport from 'passport';
 import User from '../user/model';
 
 class AuthService implements IAuthService {
@@ -98,7 +98,6 @@ class AuthService implements IAuthService {
       .then(secret => done(null, secret))
       .catch(err => done(err, null));
   }
-
 }
 
 export default AuthService;
