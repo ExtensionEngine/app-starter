@@ -8,6 +8,6 @@ export type AuthCallback = (
 ) => void;
 
 export type SecretOrKeyCallback = (
-  error: Error,
+  error: Error | null,
   secretOrKey?: string | Buffer
 ) => void;
