@@ -56,7 +56,7 @@ prompt(questions)
     await RequestContext.createAsync(db.provider.em, () => addUser(data));
   });
 
-async function addUser({ firstName, lastName, email, role, password }) {
+function addUser({ firstName, lastName, email, role, password }) {
   const { db, logger } = provider.container;
   const em = db.provider.em.fork(false);
   const user = new User(firstName, lastName, email, role, password);

@@ -2,10 +2,10 @@ import AudienceScope, { Audience } from './audience';
 import { AuthConfig } from '../config/auth';
 import autobind from 'auto-bind';
 import bcrypt from 'bcrypt';
+import { Config } from '../config';
 import IAuthService from './interfaces/service';
 import jwt from 'jsonwebtoken';
 import User from '../user/model';
-import { Config } from '../config';
 
 class AuthService implements IAuthService {
   #config: AuthConfig;

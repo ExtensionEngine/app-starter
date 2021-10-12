@@ -24,7 +24,7 @@ class AuthController {
     autobind(this);
   }
 
-  async me(_req: Request, res: Response): Promise<Response> {
+  me(_req: Request, res: Response): Response {
     const user = authContext.getCurrentUser();
     const token = this.#authService.createToken(user, AudienceScope.Access, '5 days');
     const data = { token, user };

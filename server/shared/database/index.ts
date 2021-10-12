@@ -49,7 +49,7 @@ class Db {
   async reset(): Promise<void> {
     const { em } = this.provider;
     const entities = this.#provider.config.get('entities');
-    await p.each(entities, async entity => {
+    await p.each(entities, entity => {
       return em
         .createQueryBuilder(entity as string)
         .truncate()
@@ -57,9 +57,9 @@ class Db {
     });
   }
 
-  async migrate(): Promise<void> {
+  migrate(): Promise<void> {
     const migrator = this.#provider.getMigrator();
-    await migrator.up()
+    return migrator.up()
       .then(() => this.#logger.info('Migrations up!'))
       .catch(async () => {
         this.#logger.error('Migrating failed!');

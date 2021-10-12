@@ -21,7 +21,7 @@ class ParsePaginationMiddleware implements IMiddleware {
     autobind(this);
   }
 
-  async handle(req: Request, _: Response, next: NextFunction): Promise<void> {
+  handle(req: Request, _: Response, next: NextFunction): void {
     const { limit, offset, sortBy = 'createdAt', sortOrder = 'ASC' } = req.query;
     const archivedKeywords = ['archived', 'deleted', 'destroyed'];
     const showArchived = archivedKeywords.some(it => yn(req.query[it]));

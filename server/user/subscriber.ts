@@ -16,7 +16,7 @@ class UserSubscriber implements EventSubscriber<User> {
     return [User];
   }
 
-  private async encryptPassword({ password }: User): Promise<string> {
+  private encryptPassword({ password }: User): Promise<string> {
     return bcrypt.hash(password, this.#config.auth.saltRounds);
   }
 
