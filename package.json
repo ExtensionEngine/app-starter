@@ -7,7 +7,7 @@
   "bugs": {
     "url": "https://github.com/ExtensionEngine/app-starter/issues"
   },
-  "main": "dist/framework/start.js",
+  "main": "dist/server/framework/start.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ExtensionEngine/app-starter.git"
