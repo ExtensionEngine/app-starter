@@ -6,10 +6,10 @@ to: "<%=
 import { NextFunction, Request, Response } from 'express';
 import autobind from 'auto-bind';
 import I<%= Resource = h.capitalize(resource) %>Repository from '../interfaces/repository';
-import { IMiddleware } from '../../types/middleware';
+import { Middleware } from '../../types/middleware';
 import { NotFound } from 'http-errors';
 
-class Get<%= Resource %>Middleware implements IMiddleware {
+class Get<%= Resource %>Middleware implements Middleware {
   #repository: I<%= Resource %>Repository;
 
   constructor(<%= resource %>Repository: I<%= Resource %>Repository) {

@@ -4,10 +4,10 @@ import AudienceScope from '../audience';
 import autobind from 'auto-bind';
 import { Config } from '../../config';
 import IAuthService from '../interfaces/service';
-import { IMiddleware } from '../../types/middleware';
 import IUserRepository from '../../user/interfaces/repository';
 import jwt from 'jsonwebtoken';
 import LocalStrategy from 'passport-local';
+import { Middleware } from '../../types/middleware';
 import passport from 'passport';
 import User from '../../user/model';
 
@@ -20,7 +20,7 @@ type TokenPayload = { id: number };
 type AuthCallback = (error: Error | null, user: User | string | boolean) => void;
 type SecretOrKeyCallback = (error: Error, secretOrKey?: string | Buffer) => void;
 
-class Initialize implements IMiddleware {
+class Initialize implements Middleware {
   #userRepository: IUserRepository;
   #authService: IAuthService;
 
