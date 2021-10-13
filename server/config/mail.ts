@@ -1,4 +1,4 @@
-import IEnv from '../types/env';
+import Env from '../types/env';
 import joi from 'joi';
 
 type Sender = {
@@ -30,7 +30,7 @@ const schema = joi.object({
   password: joi.string()
 });
 
-const createConfig = (env: IEnv): MailConfig => ({
+const createConfig = (env: Env): MailConfig => ({
   sender: {
     name: env.EMAIL_SENDER_NAME,
     address: env.EMAIL_SENDER_ADDRESS
@@ -42,4 +42,4 @@ const createConfig = (env: IEnv): MailConfig => ({
   port: Number(env.EMAIL_PORT)
 });
 
-export default (env: IEnv): MailConfig => joi.attempt(createConfig(env), schema);
+export default (env: Env): MailConfig => joi.attempt(createConfig(env), schema);

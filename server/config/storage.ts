@@ -1,4 +1,4 @@
-import IEnv from '../types/env';
+import Env from '../types/env';
 import joi from 'joi';
 
 export type Amazon = {
@@ -39,7 +39,7 @@ const schema = joi.object({
     })
 });
 
-const createConfig = (env: IEnv): StorageConfig => ({
+const createConfig = (env: Env): StorageConfig => ({
   amazon: {
     key: env.STORAGE_KEY,
     secret: env.STORAGE_SECRET,
@@ -50,4 +50,4 @@ const createConfig = (env: IEnv): StorageConfig => ({
   provider: env.STORAGE_PROVIDER
 });
 
-export default (env: IEnv): StorageConfig => joi.attempt(createConfig(env), schema);
+export default (env: Env): StorageConfig => joi.attempt(createConfig(env), schema);

@@ -1,4 +1,4 @@
-import IEnv from '../types/env';
+import Env from '../types/env';
 import isLocalhost from 'is-localhost';
 import joi from 'joi';
 
@@ -20,7 +20,7 @@ const schema = joi.object({
   importTemplateFormat: joi.string().default('xlsx')
 });
 
-function createConfig(env: IEnv): ServerConfig {
+function createConfig(env: Env): ServerConfig {
   const protocol = resolveProtocol(env);
   const port = resolvePort(env);
   const origin = resolveOrigin(env, protocol, port);
@@ -34,24 +34,24 @@ function createConfig(env: IEnv): ServerConfig {
   };
 }
 
-export default (env: IEnv): ServerConfig => joi.attempt(createConfig(env), schema);
+export default (env: Env): ServerConfig => joi.attempt(createConfig(env), schema);
 
-function resolveProtocol({ PROTOCOL, HOSTNAME }: IEnv): string {
+function resolveProtocol({ PROTOCOL, HOSTNAME }: Env): string {
   if (PROTOCOL) return PROTOCOL;
   return isLocalhost(HOSTNAME) ? 'http' : 'https';
 }
 
-function resolvePort({ PORT, SERVER_PORT }: IEnv): number {
+function resolvePort({ PORT, SERVER_PORT }: Env): number {
   return Number(PORT || SERVER_PORT || 3000);
 }
 
-function resolveOrigin(env: IEnv, protocol = 'http', port = 3000): string {
+function resolveOrigin(env: Env, protocol = 'http', port = 3000): string {
   const hostname = env.HOSTNAME || 'localhost';
   const originPort = resolveOriginPort(env, port);
   return `${protocol}://${hostname}${originPort}`;
 }
 
-function resolveOriginPort({ REVERSE_PROXY_PORT }: IEnv, port): string {
+function resolveOriginPort({ REVERSE_PROXY_PORT }: Env, port): string {
   if (!REVERSE_PROXY_PORT) return `:${port}`;
   if (REVERSE_PROXY_PORT === '80' || REVERSE_PROXY_PORT === '443') return '';
   return `:${REVERSE_PROXY_PORT}`;
