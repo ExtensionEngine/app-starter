@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import autobind from 'auto-bind';
-import { ErrorMiddleware } from '../types/middleware';
 import { HttpError } from 'http-errors';
+import { IErrorMiddleware } from '../types/middleware';
 import Logger from 'bunyan';
 import { ValidationError } from 'joi';
 
-class ErrorHandler implements ErrorMiddleware {
+class ErrorHandler implements IErrorMiddleware {
   #logger: Logger;
 
   constructor(logger: Logger) {

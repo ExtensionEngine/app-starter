@@ -1,9 +1,9 @@
 import autobind from 'auto-bind';
 import IAuthService from '../interfaces/service';
-import { Middleware } from '../../types/middleware';
+import { IMiddleware } from '../../types/middleware';
 import { RequestHandler } from 'express';
 
-class SetRequestContext implements Middleware {
+class SetRequestContext implements IMiddleware {
   #authService: IAuthService;
 
   constructor(authService: IAuthService) {

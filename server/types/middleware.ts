@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpError } from 'http-errors';
 
-export interface ErrorMiddleware {
+export interface IErrorMiddleware {
   handle(
     err: HttpError | Error,
     req: Request,
@@ -10,7 +10,7 @@ export interface ErrorMiddleware {
   ): Promise<Response> | Response;
 }
 
-export interface Middleware {
+export interface IMiddleware {
   handle(
     req: Request,
     res: Response,
