@@ -22,5 +22,10 @@ module.exports = {
       strict: 'off',
       '@typescript-eslint/no-explicit-any': 'off'
     }
+  }, {
+    files: ['infrastructure/**/*.js'],
+    rules: {
+      'no-unused-vars': 'off'
+    }
   }]
 };
