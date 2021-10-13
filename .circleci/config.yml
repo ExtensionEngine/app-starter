@@ -27,4 +27,8 @@ jobs:
 workflows:
   test-and-deploy:
     jobs:
-      - lint
+      - lint:
+          filters:
+              branches:
+                only:
+                  - feature/ST-293_setup-cicd
