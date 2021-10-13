@@ -4,6 +4,7 @@ import joi from 'joi';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 
 export interface DatabaseConfig {
+  host: string;
   dbName: string;
   user: string;
   password: string;
@@ -14,12 +15,14 @@ export interface DatabaseConfig {
 }
 
 const schema = joi.object({
+  host: joi.string().required(),
   dbName: joi.string().required(),
   user: joi.string().required(),
   password: joi.string().required()
 }).unknown();
 
 const createConfig = (env: IEnv): DatabaseConfig => ({
+  host: env.DATABASE_HOST,
   dbName: env.DATABASE_NAME,
   user: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
