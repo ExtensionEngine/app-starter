@@ -14,7 +14,6 @@ function createFilesystemStorage(config: StorageConfig): LocalFileSystemStorage 
       }
     }
   });
-  storage.disk<LocalFileSystemStorage>('local');
   return storage.disk<LocalFileSystemStorage>('local');
 }
 
