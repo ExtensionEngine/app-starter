@@ -23,12 +23,27 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
-
+  build-client:
+    <<: *defaults
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build client
+          command: npm run build:client
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/client
+      - run: ls
 workflows:
   test-and-deploy:
     jobs:
       - lint:
-          filters:
+          filters: &branch-filters
               branches:
                 only:
                   - feature/ST-293_setup-cicd
+      - build-client:
+          filters:
+            <<: *branch-filters
