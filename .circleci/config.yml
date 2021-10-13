@@ -39,8 +39,10 @@ jobs:
   deploy-client:
     <<: *defaults
     steps:
+      - checkout
       - attach_workspace:
           at: .
+      - run: cd ./infrastructure && npm i
       - aws-cli/setup:
           <<: *aws-credentials
           aws-region: AWS_REGION
