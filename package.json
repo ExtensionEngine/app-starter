@@ -15,6 +15,7 @@
   "license": "MIT",
   "scripts": {
     "dev:client": "poi --serve",
+    "dev:server": "tsnd server/framework/start",
     "build:client": "rimraf dist/client && del-cli node_modules/.cache/vue-loader && poi --prod",
     "build:server": "rimraf dist/server && tsc",
     "clean": "del-cli dist/* !dist/.gitkeep",
@@ -23,7 +24,6 @@
     "webpack:stats": "poi --prod --print-stats",
     "prestart": "npm run build:server",
     "start": "NODE_ENV=production node dist/server/framework/start",
-    "start:watch": "tsnd server/framework/start",
     "start:debug": "tsnd --inspect -- server/framework/start",
     "lint": "eslint server",
     "lint:fix": "eslint --fix server",
