@@ -36,6 +36,30 @@ jobs:
           paths:
             - dist/client
       - run: ls
+  deploy-client:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - pulumi/login
+      - pulumi/update:
+          stack: 'dev'
+          working_directory: ./infrastructure
+      - pulumi/stack_output:
+          stack: 'dev'
+          property_name: siteBucketEndpoint
+          env_var: WEBSITE_URL
+          working_directory: ./infrastructure
+      - run:
+          name: Echo bucket name
+          command: |
+            echo $WEBSITE_URL > /tmp/art-1.txt;
+      - store_artifacts:
+          path: /tmp/art-1.txt
+
 workflows:
   test-and-deploy:
     jobs:
@@ -45,5 +69,13 @@ workflows:
                 only:
                   - feature/ST-293_setup-cicd
       - build-client:
+          requires:
+            - lint
+          filters:
+            <<: *branch-filters
+      - deploy-client:
+          context: solution-tree-ci
+          requires:
+            - build-client
           filters:
             <<: *branch-filters
