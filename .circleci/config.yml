@@ -35,7 +35,6 @@ jobs:
           root: .
           paths:
             - dist/client
-      - run: ls
   deploy-client:
     <<: *defaults
     steps:
