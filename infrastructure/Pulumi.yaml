@@ -1,0 +1,3 @@
+name: app_starter
+runtime: nodejs
+description: App starter infrastructure
