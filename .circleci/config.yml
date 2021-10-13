@@ -1,0 +1,30 @@
+version: 2.1
+
+defaults: &defaults
+  working_directory: ~/project/solution-tree
+  docker:
+    - image: cimg/node:14.17.0
+
+aws-credentials: &aws-credentials
+  aws-access-key-id: AWS_ACCESS_KEY
+  aws-secret-access-key: AWS_ACCESS_SECRET
+
+orbs:
+  node: circleci/node@4.5.1
+  aws-cli: circleci/aws-cli@1.3
+  pulumi: pulumi/pulumi@2.0.0
+
+jobs:
+  lint:
+    <<: *defaults
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - lint
