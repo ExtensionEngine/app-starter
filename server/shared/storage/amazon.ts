@@ -11,6 +11,8 @@ import miss from 'mississippi';
 import path from 'path';
 import { validateConfig } from './validation';
 
+const NOT_FOUND_MESSAGE = 'Object not found';
+
 const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
 
 const schema = Joi.object().keys({
@@ -60,17 +62,17 @@ class Amazon implements IStorage {
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  async saveFile(key: string, data: string | Buffer): Promise<Response> {
+  async saveFile(key: string, data: Buffer): Promise<Response> {
     const params = { Bucket: this.#bucket, Key: key, Body: data };
-    await this.#client.putObject(params).promise();
-    return { raw: undefined };
+    const result = await this.#client.putObject(params).promise();
+    return { raw: result };
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
-  async createWriteStream(key: string): Promise<Response> {
+  createWriteStream(key: string): Response {
     const throughStream = miss.through();
     const params = { Bucket: this.#bucket, Key: key, Body: throughStream };
-    await this.#client.upload(params).promise();
+    this.#client.upload(params, () => null);
     return { raw: throughStream };
   }
 
@@ -94,6 +96,8 @@ class Amazon implements IStorage {
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
   async deleteFile(key: string): Promise<DeleteResponse> {
     const params = { Bucket: this.#bucket, Key: key };
+    const file = await this.getFile(key);
+    if (!file) return Promise.reject(new Error(NOT_FOUND_MESSAGE));
     const result = await this.#client.deleteObject(params).promise();
     return { raw: result, isDeleted: true };
   }
@@ -101,7 +105,6 @@ class Amazon implements IStorage {
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObjects-property
   async deleteFiles(keys: string[]): Promise<DeleteResponse> {
     const objects = keys.map(key => ({ Key: key }));
-    if (!keys.length) return Promise.resolve({ raw: null, isDeleted: false });
     const params = {
       Bucket: this.#bucket,
       Delete: { Objects: objects }

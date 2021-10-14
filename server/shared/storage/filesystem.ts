@@ -46,7 +46,7 @@ class FilesystemStorage implements IStorage {
     return createReadStream(this.path(key));
   }
 
-  async saveFile(key: string, data: string | Buffer): Promise<Response> {
+  async saveFile(key: string, data: Buffer): Promise<Response> {
     const filePath = this.path(key);
     await mkdirp(path.dirname(filePath));
     const result = await fs.writeFile(filePath, data);
