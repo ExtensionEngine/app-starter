@@ -1,3 +1,4 @@
+import { createReadStream, createWriteStream, promises as fs } from 'fs';
 import IStorage, {
   ContentResponse,
   DeleteResponse,
@@ -7,14 +8,11 @@ import IStorage, {
 import { Config } from '../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';
-import fs from 'fs';
 import Joi from 'joi';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
 import { validateConfig } from './validation';
-
-const fsAsync = P.promisifyAll(fs);
 
 const isNotFound = (err: any): boolean => err.code === 'ENOENT';
 const resolvePath = (str: string): string => path.resolve(expandPath(str));
@@ -39,46 +37,46 @@ class FilesystemStorage implements IStorage {
   }
 
   getFile(key: string): Promise<ContentResponse<string>> {
-    return fsAsync.readFileAsync(this.path(key))
+    return fs.readFile(this.path(key))
       .then(data => ({ content: data.toString(), raw: data }))
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
   createReadStream(key: string): NodeJS.ReadableStream {
-    return fsAsync.createReadStream(this.path(key));
+    return createReadStream(this.path(key));
   }
 
   async saveFile(key: string, data: string | Buffer): Promise<Response> {
     const filePath = this.path(key);
     await mkdirp(path.dirname(filePath));
-    const result = await fsAsync.writeFileAsync(filePath, data);
+    const result = await fs.writeFile(filePath, data);
     return { raw: result };
   }
 
   async createWriteStream(key: string): Promise<Response> {
     const filepath = this.path(key);
     const dirname = path.dirname(filepath);
-    await fsAsync.mkdirAsync(dirname);
-    const result = await fsAsync.createWriteStream(filepath);
+    await fs.mkdir(dirname, { recursive: true });
+    const result = createWriteStream(filepath);
     return { raw: result };
   }
 
-  async copyFile(key: string, newKey: string, mode: number): Promise<Response> {
+  async copyFile(key: string, newKey: string): Promise<Response> {
     const src = this.path(key);
     const dest = this.path(newKey);
     await mkdirp(path.dirname(dest));
-    const result = await fsAsync.copyFileAsync(src, dest, mode);
+    const result = await fs.copyFile(src, dest);
     return { raw: result };
   }
 
-  async moveFile(key: string, newKey: string, mode: number): Promise<Response> {
-    const file = await this.copyFile(key, newKey, mode);
+  async moveFile(key: string, newKey: string): Promise<Response> {
+    const file = await this.copyFile(key, newKey);
     await this.deleteFile(key);
-    return { raw: file };
+    return { raw: file.raw };
   }
 
   async deleteFile(key: string): Promise<DeleteResponse> {
-    const result = await fsAsync.unlinkAsync(this.path(key));
+    const result = await fs.unlink(this.path(key));
     return { raw: result, isDeleted: true };
   }
 
@@ -88,8 +86,8 @@ class FilesystemStorage implements IStorage {
   }
 
   listFiles(key: string): Promise<string[]> {
-    const readdir = fsAsync.readdirAsync(this.path(key), { withFileTypes: true });
-    return P.map(readdir, fileName => path.join(key, String(fileName)))
+    const readdir = fs.readdir(this.path(key), { withFileTypes: true });
+    return P.map(readdir, ({ name: fileName }) => path.join(key, String(fileName)))
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
