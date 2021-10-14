@@ -22,7 +22,7 @@ interface IStorage {
   getFile(key: string): Promise<ContentResponse<string>>;
   createReadStream(key: string): NodeJS.ReadableStream;
   saveFile(key: string, data: string): Promise<Response>;
-  createWriteStream(key: string): Promise<Response> | Response;
+  createWriteStream(key: string): Promise<Response>;
   copyFile(key: string, newKey: string, mode?: number): Promise<Response>;
   moveFile(key: string, newKey: string, mode?: number): Promise<Response>;
   deleteFile(key: string): Promise<DeleteResponse>

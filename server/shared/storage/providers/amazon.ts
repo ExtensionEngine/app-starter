@@ -72,10 +72,10 @@ class Amazon implements IStorage {
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
-  createWriteStream(key: string): Response {
+  async createWriteStream(key: string): Promise<Response> {
     const throughStream = miss.through();
     const params = { Bucket: this.#bucket, Key: key, Body: throughStream };
-    this.#client.upload(params, noop);
+    await this.#client.upload(params).promise();
     return { raw: throughStream };
   }
 
