@@ -25,11 +25,11 @@ interface IStorage {
   createWriteStream(key: string): Promise<Response>;
   copyFile(key: string, newKey: string, mode?: number): Promise<Response>;
   moveFile(key: string, newKey: string, mode?: number): Promise<Response>;
-  deleteFile(key: string): Promise<DeleteResponse>
-  deleteFiles(keys: string[]): Promise<DeleteResponse>
-  listFiles(key: string): Promise<string[]>
-  fileExists(key: string): Promise<ExistsResponse>
-  getFileUrl(key: string): Promise<string>
+  deleteFile(key: string): Promise<DeleteResponse>;
+  deleteFiles(keys: string[]): Promise<DeleteResponse>;
+  listFiles(key: string): Promise<string[]>;
+  fileExists(key: string): Promise<ExistsResponse>;
+  getFileUrl(key: string): Promise<string>;
 }
 
 export default IStorage;
