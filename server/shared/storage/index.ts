@@ -28,7 +28,7 @@ class Storage implements IStorage {
     return this.#provider.saveFile(key, data);
   }
 
-  createWriteStream(key: string): Promise<Response> | Response {
+  createWriteStream(key: string): Promise<Response> {
     return this.#provider.createWriteStream(key);
   }
 
