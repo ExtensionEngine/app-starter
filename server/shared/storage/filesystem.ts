@@ -93,9 +93,9 @@ class FilesystemStorage implements IStorage {
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  fileExists(key: string): Promise<ExistsResponse> {
+  async fileExists(key: string): Promise<ExistsResponse> {
     return Promise.resolve({
-      exists: exists(this.path(key)),
+      exists: await exists(this.path(key)),
       raw: undefined
     });
   }
