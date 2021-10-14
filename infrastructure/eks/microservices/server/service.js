@@ -11,7 +11,7 @@ const service = new k8s.core.v1.Service(`${NAME}-service`, {
     namespace
   },
   spec: {
-    type: 'LoadBalancer',
+    type: 'ClusterIP',
     ports: [{ port: 3000, targetPort: 3000 }],
     selector: { app: NAME }
   }
