@@ -11,7 +11,6 @@ import miss from 'mississippi';
 import path from 'path';
 import { validateConfig } from '../validation';
 
-const noop = () => null;
 const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
 
 const schema = Joi.object().keys({
