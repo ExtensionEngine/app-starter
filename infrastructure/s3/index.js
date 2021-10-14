@@ -1,13 +1,12 @@
 'use strict';
 
 const aws = require('@pulumi/aws');
-const mime = require('mime');
-const path = require('path');
-const pulumi = require('@pulumi/pulumi');
-const readDirRecursive = require('fs-readdir-recursive');
 
 const siteBucket = new aws.s3.Bucket('site-bucket', {
-  website: { indexDocument: 'index.html' }
+  website: {
+    indexDocument: 'index.html',
+    errorDocument: 'index.html'
+  }
 });
 
 const siteBucketPolicy = new aws.s3.BucketPolicy('bucket-policy', {
@@ -27,17 +26,18 @@ function publicReadPolicyForBucket(name) {
   };
 }
 
-function copyDirToBucket(dir, bucket) {
-  const files = readDirRecursive(dir);
-  files.forEach(file => {
-    const filePath = path.relative(process.cwd(), path.join(dir, file));
-    const object = new aws.s3.BucketObject(file, {
-      key: file,
-      bucket,
-      source: new pulumi.asset.FileAsset(filePath),
-      contentType: mime.getType(filePath)
-    });
-  });
-}
+// TODO: delete after "circleci push to S3" setup
+// function copyDirToBucket(dir, bucket) {
+//   const files = readDirRecursive(dir);
+//   files.forEach(file => {
+//     const filePath = path.relative(process.cwd(), path.join(dir, file));
+//     const object = new aws.s3.BucketObject(file, {
+//       key: file,
+//       bucket,
+//       source: new pulumi.asset.FileAsset(filePath),
+//       contentType: mime.getType(filePath)
+//     });
+//   });
+// }
 
-module.exports = { siteBucket, copyDirToBucket };
+module.exports = { siteBucket };
