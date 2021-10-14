@@ -1,5 +1,5 @@
 'use strict';
 
-const server = require('./microservices/server');
+const ingress = require('./ingress');
 
-module.exports = { server };
+module.exports = { ingress };

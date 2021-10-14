@@ -3,6 +3,9 @@
 const cluster = require('../../cluster');
 const k8s = require('@pulumi/kubernetes');
 const namespace = require('../../namespace');
+const pulumi = require('@pulumi/pulumi');
+
+const config = new pulumi.Config('server');
 
 const NAME = 'server';
 
@@ -18,8 +21,10 @@ const deployment = new k8s.apps.v1.Deployment(`${NAME}-deployment`, {
         labels: { app: NAME }
       },
       spec: {
+        // TODO: Add liveness and readiness probes
+        // TODO: add cpu autoscalling metrics
         containers: [{
-          image: 'ikovac01/kubernetes-hello',
+          image: config.get('docker-image'),
           name: NAME
         }]
       }
