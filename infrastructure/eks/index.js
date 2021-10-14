@@ -1,5 +1,5 @@
 'use strict';
 
-const namespace = require('./namespace');
+const server = require('./microservices/server');
 
-module.exports = { namespace };
+module.exports = { server };
