@@ -3,13 +3,13 @@ import IStorage, {
   DeleteResponse,
   ExistsResponse,
   Response
-} from '../interface';
+} from './interface';
 import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
-import { Config } from '../../../config';
+import { Config } from '../../config';
 import Joi from 'joi';
 import miss from 'mississippi';
 import path from 'path';
-import { validateConfig } from '../validation';
+import { validateConfig } from './validation';
 
 const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
 
@@ -38,10 +38,6 @@ class Amazon implements IStorage {
 
     this.#bucket = amazonConfig.bucket;
     this.#client = new S3(s3Config);
-  }
-
-  static create(config) {
-    return new Amazon(config);
   }
 
   private path(...segments): string {
@@ -136,4 +132,4 @@ class Amazon implements IStorage {
   }
 }
 
-export default { create: Amazon.create };
+export default Amazon;

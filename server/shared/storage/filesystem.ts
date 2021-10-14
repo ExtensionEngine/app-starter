@@ -3,8 +3,8 @@ import IStorage, {
   DeleteResponse,
   ExistsResponse,
   Response
-} from '../interface';
-import { Config } from '../../../config';
+} from './interface';
+import { Config } from '../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';
 import fs from 'fs';
@@ -12,7 +12,7 @@ import Joi from 'joi';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
-import { validateConfig } from '../validation';
+import { validateConfig } from './validation';
 
 const fsAsync = P.promisifyAll(fs);
 
@@ -31,10 +31,6 @@ class FilesystemStorage implements IStorage {
     const config = validateConfig(storage.filesystem, schema);
     this.#origin = server.origin;
     this.#rootPath = resolvePath(config.path);
-  }
-
-  static create(config) {
-    return new FilesystemStorage(config);
   }
 
   private path(...segments): string {
@@ -109,4 +105,4 @@ class FilesystemStorage implements IStorage {
   }
 }
 
-export default { create: FilesystemStorage.create };
+export default FilesystemStorage;

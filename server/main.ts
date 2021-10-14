@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import * as providers from './shared/storage';
 import { Application, NextFunction, Request, Response } from 'express';
 import auth from './auth';
 import Db from './shared/database';
@@ -10,7 +11,6 @@ import Mail from './shared/mail';
 import parsePaginationMiddleware from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
-import Storage from './shared/storage';
 import user from './user';
 import UserImportService from './user/import.service';
 import UserNotificationService from './user/notification.service';
@@ -29,7 +29,10 @@ function configure(provider: Provider): void {
   provider.registerMiddleware('errorHandler', ErrorHandler, 'logger');
   provider.service('db', Db, 'config', 'logger', 'userSubscriber');
   provider.service('mail', Mail, 'config', 'logger');
+
+  const Storage = providers[provider.container.config.storage.provider];
   provider.service('storage', Storage, 'config');
+
   provider.service(
     'userNotificationService',
     UserNotificationService,

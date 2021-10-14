@@ -1,7 +1,6 @@
 import configure from './configure';
 import createApp from './app';
 import createServer from './server';
-import { IContainer } from 'bottlejs';
 import main from '../main';
 import provider from './provider';
 
