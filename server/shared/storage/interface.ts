@@ -27,7 +27,7 @@ interface IStorage {
   moveFile(key: string, newKey: string): Promise<Response>;
   deleteFile(key: string): Promise<DeleteResponse>;
   deleteFiles(keys: string[]): Promise<DeleteResponse>;
-  listFiles(key: string): Promise<string[]>;
+  listFiles(key: string): Promise<FileListResponse[]>;
   fileExists(key: string): Promise<ExistsResponse>;
   getFileUrl(key: string): Promise<string>;
 }

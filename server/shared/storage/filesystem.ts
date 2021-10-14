@@ -3,6 +3,7 @@ import IStorage, {
   ContentResponse,
   DeleteResponse,
   ExistsResponse,
+  FileListResponse,
   Response
 } from './interface';
 import { Config } from '../../config';
@@ -85,10 +86,13 @@ class FilesystemStorage implements IStorage {
     return { raw: results, isDeleted: true };
   }
 
-  listFiles(key: string): Promise<string[]> {
+  listFiles(key: string): Promise<FileListResponse[]> {
     const readdir = fs.readdir(this.path(key), { withFileTypes: true });
-    return P.map(readdir, ({ name: fileName }) => path.join(key, String(fileName)))
-      .catch(err => isNotFound(err) ? null : Promise.reject(err));
+    return P.map(readdir, file => ({
+      raw: file,
+      path: path.join(key, String(file.name))
+    }))
+    .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
   async fileExists(key: string): Promise<ExistsResponse> {

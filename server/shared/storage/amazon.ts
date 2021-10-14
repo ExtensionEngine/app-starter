@@ -2,6 +2,7 @@ import IStorage, {
   ContentResponse,
   DeleteResponse,
   ExistsResponse,
+  FileListResponse,
   Response
 } from './interface';
 import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
@@ -95,9 +96,9 @@ class Amazon implements IStorage {
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
   async deleteFile(key: string): Promise<DeleteResponse> {
-    const params = { Bucket: this.#bucket, Key: key };
     const file = await this.getFile(key);
     if (!file) return Promise.reject(new Error(NOT_FOUND_MESSAGE));
+    const params = { Bucket: this.#bucket, Key: key };
     const result = await this.#client.deleteObject(params).promise();
     return { raw: result, isDeleted: true };
   }
@@ -114,10 +115,10 @@ class Amazon implements IStorage {
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
-  async listFiles(key: string): Promise<string[]> {
+  async listFiles(key: string): Promise<FileListResponse[]> {
     const params = { Bucket: this.#bucket, Prefix: key };
     const { Contents: files } = await this.#client.listObjectsV2(params).promise();
-    return files.map(file => file.Key);
+    return files.map(file => ({ raw: file, path: file.Key }));
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
