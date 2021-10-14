@@ -1,57 +1,63 @@
 import * as providers from './providers';
+import IStorage, {
+  ContentResponse,
+  DeleteResponse,
+  ExistsResponse,
+  Response
+} from './interface';
 import autobind from 'auto-bind';
 import { Config } from '../../config';
 
-class Storage {
-  #provider;
+class Storage implements IStorage {
+  #provider: IStorage;
 
   constructor(config: Config) {
     this.#provider = providers[config.storage.provider].create(config);
     autobind(this);
   }
 
-  getFile(key: string, options = {}): Promise<any> {
-    return this.#provider.getFile(key, options);
+  getFile(key: string): Promise<ContentResponse<string>> {
+    return this.#provider.getFile(key);
   }
 
-  createReadStream(key: string, options = {}): Promise<any> {
-    return this.#provider.createReadStream(key, options);
+  createReadStream(key: string): NodeJS.ReadableStream {
+    return this.#provider.createReadStream(key);
   }
 
-  saveFile(key: string, data = {}, options = {}): Promise<any> {
-    return this.#provider.saveFile(key, data, options);
+  saveFile(key: string, data: string): Promise<Response> {
+    return this.#provider.saveFile(key, data);
   }
 
-  createWriteStream(key: string, options = {}): Promise<any> {
-    return this.#provider.createWriteStream(key, options);
+  createWriteStream(key: string): Promise<Response> | Response {
+    return this.#provider.createWriteStream(key);
   }
 
-  deleteFile(key: string, options = {}): Promise<any> {
-    return this.#provider.deleteFile(key, options);
+  copyFile(key: string, newKey: string, mode?: number): Promise<Response> {
+    return this.#provider.copyFile(key, newKey, mode);
   }
 
-  deleteFiles(keys: string[], options = {}): Promise<any> {
-    return this.#provider.deleteFiles(keys, options);
+  moveFile(key: string, newKey: string, mode?: number): Promise<Response> {
+    return this.#provider.moveFile(key, newKey, mode);
   }
 
-  listFiles(options = {}): Promise<any> {
-    return this.#provider.listFiles(options);
+  deleteFile(key: string): Promise<DeleteResponse> {
+    return this.#provider.deleteFile(key);
   }
 
-  fileExists(key: string, options = {}): Promise<any> {
-    return this.#provider.fileExists(key, options);
+  deleteFiles(keys: string[]): Promise<DeleteResponse> {
+    return this.#provider.deleteFiles(keys);
   }
 
-  getFileUrl(key: string, options = {}): Promise<any> {
-    return this.#provider.getFileUrl(key, options);
+  listFiles(key: string): Promise<string[]> {
+    return this.#provider.listFiles(key);
   }
 
-  moveFile(key: string, newKey: string, options = {}): Promise<any> {
-    return this.#provider.moveFile(key, newKey, options);
+  fileExists(key: string): Promise<ExistsResponse> {
+    return this.#provider.fileExists(key);
   }
 
-  copyFile(key: string, newKey: string, options = {}): Promise<any> {
-    return this.#provider.copyFile(key, newKey, options);
+  getFileUrl(key: string): Promise<string> {
+    return this.#provider.getFileUrl(key);
   }
 }
 
