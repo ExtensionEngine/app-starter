@@ -14,13 +14,7 @@ const nginx = new k8s.helm.v3.Chart('nginx', {
     controller: {
       publishService: { enabled: true }
     }
-  },
-  transformations: [
-    obj => {
-      if (!obj.metadata) return;
-      obj.metadata.namespace = namespace;
-    }
-  ]
+  }
 }, { providers: { kubernetes: cluster.provider } });
 
 const ingress = new k8s.networking.v1.Ingress('nginx-ingress-rule', {
