@@ -22,10 +22,14 @@ const deployment = new k8s.apps.v1.Deployment(`${NAME}-deployment`, {
       },
       spec: {
         // TODO: Add liveness and readiness probes
-        // TODO: add cpu autoscalling metrics
         containers: [{
           image: config.get('docker-image'),
-          name: NAME
+          name: NAME,
+          resources: {
+            requests: {
+              cpu: '100m'
+            }
+          }
         }]
       }
     }
