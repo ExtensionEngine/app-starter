@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { QueryFlag, QueryOrder } from '@mikro-orm/core';
 import autobind from 'auto-bind';
-import { Middleware } from '../types/middleware';
+import { IMiddleware } from '../types/middleware';
 import yn from 'yn';
 
 type orderBy = {
@@ -16,7 +16,7 @@ export interface Pagination {
   showArchived: boolean;
 }
 
-class ParsePaginationMiddleware implements Middleware {
+class ParsePaginationMiddleware implements IMiddleware {
   constructor() {
     autobind(this);
   }
