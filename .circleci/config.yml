@@ -44,7 +44,8 @@ jobs:
        - docker/check
        - docker/build:
           image: ikovac01/app-starter:dev$CIRCLE_BUILD_NUM
-       - docker/push
+       - docker/push:
+          image: ikovac01/app-starter:dev$CIRCLE_BUILD_NUM
   # deploy:
   #   <<: *defaults
   #   steps:
