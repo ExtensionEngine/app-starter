@@ -13,70 +13,87 @@ orbs:
   node: circleci/node@4.5.1
   aws-cli: circleci/aws-cli@1.3
   pulumi: pulumi/pulumi@2.0.0
+  docker: circleci/docker@1.7.0
 
 jobs:
-  lint:
+  # lint:
+  #   <<: *defaults
+  #   steps:
+  #     - checkout
+  #     - node/install-packages
+  #     - run:
+  #         name: Lint
+  #         command: npm run lint
+  # build-client:
+  #   <<: *defaults
+  #   steps:
+  #     - checkout
+  #     - node/install-packages
+  #     - run:
+  #         name: Build client
+  #         command: npm run build:client
+  #     - persist_to_workspace:
+  #         root: .
+  #         paths:
+  #           - dist/client
+  build-server:
     <<: *defaults
     steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: Lint
-          command: npm run lint
-  build-client:
-    <<: *defaults
-    steps:
-      - checkout
-      - node/install-packages
-      - run:
-          name: Build client
-          command: npm run build:client
-      - persist_to_workspace:
-          root: .
-          paths:
-            - dist/client
-  deploy-client:
-    <<: *defaults
-    steps:
-      - checkout
-      - attach_workspace:
-          at: .
-      - run: cd ./infrastructure && npm i
-      - aws-cli/setup:
-          <<: *aws-credentials
-          aws-region: AWS_REGION
-      - pulumi/login
-      - pulumi/update:
-          stack: 'dev'
-          working_directory: ./infrastructure
-      - pulumi/stack_output:
-          stack: 'dev'
-          property_name: siteBucketEndpoint
-          env_var: WEBSITE_URL
-          working_directory: ./infrastructure
-      - run:
-          name: Echo bucket name
-          command: |
-            echo $WEBSITE_URL > /tmp/art-1.txt;
-      - store_artifacts:
-          path: /tmp/art-1.txt
+       - checkout
+       - node/install-packages
+       - docker/check
+       - docker/build:
+          image: ikovac01/app-starter:dev$CIRCLE_BUILD_NUM
+       - docker/push
+  # deploy:
+  #   <<: *defaults
+  #   steps:
+  #     - checkout
+  #     - attach_workspace:
+  #         at: .
+  #     - run: cd ./infrastructure && npm i
+  #     - aws-cli/setup:
+  #         <<: *aws-credentials
+  #         aws-region: AWS_REGION
+  #     - pulumi/login
+  #     - pulumi/update:
+  #         stack: 'dev'
+  #         working_directory: ./infrastructure
+  #     - pulumi/stack_output:
+  #         stack: 'dev'
+  #         property_name: siteBucketEndpoint
+  #         env_var: WEBSITE_URL
+  #         working_directory: ./infrastructure
+  #     - run:
+  #         name: Echo bucket name
+  #         command: |
+  #           echo $WEBSITE_URL > /tmp/art-1.txt;
+  #     - store_artifacts:
+  #         path: /tmp/art-1.txt
+
 
 workflows:
   test-and-deploy:
     jobs:
-      - lint:
+      # - lint:
+      #     filters: &branch-filters
+      #         branches:
+      #           only:
+      #             - feature/ST-293_setup-cicd
+      - build-server:
+          context: solution-tree-ci
           filters: &branch-filters
               branches:
                 only:
                   - feature/ST-293_setup-cicd
-      - build-client:
-          requires:
-            - lint
-          filters:
-            <<: *branch-filters
-      - deploy-client:
-          context: solution-tree-ci
-          requires:
-            - build-client
-          filters:
-            <<: *branch-filters
+      # - build-client:
+      #     requires:
+      #       - lint
+      #     filters:
+      #       <<: *branch-filters
+      # - deploy:
+      #     context: solution-tree-ci
+      #     requires:
+      #       - build-client
+      #     filters:
+      #       <<: *branch-filters
