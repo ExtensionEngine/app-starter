@@ -9,6 +9,7 @@ import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
 import { Config } from '../../config';
 import miss from 'mississippi';
 import path from 'path';
+import { Amazon as S3Config } from '../../config/storage';
 
 const NOT_FOUND_MESSAGE = 'Object not found';
 
@@ -19,7 +20,7 @@ class Amazon implements IStorage {
   #client: S3;
 
   constructor(config: Config) {
-    const amazonConfig = config.storage.amazon;
+    const amazonConfig = config.storage.amazon as S3Config;
 
     const s3Config = {
       accessKeyId: amazonConfig.key,

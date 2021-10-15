@@ -9,6 +9,7 @@ import IStorage, {
 import { Config } from '../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';
+import { Filesystem as FilesystemConfig } from '../../config/storage';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
@@ -21,7 +22,7 @@ class FilesystemStorage implements IStorage {
   #origin: string;
 
   constructor({ server, storage }: Config) {
-    const config = storage.filesystem;
+    const config = storage.filesystem as FilesystemConfig;
     this.#origin = server.origin;
     this.#rootPath = resolvePath(config.path);
   }
