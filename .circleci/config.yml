@@ -17,7 +17,7 @@ orbs:
 
 jobs:
   setup-env-dev: &setup-env
-    <<: *default-executor
+    <<: *defaults
     steps:
       - checkout
       - run:
