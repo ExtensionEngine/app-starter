@@ -16,6 +16,17 @@ orbs:
   docker: circleci/docker@1.7.0
 
 jobs:
+  setup-env-dev: &setup-env
+    <<: *default-executor
+    steps:
+      - checkout
+      - run:
+          name: Setup environment variables
+          command: source ./.circleci/setup-env.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .env
   # lint:
   #   <<: *defaults
   #   steps:
@@ -40,12 +51,14 @@ jobs:
     <<: *defaults
     steps:
        - checkout
+       - attach_workspace:
+          at: .
        - node/install-packages
        - docker/check
        - docker/build:
-          image: ikovac01/app-starter:dev$CIRCLE_BUILD_NUM
+          image: ikovac01/app-starter@dev$CIRCLE_BUILD_NUM
        - docker/push:
-          image: ikovac01/app-starter:dev$CIRCLE_BUILD_NUM
+          image: ikovac01/app-starter@dev$CIRCLE_BUILD_NUM
   # deploy:
   #   <<: *defaults
   #   steps:
