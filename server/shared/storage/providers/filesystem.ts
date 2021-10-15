@@ -1,5 +1,4 @@
 import { Config } from '../../../config';
-import exists from 'path-exists';
 import expandPath from 'untildify';
 import fs from 'fs';
 import Joi from 'joi';
@@ -86,8 +85,8 @@ class FilesystemStorage {
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  fileExists(key: string): Promise<boolean> {
-    return exists(this.path(key));
+  fileExists(key: string): boolean {
+    return fsAsync.existsSync(this.path(key));
   }
 
   getFileUrl(key: string): Promise<string> {
