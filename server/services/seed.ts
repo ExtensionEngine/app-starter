@@ -4,22 +4,22 @@ import Logger from 'bunyan';
 import path from 'path';
 
 class Seed {
-  db: Db;
-  config: Config;
-  log: Logger;
+  #db: Db;
+  #config: Config;
+  #log: Logger;
 
   constructor(db: Db, config: Config, logger: Logger) {
-    this.db = db;
-    this.config = config;
-    this.log = logger.child({ service: 'seed' });
+    this.#db = db;
+    this.#config = config;
+    this.#log = logger.child({ service: 'seed' });
   }
 
   async run(resourceName: string): Promise<void> {
-    await this.db.connect();
-    this.log.info(`Seeding database with "${resourceName}" state`);
+    await this.#db.connect();
+    this.#log.info(`Seeding database with "${resourceName}" state`);
     const seed = await this.load(resourceName);
-    await seed();
-    this.log.info('Database successfully seeded');
+    await seed(this.#db.provider.em);
+    this.#log.info('Database successfully seeded');
   }
 
   async load(name: string): Promise<any> {
