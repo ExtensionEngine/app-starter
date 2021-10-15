@@ -8,7 +8,6 @@ import IStorage, {
 } from './interface';
 import { Config } from '../../config';
 import expandPath from 'untildify';
-import { Filesystem as FilesystemConfig } from '../../config/storage';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
@@ -21,14 +20,13 @@ class FilesystemStorage implements IStorage {
   #serverUrl: string;
 
   constructor({ server, storage }: Config) {
-    const config = storage.filesystem as FilesystemConfig;
+    const config = storage.filesystem;
     this.#serverUrl = server.serverUrl;
     this.#rootPath = resolvePath(config.path);
   }
 
   private path(...segments): string {
-    segments = [this.#rootPath, ...segments];
-    return path.join(...segments);
+    return path.join(this.#rootPath, ...segments);
   }
 
   getFile(key: string): Promise<ContentResponse<string>> {

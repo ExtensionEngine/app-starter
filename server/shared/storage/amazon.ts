@@ -5,11 +5,10 @@ import IStorage, {
   FileListResponse,
   Response
 } from './interface';
-import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
 import { Config } from '../../config';
 import miss from 'mississippi';
 import path from 'path';
-import { Amazon as S3Config } from '../../config/storage';
+import S3 from 'aws-sdk/clients/s3';
 
 const NOT_FOUND_MESSAGE = 'Object not found';
 
@@ -20,7 +19,7 @@ class Amazon implements IStorage {
   #client: S3;
 
   constructor(config: Config) {
-    const amazonConfig = config.storage.amazon as S3Config;
+    const amazonConfig = config.storage.amazon;
 
     const s3Config = {
       accessKeyId: amazonConfig.key,
@@ -29,15 +28,14 @@ class Amazon implements IStorage {
       signatureVersion: 'v4',
       apiVersion: '2006-03-01',
       maxRetries: 3
-    } as ClientConfiguration;
+    };
 
     this.#bucket = amazonConfig.bucket;
     this.#client = new S3(s3Config);
   }
 
   private path(...segments): string {
-    segments = [this.#bucket, ...segments];
-    return path.join(...segments);
+    return path.join(this.#bucket, ...segments);
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
