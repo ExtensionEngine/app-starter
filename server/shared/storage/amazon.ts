@@ -34,10 +34,6 @@ class Amazon implements IStorage {
     this.#client = new S3(s3Config);
   }
 
-  private path(...segments): string {
-    return path.join(this.#bucket, ...segments);
-  }
-
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
   getFile(key: string): Promise<ContentResponse<string>> {
     const params = { Bucket: this.#bucket, Key: key };
@@ -123,6 +119,10 @@ class Amazon implements IStorage {
   getFileUrl(key: string): Promise<string> {
     const params = { Bucket: this.#bucket, Key: key, Expires: 3600 };
     return this.#client.getSignedUrlPromise('getObject', params);
+  }
+
+  private path(...segments): string {
+    return path.join(this.#bucket, ...segments);
   }
 }
 

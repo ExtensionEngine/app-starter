@@ -25,10 +25,6 @@ class FilesystemStorage implements IStorage {
     this.#rootPath = resolvePath(config.path);
   }
 
-  private path(...segments): string {
-    return path.join(this.#rootPath, ...segments);
-  }
-
   getFile(key: string): Promise<ContentResponse<string>> {
     return fsAsync.readFile(this.path(key))
       .then(data => ({ content: data.toString(), raw: data }))
@@ -96,6 +92,10 @@ class FilesystemStorage implements IStorage {
 
   getFileUrl(key: string): Promise<string> {
     return Promise.resolve(`${this.#serverUrl}/${key}`);
+  }
+
+  private path(...segments): string {
+    return path.join(this.#rootPath, ...segments);
   }
 }
 
