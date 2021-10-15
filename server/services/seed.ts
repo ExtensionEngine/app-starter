@@ -18,7 +18,6 @@ class Seed {
     await this.db.connect();
     this.log.info(`Seeding database with "${resourceName}" state`);
     const seed = await this.load(resourceName);
-    console.log({ seed });
     await seed();
     this.log.info('Database successfully seeded');
   }
