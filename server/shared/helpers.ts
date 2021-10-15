@@ -1,5 +1,3 @@
-'use strict';
-
 import roles, { Role } from '../user/roles';
 import times from 'lodash/times';
 import { UserDTO } from '../user/interfaces/dtos';
