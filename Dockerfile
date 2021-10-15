@@ -8,6 +8,7 @@ RUN npm run build:server
 FROM node:14.18.1
 WORKDIR /usr/src/app
 COPY package*.json ./
+COPY .env ./
 RUN npm install --production
 COPY --from=builder /usr/src/app/dist/server /usr/src/app/dist/server
 EXPOSE 3000
