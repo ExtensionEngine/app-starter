@@ -91,10 +91,7 @@ class FilesystemStorage implements IStorage {
   }
 
   async fileExists(key: string): Promise<ExistsResponse> {
-    return Promise.resolve({
-      exists: await exists(this.path(key)),
-      raw: undefined
-    });
+    return { exists: await exists(this.path(key)), raw: undefined };
   }
 
   getFileUrl(key: string): Promise<string> {
