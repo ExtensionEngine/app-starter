@@ -1,2 +1,7 @@
-export { default as amazon } from './amazon';
-export { default as filesystem } from './filesystem';
+import * as providers from './providers';
+import { Config } from '../../config';
+import IStorage from './interface';
+
+export default function createStorage(config: Config): IStorage {
+  return new providers[config.storage.provider](config);
+}
