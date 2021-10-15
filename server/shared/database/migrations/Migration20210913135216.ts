@@ -21,7 +21,7 @@ export class Migration20210913135216 extends Migration {
       table.string('first_name').notNullable();
       table.string('last_name').notNullable();
       table.string('email').notNullable().unique();
-      table.string('password').nullable();
+      table.string('password_hash').nullable();
       setTimestamps(table);
     });
 
