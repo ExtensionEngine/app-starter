@@ -52,6 +52,9 @@ jobs:
     executor: aws-ecr/default
     steps:
       - checkout
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
       -  attach_workspace:
           at: .
       - aws-ecr/build-and-push-image:
