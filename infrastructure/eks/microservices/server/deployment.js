@@ -29,7 +29,7 @@ const deployment = new k8s.apps.v1.Deployment(`${NAME}-deployment`, {
           name: NAME,
           resources: {
             requests: {
-              cpu: '100m'
+              cpu: '250m'
             }
           },
           env: [

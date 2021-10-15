@@ -1,7 +1,8 @@
 'use strict';
 
-const hpa = require('./autoscaler');
+// TODO: Uncomment for prod stack implementation
+// const hpa = require('./autoscaler');
 const { NAME } = require('./deployment');
 const service = require('./service');
 
-module.exports = { NAME, service, hpa };
+module.exports = { NAME, service };
