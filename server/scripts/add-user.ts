@@ -1,6 +1,7 @@
 'use strict';
 
 import { anyTldEmailSchema } from '../utils/validation';
+import { Command } from 'commander';
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
 import joi from 'joi';
@@ -11,6 +12,18 @@ import provider from '../framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import roles from '../user/roles';
 import User from '../user/model';
+
+const program = new Command('add-user');
+
+program.action(async () => {
+  const data = await prompt(questions);
+  configure(provider, main);
+  const { db } = provider.container;
+  await db.connect();
+  return RequestContext.createAsync(db.provider.em, () => addUser(data));
+});
+
+export default program;
 
 const userSchema = {
   email: anyTldEmailSchema.required(),
@@ -47,14 +60,6 @@ const questions = [{
   choices: map(roles, value => ({ name: humanize(value), value })),
   message: 'Select role:'
 }];
-
-prompt(questions)
-  .then(async data => {
-    configure(provider, main);
-    const { db } = provider.container;
-    await db.connect();
-    await RequestContext.createAsync(db.provider.em, () => addUser(data));
-  });
 
 function addUser({ firstName, lastName, email, role, password }) {
   const { db, logger } = provider.container;
