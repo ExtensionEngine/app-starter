@@ -19,7 +19,7 @@ class UserNotificationService implements IUserNotificationService {
   }
 
   private resetUrl(token) {
-    return `${this.#config.server.origin}/#/auth/reset-password/${token}`;
+    return `${this.#config.server.serverUrl}/#/auth/reset-password/${token}`;
   }
 
   async resetPassword(user: User): Promise<User> {
@@ -38,10 +38,9 @@ class UserNotificationService implements IUserNotificationService {
   async invite(user: User): Promise<User> {
     const token = this.#authService.createToken(user, AudienceScope.Setup, '5 days');
     const href = this.resetUrl(token);
-    const { origin, hostname } = this.#config.server;
     const recipient = user.email;
     const recipientName = user.firstName;
-    const templateData = { href, origin, hostname, recipientName };
+    const templateData = { href, recipientName };
     await this.#mail.send({
       to: recipient,
       subject: 'Invite',

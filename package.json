@@ -14,20 +14,19 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev:client": "poi --serve",
     "build:client": "rimraf dist/client && del-cli node_modules/.cache/vue-loader && poi --prod",
     "build:server": "rimraf dist/server && tsc",
+    "dev:client": "poi --serve",
+    "dev:server": "tsnd server/framework/start",
+    "server:debug": "tsnd --inspect -- server/framework/start",
+    "prestart": "npm run build:server",
+    "start": "NODE_ENV=production node dist/server/framework/start",
     "clean": "del-cli dist/* !dist/.gitkeep",
     "webpack:inspect-config": "poi --inspect-webpack",
     "webpack:bundle-report": "poi --prod --bundle-report",
     "webpack:stats": "poi --prod --print-stats",
-    "prestart": "npm run build:server",
-    "start": "NODE_ENV=production node dist/server/framework/start",
-    "start:watch": "tsnd server/framework/start",
-    "start:debug": "tsnd --inspect -- server/framework/start",
     "lint": "eslint server",
     "lint:fix": "eslint --fix server",
-    "db:seed": "ts-node server/framework/cli seed",
     "user:add": "ts-node server/scripts/add-user",
     "db:migration:up": "npx mikro-orm migration:up",
     "db:migration:down": "npx mikro-orm migration:down",
@@ -82,7 +81,6 @@
     "humanize-string": "^2.1.0",
     "inquirer": "^8.1.5",
     "into-stream": "^6.0.0",
-    "is-localhost": "^0.0.2",
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
@@ -178,7 +176,7 @@
   },
   "engines": {
     "node": ">= 16",
-    "npm": ">= 7",
+    "npm": ">= 6",
     "postgres": ">= 9.4"
   }
 }
