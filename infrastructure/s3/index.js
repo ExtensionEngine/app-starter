@@ -27,18 +27,4 @@ function publicReadPolicyForBucket(name) {
   };
 }
 
-// TODO: delete after "circleci push to S3" setup
-// function copyDirToBucket(dir, bucket) {
-//   const files = readDirRecursive(dir);
-//   files.forEach(file => {
-//     const filePath = path.relative(process.cwd(), path.join(dir, file));
-//     const object = new aws.s3.BucketObject(file, {
-//       key: file,
-//       bucket,
-//       source: new pulumi.asset.FileAsset(filePath),
-//       contentType: mime.getType(filePath)
-//     });
-//   });
-// }
-
 module.exports = { siteBucket };
