@@ -16,103 +16,120 @@ orbs:
   pulumi: pulumi/pulumi@2.0.0
 
 jobs:
-  setup-env-dev: &setup-env
-    <<: *defaults
-    steps:
-      - checkout
-      - run:
-          name: Setup environment variables
-          command: source ./.circleci/setup-env.sh
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .env
-  # lint:
+  # setup-env-dev: &setup-env
   #   <<: *defaults
   #   steps:
   #     - checkout
-  #     - node/install-packages
   #     - run:
-  #         name: Lint
-  #         command: npm run lint
-  # build-client:
-  #   <<: *defaults
-  #   steps:
-  #     - checkout
-  #     - node/install-packages
-  #     - run:
-  #         name: Build client
-  #         command: npm run build:client
+  #         name: Setup environment variables
+  #         command: source ./.circleci/setup-env.sh
   #     - persist_to_workspace:
   #         root: .
   #         paths:
-  #           - dist/client
-  build-server:
-    working_directory: ~/project/solution-tree
-    executor: aws-ecr/default
+  #           - .env
+  lint:
+    <<: *defaults
     steps:
       - checkout
-      - aws-cli/setup:
-          <<: *aws-credentials
-          aws-region: AWS_REGION
-      -  attach_workspace:
-          at: .
-      - aws-ecr/build-and-push-image:
-          <<: *aws-credentials
-          account-url: AWS_ECR_ACCOUNT
-          attach-workspace: true
-          create-repo: true
-          repo: app-starter
-          tag: dev${CIRCLE_SHA1}
-  # deploy:
-  #   <<: *defaults
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+  build-client:
+    <<: *defaults
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build client
+          command: npm run build:client
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/client
+  # build-server:
+  #   working_directory: ~/project/solution-tree
+  #   executor: aws-ecr/default
   #   steps:
   #     - checkout
-  #     - attach_workspace:
-  #         at: .
-  #     - run: cd ./infrastructure && npm i
   #     - aws-cli/setup:
   #         <<: *aws-credentials
   #         aws-region: AWS_REGION
-  #     - pulumi/login
-  #     - pulumi/update:
-  #         stack: 'dev'
-  #         working_directory: ./infrastructure
-  #     - pulumi/stack_output:
-  #         stack: 'dev'
-  #         property_name: siteBucketEndpoint
-  #         env_var: WEBSITE_URL
-  #         working_directory: ./infrastructure
-  #     - run:
-  #         name: Echo bucket name
-  #         command: |
-  #           echo $WEBSITE_URL > /tmp/art-1.txt;
-  #     - store_artifacts:
-  #         path: /tmp/art-1.txt
-
+  #     -  attach_workspace:
+  #         at: .
+  #     - aws-ecr/build-and-push-image:
+  #         <<: *aws-credentials
+  #         account-url: AWS_ECR_ACCOUNT
+  #         attach-workspace: true
+  #         create-repo: true
+  #         repo: app-starter
+  #         tag: dev${CIRCLE_SHA1}
+  deploy:
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: cd ./infrastructure && npm i
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - pulumi/login
+      - pulumi/update:
+          stack: 'dev'
+          working_directory: ./infrastructure
+      - pulumi/stack_output:
+          stack: 'dev'
+          property_name: siteBucketEndpoint
+          env_var: WEBSITE_URL
+          working_directory: ./infrastructure
+      - run:
+          name: Echo bucket name
+          command: |
+            echo $WEBSITE_URL > /tmp/art-1.txt;
+      - store_artifacts:
+          path: /tmp/art-1.txt
+  push-to-s3:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - run:
+          name: Deploy to S3
+          command: |
+            aws s3 sync dist/client s3://app-starter-site-bucket --no-progress --delete
 
 workflows:
   test-and-deploy:
     jobs:
-      # - lint:
-      #     filters: &branch-filters
-      #         branches:
-      #           only:
-      #             - feature/ST-293_setup-cicd
-      - build-server:
-          context: solution-tree-ci
+      - lint:
           filters: &branch-filters
               branches:
                 only:
                   - feature/ST-293_setup-cicd
-      # - build-client:
-      #     requires:
-      #       - lint
-      #     filters:
-      #       <<: *branch-filters
-      # - deploy:
+      # - build-server:
       #     context: solution-tree-ci
-      #     requires:
-      #       - build-client
-      #     filters:
-      #       <<: *branch-filters
+      #     filters: &branch-filters
+      #         branches:
+      #           only:
+      #             - feature/ST-293_setup-cicd
+      - build-client:
+          requires:
+            - lint
+          filters:
+            <<: *branch-filters
+      - deploy:
+          context: solution-tree-ci
+          requires:
+            - build-client
+          filters:
+            <<: *branch-filters
+      - push-to-s3:
+          context: solution-tree-ci
+          requires:
+            - deploy
+          filters:
+            <<: *branch-filters

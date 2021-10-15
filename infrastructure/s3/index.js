@@ -3,6 +3,7 @@
 const aws = require('@pulumi/aws');
 
 const siteBucket = new aws.s3.Bucket('site-bucket', {
+  bucket: 'app-starter-site-bucket',
   website: {
     indexDocument: 'index.html',
     errorDocument: 'index.html'
