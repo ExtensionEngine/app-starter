@@ -59,9 +59,10 @@ jobs:
           at: .
       - aws-ecr/build-and-push-image:
           <<: *aws-credentials
+          account-url: AWS_ECR_ACCOUNT
           attach-workspace: true
           create-repo: true
-          repo: ikovac/app-starter
+          repo: app-starter
           tag: dev${CIRCLE_SHA1}
   # deploy:
   #   <<: *defaults
