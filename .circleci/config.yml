@@ -48,7 +48,8 @@ jobs:
   #         paths:
   #           - dist/client
   build-server:
-    <<: *defaults
+    executor: docker/docker
+    working_directory: ~/project/solution-tree
     steps:
        - checkout
        - attach_workspace:
