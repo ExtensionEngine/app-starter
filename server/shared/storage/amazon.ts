@@ -7,34 +7,25 @@ import IStorage, {
 } from './interface';
 import S3, { ClientConfiguration } from 'aws-sdk/clients/s3';
 import { Config } from '../../config';
-import Joi from 'joi';
 import miss from 'mississippi';
 import path from 'path';
-import { validateConfig } from './validation';
 
 const NOT_FOUND_MESSAGE = 'Object not found';
 
 const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
-
-const schema = Joi.object().keys({
-  region: Joi.string().required(),
-  bucket: Joi.string().required(),
-  key: Joi.string().required(),
-  secret: Joi.string().required()
-});
 
 class Amazon implements IStorage {
   #bucket: string;
   #client: S3;
 
   constructor(config: Config) {
-    const amazonConfig = validateConfig(config.storage.amazon, schema);
+    const amazonConfig = config.storage.amazon;
 
     const s3Config = {
-      signatureVersion: 'v4',
       accessKeyId: amazonConfig.key,
       secretAccessKey: amazonConfig.secret,
       region: amazonConfig.region,
+      signatureVersion: 'v4',
       apiVersion: '2006-03-01',
       maxRetries: 3
     } as ClientConfiguration;

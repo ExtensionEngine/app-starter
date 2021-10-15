@@ -9,25 +9,19 @@ import IStorage, {
 import { Config } from '../../config';
 import exists from 'path-exists';
 import expandPath from 'untildify';
-import Joi from 'joi';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
-import { validateConfig } from './validation';
 
 const isNotFound = (err: any): boolean => err.code === 'ENOENT';
 const resolvePath = (str: string): string => path.resolve(expandPath(str));
-
-const schema = Joi.object().keys({
-  path: Joi.string().required()
-});
 
 class FilesystemStorage implements IStorage {
   #rootPath: string;
   #origin: string;
 
   constructor({ server, storage }: Config) {
-    const config = validateConfig(storage.filesystem, schema);
+    const config = storage.filesystem;
     this.#origin = server.origin;
     this.#rootPath = resolvePath(config.path);
   }
