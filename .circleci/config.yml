@@ -56,9 +56,11 @@ jobs:
        - node/install-packages
        - docker/check
        - docker/build:
-          image: ikovac01/app-starter@dev$CIRCLE_BUILD_NUM
+          image: ikovac01/app-starter
+          tag: dev$CIRCLE_SHA1
        - docker/push:
-          image: ikovac01/app-starter@dev$CIRCLE_BUILD_NUM
+          image: ikovac01/app-starter
+          tag: dev$CIRCLE_SHA1
   # deploy:
   #   <<: *defaults
   #   steps:
