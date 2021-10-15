@@ -4,12 +4,9 @@ const path = require('path');
 
 require('dotenv').config();
 
-const { IP, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
-
-const PORT = process.env.PORT || process.env.SERVER_PORT;
+const { AUTH_JWT_SCHEME, SERVER_URL } = process.env;
 
 const isProduction = process.env.NODE_ENV === 'production';
-const serverUrl = `http://${IP}:${PORT}`;
 
 const aliases = {
   '@': path.resolve(__dirname, './client')
@@ -21,10 +18,10 @@ const devServer = {
     'X-Powered-By': 'Webpack DevSever'
   },
   proxy: {
-    '/api': { target: serverUrl }
+    '/api': { target: SERVER_URL }
   },
   // Override using: `npm run dev:client -- --port <number>`
-  port: Number(REVERSE_PROXY_PORT),
+  port: 8081,
   hot: true,
   hotEntries: ['admin', 'main']
 };
