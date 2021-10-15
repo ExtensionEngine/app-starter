@@ -10,7 +10,7 @@ const hpa = new k8s.autoscaling.v1.HorizontalPodAutoscaler(`${NAME}-autoscaler`,
   spec: {
     minReplicas: 1,
     maxReplicas: 3,
-    targetCPUUtilizationPercentage: 20,
+    targetCPUUtilizationPercentage: 70,
     scaleTargetRef: {
       kind: 'Deployment',
       name: deployment.metadata.name,
