@@ -5,6 +5,7 @@ import {
   Unique
 } from '@mikro-orm/core';
 import BaseEntity from '../shared/database/base-entity';
+import bcrypt from 'bcrypt';
 import { Role } from './roles';
 
 @Entity()
@@ -14,9 +15,6 @@ class User extends BaseEntity {
 
   @Property()
   lastName: string;
-
-  @Property({ nullable: true })
-  password?: string
 
   @Property()
   @Unique()
@@ -28,15 +26,8 @@ class User extends BaseEntity {
   @Property({ nullable: true })
   deletedAt: Date;
 
-  @Property({ persist: false })
-  get fullName(): string | null {
-    return [this.firstName, this.lastName].filter(Boolean).join(' ') || null;
-  }
-
-  @Property({ persist: false })
-  get label(): string {
-    return this.fullName || this.email;
-  }
+  @Property({ nullable: true, hidden: true })
+  private passwordHash?: string;
 
   constructor(
     firstName: string,
@@ -50,7 +41,26 @@ class User extends BaseEntity {
     this.lastName = lastName;
     this.email = email;
     this.role = role;
-    this.password = password;
+    if (password) this.password = password;
+  }
+
+  @Property({ persist: false })
+  get password(): string {
+    return this.passwordHash;
+  }
+
+  set password(value: string) {
+    this.passwordHash = bcrypt.hashSync(value, 10);
+  }
+
+  @Property({ persist: false })
+  get fullName(): string | null {
+    return [this.firstName, this.lastName].filter(Boolean).join(' ') || null;
+  }
+
+  @Property({ persist: false })
+  get label(): string {
+    return this.fullName || this.email;
   }
 }
 

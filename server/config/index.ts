@@ -17,7 +17,7 @@ export interface Config {
 }
 
 const schema = joi.object({
-  environment: joi.string().valid(...environments).required(),
+  environment: joi.string().valid(...environments),
   database: joi.object(),
   server: joi.object(),
   auth: joi.object(),

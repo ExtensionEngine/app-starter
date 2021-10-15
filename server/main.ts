@@ -14,7 +14,6 @@ import { RequestContext } from '@mikro-orm/core';
 import user from './user';
 import UserImportService from './user/import.service';
 import UserNotificationService from './user/notification.service';
-import UserSubscriber from './user/subscriber';
 
 const program: IProgram = {
   configure,
@@ -27,7 +26,7 @@ export default program;
 function configure(provider: Provider): void {
   provider.value('logger', logger);
   provider.registerMiddleware('errorHandler', ErrorHandler, 'logger');
-  provider.service('db', Db, 'config', 'logger', 'userSubscriber');
+  provider.service('db', Db, 'config', 'logger');
   provider.service('mail', Mail, 'config', 'logger');
 
   const Storage = providers[provider.container.config.storage.provider];
@@ -44,7 +43,6 @@ function configure(provider: Provider): void {
     'config', 'userRepository', 'userNotificationService'
   );
   provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
-  provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule(auth);
   provider.registerModule(user);
 }
