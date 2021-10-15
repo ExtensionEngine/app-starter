@@ -19,11 +19,11 @@ const resolvePath = (str: string): string => path.resolve(expandPath(str));
 
 class FilesystemStorage implements IStorage {
   #rootPath: string;
-  #origin: string;
+  #serverUrl: string;
 
   constructor({ server, storage }: Config) {
     const config = storage.filesystem as FilesystemConfig;
-    this.#origin = server.origin;
+    this.#serverUrl = server.serverUrl;
     this.#rootPath = resolvePath(config.path);
   }
 
@@ -98,7 +98,7 @@ class FilesystemStorage implements IStorage {
   }
 
   getFileUrl(key: string): Promise<string> {
-    return Promise.resolve(`${this.#origin}/${key}`);
+    return Promise.resolve(`${this.#serverUrl}/${key}`);
   }
 }
 
