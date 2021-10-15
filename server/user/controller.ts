@@ -49,10 +49,10 @@ class UserController {
 
   async createOrRestore({ body }: Request, res: Response): Promise<Response> {
     joi.attempt(body, userSchema);
-    const { id, firstName, lastName, email, role, password } = body;
+    const { id, firstName, lastName, email, role } = body;
     const user = id
       ? await this.#userRepository.findOne(Number(id))
-      : new User(firstName, lastName, email, role, password);
+      : new User(firstName, lastName, email, role);
     if (id) this.#userRepository.assign(user, { deletedAt: null });
     await this.#userRepository.persistAndFlush(user);
     await this.#userNotificationService.invite(user);
