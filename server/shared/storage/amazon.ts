@@ -3,12 +3,13 @@ import IStorage, {
   DeleteResponse,
   FileListResponse
 } from './interface';
+import { AWSError } from 'aws-sdk';
 import { Config } from '../../config';
 import miss from 'mississippi';
 import path from 'path';
 import S3 from 'aws-sdk/clients/s3';
 
-const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
+const isNotFound = (err: AWSError): boolean => err.code === 'NoSuchKey';
 
 class Amazon implements IStorage {
   #bucket: string;
