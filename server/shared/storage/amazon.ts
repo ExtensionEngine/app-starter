@@ -99,7 +99,7 @@ class Amazon implements IStorage {
   async listFiles(key: string): Promise<FileListResponse[]> {
     const params = { Bucket: this.#bucket, Prefix: key };
     const { Contents: files } = await this.#client.listObjectsV2(params).promise();
-    return files.map(file => ({ raw: file, path: file.Key }));
+    return files.map(file => ({ path: file.Key }));
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property

@@ -75,11 +75,8 @@ class FilesystemStorage implements IStorage {
 
   listFiles(key: string): Promise<FileListResponse[]> {
     const readdir = fsAsync.readdir(this.path(key), { withFileTypes: true });
-    return P.map(readdir, file => ({
-      raw: file,
-      path: path.join(key, String(file.name))
-    }))
-    .catch(err => isNotFound(err) ? null : Promise.reject(err));
+    return P.map(readdir, file => ({ path: path.join(key, String(file.name)) }))
+      .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
   fileExists(key: string): Promise<boolean> {

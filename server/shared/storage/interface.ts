@@ -6,7 +6,7 @@ export interface ContentResponse<ContentType> extends Response {
   content: ContentType;
 }
 
-export interface FileListResponse extends Response {
+export interface FileListResponse {
   path: string;
 }
 
