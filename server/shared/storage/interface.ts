@@ -2,10 +2,6 @@ export interface Response {
   raw: unknown;
 }
 
-export interface ExistsResponse extends Response {
-  exists: boolean;
-}
-
 export interface ContentResponse<ContentType> extends Response {
   content: ContentType;
 }
@@ -28,7 +24,7 @@ interface IStorage {
   deleteFile(key: string): Promise<DeleteResponse>;
   deleteFiles(keys: string[]): Promise<DeleteResponse>;
   listFiles(key: string): Promise<FileListResponse[]>;
-  fileExists(key: string): Promise<ExistsResponse>;
+  fileExists(key: string): Promise<boolean>;
   getFileUrl(key: string): Promise<string>;
 }
 

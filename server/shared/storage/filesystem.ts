@@ -2,7 +2,6 @@ import fs, { createReadStream, createWriteStream, promises as fsAsync } from 'fs
 import IStorage, {
   ContentResponse,
   DeleteResponse,
-  ExistsResponse,
   FileListResponse,
   Response
 } from './interface';
@@ -82,11 +81,9 @@ class FilesystemStorage implements IStorage {
     .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  async fileExists(key: string): Promise<ExistsResponse> {
-    return Promise.resolve({
-      exists: fs.existsSync(this.path(key)),
-      raw: undefined
-    });
+  fileExists(key: string): Promise<boolean> {
+    const exists = fs.existsSync(this.path(key));
+    return Promise.resolve(exists);
   }
 
   getFileUrl(key: string): Promise<string> {

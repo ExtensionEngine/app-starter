@@ -1,7 +1,6 @@
 import IStorage, {
   ContentResponse,
   DeleteResponse,
-  ExistsResponse,
   FileListResponse,
   Response
 } from './interface';
@@ -108,11 +107,11 @@ class Amazon implements IStorage {
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#headObject-property
-  fileExists(key: string): Promise<ExistsResponse> {
+  fileExists(key: string): Promise<boolean> {
     const params = { Bucket: this.#bucket, Key: key };
     return this.#client.headObject(params).promise()
-      .then(result => ({ exists: true, raw: result }))
-      .catch(err => ({ exists: false, raw: err }));
+      .then(Boolean)
+      .catch(() => false);
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getSignedUrl-property
