@@ -1,6 +1,6 @@
 export interface ContentResponse<ContentType> {
   content: ContentType;
-  raw: unknown;
+  raw: Buffer;
 }
 
 export interface FileListResponse {

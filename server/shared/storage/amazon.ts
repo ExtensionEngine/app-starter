@@ -34,7 +34,7 @@ class Amazon implements IStorage {
   getFile(key: string): Promise<ContentResponse<string>> {
     const params = { Bucket: this.#bucket, Key: key };
     return this.#client.getObject(params).promise()
-      .then(({ Body: data }) => ({ content: data.toString(), raw: data }))
+      .then(({ Body: data }) => ({ content: data.toString(), raw: data as Buffer }))
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
