@@ -1,8 +1,7 @@
 import IStorage, {
   ContentResponse,
   DeleteResponse,
-  FileListResponse,
-  Response
+  FileListResponse
 } from './interface';
 import { Config } from '../../config';
 import miss from 'mississippi';
@@ -54,27 +53,24 @@ class Amazon implements IStorage {
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
-  async saveFile(key: string, data: Buffer): Promise<Response> {
+  async saveFile(key: string, data: Buffer): Promise<void> {
     const params = { Bucket: this.#bucket, Key: key, Body: data };
-    const result = await this.#client.putObject(params).promise();
-    return { raw: result };
+    await this.#client.putObject(params).promise();
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#copyObject-property
-  async copyFile(key: string, newKey: string): Promise<Response> {
+  async copyFile(key: string, newKey: string): Promise<void> {
     const params = {
       Bucket: this.#bucket,
       CopySource: this.path(`/${key}`),
       Key: newKey
     };
-    const result = await this.#client.copyObject(params).promise();
-    return { raw: result };
+    await this.#client.copyObject(params).promise();
   }
 
-  async moveFile(key: string, newKey: string): Promise<Response> {
-    const result = await this.copyFile(key, newKey);
+  async moveFile(key: string, newKey: string): Promise<void> {
+    await this.copyFile(key, newKey);
     await this.deleteFile(key);
-    return { raw: result };
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property

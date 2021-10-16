@@ -1,9 +1,6 @@
-export interface Response {
-  raw: unknown;
-}
-
-export interface ContentResponse<ContentType> extends Response {
+export interface ContentResponse<ContentType> {
   content: ContentType;
+  raw: unknown;
 }
 
 export interface FileListResponse {
@@ -18,9 +15,9 @@ interface IStorage {
   getFile(key: string): Promise<ContentResponse<string>>;
   createReadStream(key: string): NodeJS.ReadableStream;
   createWriteStream(key: string): Promise<NodeJS.WritableStream> | NodeJS.WritableStream;
-  saveFile(key: string, data: Buffer): Promise<Response>;
-  copyFile(key: string, newKey: string): Promise<Response>;
-  moveFile(key: string, newKey: string): Promise<Response>;
+  saveFile(key: string, data: Buffer): Promise<void>;
+  copyFile(key: string, newKey: string): Promise<void>;
+  moveFile(key: string, newKey: string): Promise<void>;
   deleteFile(key: string): Promise<DeleteResponse>;
   deleteFiles(keys: string[]): Promise<DeleteResponse>;
   listFiles(key: string): Promise<FileListResponse[]>;

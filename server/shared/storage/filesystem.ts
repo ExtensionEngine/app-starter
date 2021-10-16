@@ -2,8 +2,7 @@ import fs, { createReadStream, createWriteStream, promises as fsAsync } from 'fs
 import IStorage, {
   ContentResponse,
   DeleteResponse,
-  FileListResponse,
-  Response
+  FileListResponse
 } from './interface';
 import { Config } from '../../config';
 import expandPath from 'untildify';
@@ -41,25 +40,22 @@ class FilesystemStorage implements IStorage {
     return createWriteStream(filepath);
   }
 
-  async saveFile(key: string, data: Buffer): Promise<Response> {
+  async saveFile(key: string, data: Buffer): Promise<void> {
     const filePath = this.path(key);
     await mkdirp(path.dirname(filePath));
-    const result = await fsAsync.writeFile(filePath, data);
-    return { raw: result };
+    await fsAsync.writeFile(filePath, data);
   }
 
-  async copyFile(key: string, newKey: string): Promise<Response> {
+  async copyFile(key: string, newKey: string): Promise<void> {
     const src = this.path(key);
     const dest = this.path(newKey);
     await mkdirp(path.dirname(dest));
-    const result = await fsAsync.copyFile(src, dest);
-    return { raw: result };
+    await fsAsync.copyFile(src, dest);
   }
 
-  async moveFile(key: string, newKey: string): Promise<Response> {
-    const file = await this.copyFile(key, newKey);
+  async moveFile(key: string, newKey: string): Promise<void> {
+    await this.copyFile(key, newKey);
     await this.deleteFile(key);
-    return { raw: file.raw };
   }
 
   async deleteFile(key: string): Promise<DeleteResponse> {
