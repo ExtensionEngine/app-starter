@@ -63,13 +63,14 @@ class FilesystemStorage implements IStorage {
   }
 
   async deleteFile(key: string): Promise<DeleteResponse> {
-    const result = await fsAsync.unlink(this.path(key));
-    return { raw: result, isDeleted: true };
+    const exists = await this.fileExists(key);
+    if (exists) await fsAsync.unlink(this.path(key));
+    return { isDeleted: true };
   }
 
   async deleteFiles(keys: string[]): Promise<DeleteResponse> {
-    const results = await P.map(keys, key => this.deleteFile(key));
-    return { raw: results, isDeleted: true };
+    await P.map(keys, key => this.deleteFile(key));
+    return { isDeleted: true };
   }
 
   listFiles(key: string): Promise<FileListResponse[]> {

@@ -10,7 +10,7 @@ export interface FileListResponse extends Response {
   path: string;
 }
 
-export interface DeleteResponse extends Response {
+export interface DeleteResponse {
   isDeleted: boolean | null;
 }
 

@@ -81,11 +81,9 @@ class Amazon implements IStorage {
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
   async deleteFile(key: string): Promise<DeleteResponse> {
-    const file = await this.getFile(key);
-    if (!file) return Promise.reject(new Error(NOT_FOUND_MESSAGE));
     const params = { Bucket: this.#bucket, Key: key };
-    const result = await this.#client.deleteObject(params).promise();
-    return { raw: result, isDeleted: true };
+    await this.#client.deleteObject(params).promise();
+    return { isDeleted: true };
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObjects-property
@@ -95,8 +93,8 @@ class Amazon implements IStorage {
       Bucket: this.#bucket,
       Delete: { Objects: objects }
     };
-    const results = await this.#client.deleteObjects(params).promise();
-    return { raw: results, isDeleted: true };
+    await this.#client.deleteObjects(params).promise();
+    return { isDeleted: true };
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property
