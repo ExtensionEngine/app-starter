@@ -9,8 +9,6 @@ import miss from 'mississippi';
 import path from 'path';
 import S3 from 'aws-sdk/clients/s3';
 
-const NOT_FOUND_MESSAGE = 'Object not found';
-
 const isNotFound = (err: any): boolean => err.code === 'NoSuchKey';
 
 class Amazon implements IStorage {
