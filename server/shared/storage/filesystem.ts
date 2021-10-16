@@ -35,18 +35,17 @@ class FilesystemStorage implements IStorage {
     return createReadStream(this.path(key));
   }
 
+  async createWriteStream(key: string): Promise<NodeJS.WritableStream> {
+    const filepath = this.path(key);
+    const dirname = path.dirname(filepath);
+    await fsAsync.mkdir(dirname, { recursive: true });
+    return createWriteStream(filepath);
+  }
+
   async saveFile(key: string, data: Buffer): Promise<Response> {
     const filePath = this.path(key);
     await mkdirp(path.dirname(filePath));
     const result = await fsAsync.writeFile(filePath, data);
-    return { raw: result };
-  }
-
-  async createWriteStream(key: string): Promise<Response> {
-    const filepath = this.path(key);
-    const dirname = path.dirname(filepath);
-    await fsAsync.mkdir(dirname, { recursive: true });
-    const result = createWriteStream(filepath);
     return { raw: result };
   }
 

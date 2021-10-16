@@ -21,8 +21,8 @@ export interface DeleteResponse extends Response {
 interface IStorage {
   getFile(key: string): Promise<ContentResponse<string>>;
   createReadStream(key: string): NodeJS.ReadableStream;
+  createWriteStream(key: string): Promise<NodeJS.WritableStream> | NodeJS.WritableStream;
   saveFile(key: string, data: Buffer): Promise<Response>;
-  createWriteStream(key: string): Promise<Response> | Response;
   copyFile(key: string, newKey: string): Promise<Response>;
   moveFile(key: string, newKey: string): Promise<Response>;
   deleteFile(key: string): Promise<DeleteResponse>;

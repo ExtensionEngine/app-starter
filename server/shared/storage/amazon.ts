@@ -48,19 +48,19 @@ class Amazon implements IStorage {
     return this.#client.getObject(params).createReadStream();
   }
 
+  // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
+  createWriteStream(key: string): NodeJS.WritableStream {
+    const throughStream = miss.through();
+    const params = { Bucket: this.#bucket, Key: key, Body: throughStream };
+    this.#client.upload(params, () => null);
+    return throughStream;
+  }
+
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
   async saveFile(key: string, data: Buffer): Promise<Response> {
     const params = { Bucket: this.#bucket, Key: key, Body: data };
     const result = await this.#client.putObject(params).promise();
     return { raw: result };
-  }
-
-  // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
-  createWriteStream(key: string): Response {
-    const throughStream = miss.through();
-    const params = { Bucket: this.#bucket, Key: key, Body: throughStream };
-    this.#client.upload(params, () => null);
-    return { raw: throughStream };
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#copyObject-property
