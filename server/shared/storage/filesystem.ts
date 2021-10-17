@@ -10,7 +10,11 @@ import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
 
-const isNotFound = (err: any): boolean => err.code === 'ENOENT';
+interface SystemError extends Error {
+  code: string;
+}
+
+const isNotFound = (err: SystemError): boolean => err.code === 'ENOENT';
 const resolvePath = (str: string): string => path.resolve(expandPath(str));
 
 class FilesystemStorage implements IStorage {
