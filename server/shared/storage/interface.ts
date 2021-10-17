@@ -1,15 +1,8 @@
-export interface ContentResponse<ContentType> {
-  content: ContentType;
-  raw: Buffer;
-}
+export type ContentResponse<ContentType> = { content: ContentType, raw: Buffer };
 
-export interface FileListResponse {
-  path: string;
-}
+export type FileListResponse = { path: string };
 
-export interface DeleteResponse {
-  isDeleted: boolean | null;
-}
+export type DeleteResponse = { isDeleted: boolean | null };
 
 interface IStorage {
   getFile(key: string): Promise<ContentResponse<string>>;
