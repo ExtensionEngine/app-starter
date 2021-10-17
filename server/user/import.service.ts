@@ -17,7 +17,7 @@ export type SheetData = {
     [key: string]: { header: string, width: number }
   },
   data: UserDTO[]
-}
+};
 
 const columns = {
   email: { header: 'Email', width: 30 },
