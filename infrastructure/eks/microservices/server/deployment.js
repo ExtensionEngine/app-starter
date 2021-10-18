@@ -8,7 +8,7 @@ const pulumi = require('@pulumi/pulumi');
 const s3 = require('../../../s3');
 
 const serverConfig = new pulumi.Config('server');
-const dbConfig = new pulumi.Config('database');
+const dbConfig = new pulumi.Config('db');
 
 const NAME = 'server';
 
