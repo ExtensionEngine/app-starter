@@ -33,7 +33,7 @@ const deployment = new k8s.apps.v1.Deployment(`${NAME}-deployment`, {
           },
           env: [
             { name: 'DATABASE_HOST', value: db.address },
-            { name: 'DATABASE_PORT', value: db.port },
+            { name: 'DATABASE_PORT', value: db.port.apply(port => String(port)) },
             { name: 'DATABASE_NAME', value: dbConfig.require('name') },
             { name: 'DATABASE_USER', value: dbConfig.require('user') },
             { name: 'DATABASE_PASSWORD', value: dbConfig.requireSecret('password') },
