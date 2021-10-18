@@ -15,9 +15,9 @@ const db = new aws.rds.Instance('pulumi-test-postgres', {
   publiclyAccessible: true,
   skipFinalSnapshot: true,
   vpcSecurityGroupIds: [dbSecurityGroup.id],
-  name: config.get('name'),
-  username: config.get('user'),
-  password: config.getSecret('password')
+  name: config.require('name'),
+  username: config.require('user'),
+  password: config.requireSecret('password')
 });
 
 module.exports = db;
