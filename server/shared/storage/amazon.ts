@@ -61,9 +61,11 @@ class Amazon implements IStorage {
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#copyObject-property
   async copyFile(key: string, newKey: string): Promise<void> {
+    const { base, ...rest } = path.parse(key);
+    const encodedSource = path.format({ base: encodeURIComponent(base), ...rest });
     const params = {
       Bucket: this.#bucket,
-      CopySource: this.path(`/${key}`),
+      CopySource: this.path(`/${encodedSource}`),
       Key: newKey
     };
     await this.#client.copyObject(params).promise();
