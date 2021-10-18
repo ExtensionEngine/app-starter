@@ -14,7 +14,7 @@ const schema = joi.object({
 });
 
 const createConfig = (env: Env): ServerConfig => ({
-  port: Number(env.PORT),
+  port: Number(env.SERVER_PORT),
   serverUrl: env.SERVER_URL,
   importTemplateFormat: env.IMPORT_TEMPLATE_FORMAT
 });
