@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import * as authMiddleware from './auth/middleware';
 import { Application, NextFunction, Request, Response } from 'express';
 import auth from './auth';
 import Db from './shared/database';
@@ -15,19 +14,19 @@ import Storage from './shared/storage';
 import user from './user';
 import UserImportService from './user/import.service';
 import UserNotificationService from './user/notification.service';
-import UserSubscriber from './user/subscriber';
 
 const program: IProgram = {
   configure,
   beforeStart,
   registerRouters
 };
+
 export default program;
 
 function configure(provider: Provider): void {
   provider.value('logger', logger);
   provider.registerMiddleware('errorHandler', ErrorHandler, 'logger');
-  provider.service('db', Db, 'config', 'logger', 'userSubscriber');
+  provider.service('db', Db, 'config', 'logger');
   provider.service('mail', Mail, 'config', 'logger');
   provider.service('storage', Storage, 'config');
   provider.service(
@@ -40,13 +39,7 @@ function configure(provider: Provider): void {
     UserImportService,
     'config', 'userRepository', 'userNotificationService'
   );
-  provider.registerMiddleware(
-    'authInitializeMiddleware',
-    authMiddleware.initialize,
-    'config', 'userRepository', 'authService'
-  );
   provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
-  provider.service('userSubscriber', UserSubscriber, 'config');
   provider.registerModule(auth);
   provider.registerModule(user);
 }
@@ -60,13 +53,13 @@ function registerRouters(app: Application, container: IContainer): void {
     db,
     userRouter,
     authRouter,
-    authInitializeMiddleware,
+    setAuthRequestContextMiddleware,
     parsePaginationMiddleware
   } = container;
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
-  app.use(authInitializeMiddleware, parsePaginationMiddleware);
+  app.use(setAuthRequestContextMiddleware, parsePaginationMiddleware);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }

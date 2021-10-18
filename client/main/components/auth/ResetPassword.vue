@@ -10,9 +10,9 @@
       novalidate>
       <validation-provider
         v-slot="{ errors }"
+        :rules="{ required: true, alphanumerical: true, min: 6 }"
         vid="password"
-        name="password"
-        rules="required|alphanumerical|min:6">
+        name="password">
         <v-text-field
           v-model="password"
           :error-messages="errors"
@@ -26,9 +26,9 @@
       </validation-provider>
       <validation-provider
         v-slot="{ errors }"
+        :rules="{ required: true, confirmed: { target: 'password' } }"
         vid="passwordConfirmation"
-        name="password"
-        rules="required|confirmed:password">
+        name="password">
         <v-text-field
           v-model="passwordConfirmation"
           :error-messages="errors"

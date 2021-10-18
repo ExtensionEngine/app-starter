@@ -1,5 +1,5 @@
-interface IEnv {
+interface Env {
   [key: string]: string | undefined;
 }
 
-export default IEnv;
+export default Env;

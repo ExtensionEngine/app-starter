@@ -17,7 +17,7 @@ export type SheetData = {
     [key: string]: { header: string, width: number }
   },
   data: UserDTO[]
-}
+};
 
 const columns = {
   email: { header: 'Email', width: 30 },
@@ -60,7 +60,7 @@ class UserImportService implements IUserImportService {
       }
       const { firstName, lastName, email, role } = item;
       const user = new User(firstName, lastName, email, role);
-      await this.#userNotificationService.invite(user)
+      await this.#userNotificationService.invite(user);
       acc.users.push(user);
       return acc;
     }, { users: [], errors: [] });

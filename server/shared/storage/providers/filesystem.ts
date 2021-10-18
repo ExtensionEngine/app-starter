@@ -1,6 +1,4 @@
-'use strict';
 import { Config } from '../../../config';
-import exists from 'path-exists';
 import expandPath from 'untildify';
 import fs from 'fs';
 import Joi from 'joi';
@@ -20,11 +18,11 @@ const schema = Joi.object().keys({
 
 class FilesystemStorage {
   #rootPath: string;
-  #origin: string;
+  #serverUrl: string;
 
   constructor({ server, storage }: Config) {
     const config = validateConfig(storage.filesystem, schema);
-    this.#origin = server.origin;
+    this.#serverUrl = server.serverUrl;
     this.#rootPath = resolvePath(config.path);
   }
 
@@ -88,11 +86,11 @@ class FilesystemStorage {
   }
 
   fileExists(key: string): boolean {
-    return exists(this.path(key));
+    return fsAsync.existsSync(this.path(key));
   }
 
   getFileUrl(key: string): Promise<string> {
-    return P.resolve(`${this.#origin}/${key}`);
+    return P.resolve(`${this.#serverUrl}/${key}`);
   }
 }
 

@@ -14,8 +14,8 @@
       novalidate>
       <validation-provider
         v-slot="{ errors }"
-        name="email"
-        rules="required|email">
+        :rules="{ required: true, email: true }"
+        name="email">
         <v-text-field
           v-model="email"
           :error-messages="errors"
@@ -30,8 +30,8 @@
       </validation-provider>
       <validation-provider
         v-slot="{ errors }"
-        name="password"
-        rules="required">
+        :rules="{ required: true }"
+        name="password">
         <v-text-field
           v-model="password"
           :error-messages="errors"

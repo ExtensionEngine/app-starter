@@ -1,6 +1,6 @@
 import App, { Router } from 'express';
-import { authenticate } from './middleware';
 import AuthController from './controller';
+import { authenticate } from './middleware';
 import { requestLimiter } from '../middleware/request';
 
 export default function createRouter(authController: AuthController): Router {

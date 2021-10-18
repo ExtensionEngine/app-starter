@@ -1,5 +1,3 @@
-  'use strict';
-
 import S3, {
   ClientConfiguration,
   CopyObjectRequest,
@@ -87,7 +85,7 @@ class Amazon {
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
   createWriteStream(key: string, options: PutObjectRequest) {
     const throughStream = miss.through();
-    const params = {Bucket: this.#bucket, Key: key, Body: throughStream, ...options };
+    const params = { Bucket: this.#bucket, Key: key, Body: throughStream, ...options };
     this.#client.upload(params, noop);
     return throughStream;
   }

@@ -1,20 +1,23 @@
 <template>
-  <v-dialog v-model="show" max-width="500">
-    <v-form @submit.prevent="executeAction">
-      <v-card>
-        <v-card-title class="headline">{{ heading }}</v-card-title>
-        <v-card-text>{{ message }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
+  <admin-dialog v-model="show" width="500" header-icon="mdi-alert">
+    <template #header>{{ heading }}</template>
+    <template #body>
+      <v-form @submit.prevent="executeAction">
+        {{ message }}
+        <div class="d-flex justify-end">
           <v-btn @click="close" text>Cancel</v-btn>
-          <v-btn type="submit" color="red" text>Yes</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-form>
-  </v-dialog>
+          <v-btn :disabled="isLoading" type="submit" color="error" text>
+            Confirm
+          </v-btn>
+        </div>
+      </v-form>
+    </template>
+  </admin-dialog>
 </template>
 
 <script>
+import AdminDialog from '@/admin/components/common/Dialog';
+
 export default {
   name: 'confirmation-dialog',
   props: {
@@ -23,6 +26,7 @@ export default {
     message: { type: String, default: 'Are you sure?' },
     action: { type: Function, default: () => true }
   },
+  data: () => ({ isLoading: false }),
   computed: {
     show: {
       get: vm => vm.visible,
@@ -36,11 +40,15 @@ export default {
       this.$emit('update:visible', false);
     },
     executeAction() {
-      return Promise.resolve(this.action()).then(() => {
-        this.close();
-        this.$emit('confirmed');
-      });
+      this.isLoading = true;
+      return Promise.resolve(this.action())
+        .then(() => {
+          this.close();
+          this.$emit('confirmed');
+        })
+        .finally(() => (this.isLoading = false));
     }
-  }
+  },
+  components: { AdminDialog }
 };
 </script>

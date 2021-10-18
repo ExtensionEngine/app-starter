@@ -36,7 +36,7 @@ class Mail implements IMail {
     return `${name} <${address}>`;
   }
 
-  async send(data: MailData): Promise<SentMessageInfo> {
+  send(data: MailData): Promise<SentMessageInfo> {
     joi.assert(data, dataSchema);
     const { subject, templateName, templateData } = data;
     const from = data.from || this.from;

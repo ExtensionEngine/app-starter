@@ -5,11 +5,7 @@ require('dotenv').config();
 const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const path = require('path');
 
-const { IP, AUTH_JWT_SCHEME, REVERSE_PROXY_PORT } = process.env;
-
-const PORT = process.env.PORT || process.env.SERVER_PORT;
-
-const serverUrl = `http://${IP}:${PORT}`;
+const { AUTH_JWT_SCHEME, SERVER_URL } = process.env;
 
 const extensions = ['.vue'];
 
@@ -22,9 +18,9 @@ const devServer = {
     'X-Powered-By': 'Webpack DevSever'
   },
   proxy: {
-    '/api': { target: serverUrl, ws: false }
+    '/api': { target: SERVER_URL, ws: false }
   },
-  port: Number(REVERSE_PROXY_PORT)
+  port: 8081
 };
 
 module.exports = {

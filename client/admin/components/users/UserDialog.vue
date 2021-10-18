@@ -35,8 +35,8 @@
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="role"
-          rules="required">
+          :rules="{ required: true }"
+          name="role">
           <v-select
             v-model="user.role"
             :items="roles"
@@ -48,8 +48,8 @@
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="first name"
-          rules="required|alpha|min:2|max:50">
+          :rules="{ required: true, name_format: true, min: 2, max: 50 }"
+          name="first name">
           <v-text-field
             v-model="user.firstName"
             :error-messages="errors"
@@ -59,8 +59,8 @@
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="last name"
-          rules="required|alpha|min:2|max:50">
+          :rules="{ required: true, name_format: true, min: 2, max: 50 }"
+          name="last name">
           <v-text-field
             v-model="user.lastName"
             :error-messages="errors"
@@ -118,14 +118,15 @@ export default {
       this.user = resetUser();
       this.$emit('update:visible', false);
     },
-    save() {
+    async save() {
       const action = this.isNewUser ? 'create' : 'update';
-      api[action](this.user).then(() => this.$emit(`${action}d`));
+      await api[action](this.user);
+      this.$emit(`${action}d`);
       this.close();
     },
     invite() {
       this.isLoading = true;
-      api.invite(this.user).finally(() => (this.isLoading = false));
+      return api.invite(this.user).finally(() => { this.isLoading = false; });
     }
   },
   watch: {

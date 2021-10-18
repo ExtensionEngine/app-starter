@@ -1,5 +1,3 @@
-'use strict';
-
 import { anyTldEmailSchema } from '../utils/validation';
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
@@ -56,7 +54,7 @@ prompt(questions)
     await RequestContext.createAsync(db.provider.em, () => addUser(data));
   });
 
-async function addUser({ firstName, lastName, email, role, password }) {
+function addUser({ firstName, lastName, email, role, password }) {
   const { db, logger } = provider.container;
   const em = db.provider.em.fork(false);
   const user = new User(firstName, lastName, email, role, password);

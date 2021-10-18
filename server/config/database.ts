@@ -1,9 +1,11 @@
 import { Highlighter, MigrationsOptions } from '@mikro-orm/core';
-import IEnv from '../types/env';
+import Env from '../types/env';
 import joi from 'joi';
 import { SqlHighlighter } from '@mikro-orm/sql-highlighter';
 
 export interface DatabaseConfig {
+  host: string;
+  port: number;
   dbName: string;
   user: string;
   password: string;
@@ -14,12 +16,16 @@ export interface DatabaseConfig {
 }
 
 const schema = joi.object({
+  host: joi.string().required(),
+  port: joi.number().default(5432),
   dbName: joi.string().required(),
   user: joi.string().required(),
   password: joi.string().required()
 }).unknown();
 
-const createConfig = (env: IEnv): DatabaseConfig => ({
+const createConfig = (env: Env): DatabaseConfig => ({
+  host: env.DATABASE_HOST,
+  port: Number(env.DATABASE_PORT),
   dbName: env.DATABASE_NAME,
   user: env.DATABASE_USER,
   password: env.DATABASE_PASSWORD,
@@ -32,6 +38,6 @@ const createConfig = (env: IEnv): DatabaseConfig => ({
   highlighter: env.NODE_ENV !== 'production' && new SqlHighlighter()
 });
 
-export default (env: IEnv): DatabaseConfig => {
+export default (env: Env): DatabaseConfig => {
   return joi.attempt(createConfig(env), schema);
 };
