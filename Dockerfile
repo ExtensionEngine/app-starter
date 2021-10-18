@@ -13,4 +13,4 @@ RUN npm install --production
 COPY --from=builder /usr/src/app/dist/server /usr/src/app/dist/server
 EXPOSE 3000
 ENV NODE_ENV=production
-CMD ["node", "./dist/server/framework/start"]
+CMD npm run db:migration:up && node ./dist/server/framework/start
