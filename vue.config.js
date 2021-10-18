@@ -2,64 +2,50 @@
 
 require('dotenv').config();
 
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
 const path = require('path');
 
-const { AUTH_JWT_SCHEME, SERVER_URL } = process.env;
+const { AUTH_JWT_SCHEME, SERVER_PORT } = process.env;
 
-const extensions = ['.vue'];
+const devServerUrl = `http://localhost:${SERVER_PORT}`;
+
+const outputDir = path.resolve(__dirname, './dist/client');
 
 const aliases = {
   '@': path.resolve(__dirname, './client')
 };
 
-const devServer = {
-  headers: {
-    'X-Powered-By': 'Webpack DevSever'
-  },
-  proxy: {
-    '/api': { target: SERVER_URL, ws: false }
-  },
-  port: 8081
+const envs = {
+  VUE_APP_API_PATH: '/api',
+  VUE_APP_AUTH_JWT_SCHEME: AUTH_JWT_SCHEME
 };
 
+Object.assign(process.env, envs);
+
 module.exports = {
-  pluginOptions: {
-    cleanOutDir: {
-      cleanOnceBeforeBuildPatterns: ['**/*', '!.gitkeep']
+  transpileDependencies: ['vuetify'],
+  outputDir,
+  devServer: {
+    headers: {
+      'X-Powered-By': 'Webpack DevSever'
     },
-    envs: {
-      API_PATH: '/api',
-      AUTH_JWT_SCHEME
-    }
+    proxy: {
+      '/api': { target: devServerUrl, ws: false }
+    },
+    port: 8081
   },
   pages: {
     admin: {
       filename: 'admin/index.html',
-      entry: './client/admin/main.js'
+      entry: './client/admin/main.js',
+      title: 'Admin panel'
     },
     main: {
       filename: 'index.html',
-      entry: './client/main/index.js'
-    }
-  },
-  configureWebpack: {
-    optimization: {
-      minimizer: [
-        new ESBuildMinifyPlugin()
-      ]
+      entry: './client/main/index.js',
+      title: 'Main panel'
     }
   },
   chainWebpack(config) {
     config.resolve.alias.merge(aliases);
-    config.resolve.extensions.merge(extensions);
-    config.module
-      .rule('js')
-      .test('/.js$/')
-      .use('esbuild-loader')
-      .loader('esbuild-loader')
-      .end();
-  },
-  devServer,
-  transpileDependencies: ['vuetify']
+  }
 };
