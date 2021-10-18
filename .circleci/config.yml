@@ -133,7 +133,8 @@ workflows:
           filters: &dev-filters
             branches:
               only:
-                - develop
+                # - develop
+                - feature/ST-293_setup-cicd
       - build-client-dev:
           requires:
             - lint
