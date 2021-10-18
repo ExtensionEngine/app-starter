@@ -1,5 +1,3 @@
-'use strict';
-
 import { anyTldEmailSchema } from '../utils/validation';
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
