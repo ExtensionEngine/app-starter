@@ -6,7 +6,7 @@ import yn from 'yn';
 
 type orderBy = {
   [key: string]: QueryOrder
-}
+};
 
 export interface Pagination {
   limit: number;

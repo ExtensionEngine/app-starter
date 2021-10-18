@@ -5,7 +5,7 @@ type Jwt = {
   secret: string,
   scheme: string,
   issuer: string
-}
+};
 
 export interface AuthConfig {
   jwt: Jwt;
