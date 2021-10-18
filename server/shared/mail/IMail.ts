@@ -6,7 +6,7 @@ export type MailData = {
   to: string,
   templateName: string,
   templateData: any
-}
+};
 
 interface IMail {
   send(data: MailData): Promise<SentMessageInfo>;

@@ -4,7 +4,7 @@ import joi from 'joi';
 type Sender = {
   name: string,
   address: string
-}
+};
 
 export interface MailConfig {
   sender: Sender;

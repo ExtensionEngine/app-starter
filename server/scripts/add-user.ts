@@ -1,5 +1,3 @@
-'use strict';
-
 import { anyTldEmailSchema } from '../utils/validation';
 import { Command } from 'commander';
 import configure from '../framework/configure';
