@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Lint
           command: npm run lint
-  setup-env:
+  setup-env-dev: &setup-env
     <<: *defaults
     steps:
       - checkout
@@ -36,19 +36,27 @@ jobs:
           root: .
           paths:
             - .env
-  # build-client:
-  #   <<: *defaults
-  #   steps:
-  #     - checkout
-  #     - node/install-packages
-  #     - run:
-  #         name: Build client
-  #         command: npm run build:client
-  #     - persist_to_workspace:
-  #         root: .
-  #         paths:
-  #           - dist/client
-  build-server:
+  setup-env-staging:
+    <<: *setup-env
+  setup-env-prod:
+    <<: *setup-env
+  build-client-dev: &build-client
+    <<: *defaults
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build client
+          command: npm run build:client
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/client
+  build-client-staging:
+    <<: *build-client
+  build-client-prod:
+    <<: *build-client
+  build-server-dev: &build-server
     working_directory: ~/project/solution-tree
     executor: aws-ecr/default
     steps:
@@ -61,80 +69,162 @@ jobs:
           create-repo: true
           repo: "${AWS_ECR_REPO}"
           tag: "${CIRCLE_SHA1}"
-  # deploy:
-  #   <<: *defaults
-  #   steps:
-  #     - checkout
-  #     - attach_workspace:
-  #         at: .
-  #     - run: cd ./infrastructure && npm i
-  #     - aws-cli/setup:
-  #         <<: *aws-credentials
-  #         aws-region: AWS_REGION
-  #     - pulumi/login
-  #     - pulumi/update:
-  #         stack: 'dev'
-  #         working_directory: ./infrastructure
-  #     - pulumi/stack_output:
-  #         stack: 'dev'
-  #         property_name: siteBucketEndpoint
-  #         env_var: WEBSITE_URL
-  #         working_directory: ./infrastructure
-  #     - run:
-  #         name: Echo bucket name
-  #         command: |
-  #           echo $WEBSITE_URL > /tmp/art-1.txt;
-  #     - store_artifacts:
-  #         path: /tmp/art-1.txt
-  # push-to-s3:
-  #   <<: *defaults
-  #   steps:
-  #     - attach_workspace:
-  #         at: .
-  #     - aws-cli/setup:
-  #         <<: *aws-credentials
-  #         aws-region: AWS_REGION
-  #     - run:
-  #         name: Deploy to S3
-  #         command: |
-  #           aws s3 sync dist/client s3://app-starter-site-bucket --no-progress --delete
+  build-server-staging:
+    <<: *build-server
+  build-server-prod:
+    <<: *build-server
+  deploy-dev: &deploy
+    <<: *defaults
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: cd ./infrastructure && npm i
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - pulumi/login
+      - run:
+          name: Stack init
+          command: |
+            cd ./infrastructure
+            pulumi stack init ${PULUMI_STACK} || true
+            pulumi stack select ${PULUMI_STACK}
+            pulumi config set aws:region ${AWS_REGION}
+            pulumi config set db:name ${DATABASE_NAME}
+            pulumi config set db:user ${DATABASE_USER}
+            pulumi config set db:password ${DATABASE_PASSWORD} --secret
+            pulumi config set server:docker-image ${AWS_ECR_ACCOUNT_URL}/${AWS_ECR_REPO}:${CIRCLE_SHA1}
+            pulumi config set s3:site-bucket-name ${S3_SITE_BUCKET_NAME}
+            pulumi config set s3:storage-bucket-name ${S3_STORAGE_BUCKET}
+      - pulumi/update:
+          stack: PULUMI_STACK
+          working_directory: ./infrastructure
+  deploy-staging:
+    <<: *deploy
+  deploy-prod:
+    <<: *deploy
+  push-to-s3-dev: &push-to-s3
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - run:
+          name: Deploy to S3
+          command: |
+            aws s3 sync dist/client s3://${S3_SITE_BUCKET_NAME} --no-progress --delete
+  push-to-s3-staging:
+    <<: *push-to-s3
+  push-to-s3-prod:
+    <<: *push-to-s3
 
 workflows:
   test-and-deploy:
     jobs:
-      - lint:
-          filters: &branch-filters
-              branches:
-                only:
-                  - feature/ST-293_setup-cicd
+      - lint
       - shellcheck/check
-      - setup-env:
-          context: solution-tree-ci
+      - setup-env-dev:
+          context: app-starter-dev
           requires:
             - shellcheck/check
-          filters:
-            <<: *branch-filters
-      - build-server:
-          context: solution-tree-ci
+          filters: &dev-filters
+            branches:
+              only:
+                - develop
+      - build-client-dev:
           requires:
             - lint
-            - setup-env
+            - setup-env-dev
           filters:
-            <<: *branch-filters
-      # - build-client:
-      #     requires:
-      #       - lint
-      #     filters:
-      #       <<: *branch-filters
-      # - deploy:
-      #     context: solution-tree-ci
-      #     requires:
-      #       - build-client
-      #     filters:
-      #       <<: *branch-filters
-      # - push-to-s3:
-      #     context: solution-tree-ci
-      #     requires:
-      #       - deploy
-      #     filters:
-      #       <<: *branch-filters
+            <<: *dev-filters
+      - build-server-dev:
+          context: app-starter-dev
+          requires:
+            - lint
+            - setup-env-dev
+          filters:
+            <<: *dev-filters
+      - deploy-dev:
+          context: app-starter-dev
+          requires:
+            - build-client-dev
+            - build-server-dev
+          filters:
+            <<: *dev-filters
+      - push-to-s3-dev:
+          context: app-starter-dev
+          requires:
+            - deploy-dev
+          filters:
+            <<: *dev-filters
+      - setup-env-staging:
+          context: app-starter-staging
+          requires:
+            - shellcheck/check
+          filters: &staging-filters
+            branches:
+              only:
+                - staging
+      - build-client-staging:
+          requires:
+            - lint
+            - setup-env-staging
+          filters:
+            <<: *staging-filters
+      - build-server-staging:
+          context: app-starter-staging
+          requires:
+            - lint
+            - setup-env-staging
+          filters:
+            <<: *staging-filters
+      - deploy-staging:
+          context: app-starter-staging
+          requires:
+            - build-client-staging
+            - build-server-staging
+          filters:
+            <<: *staging-filters
+      - push-to-s3-staging:
+          context: app-starter-staging
+          requires:
+            - deploy-staging
+          filters:
+            <<: *staging-filters
+      - setup-env-prod:
+          context: app-starter-prod
+          requires:
+            - shellcheck/check
+          filters: &prod-filters
+            branches:
+              only:
+                - master
+      - build-client-prod:
+          requires:
+            - lint
+            - setup-env-prod
+          filters:
+            <<: *prod-filters
+      - build-server-prod:
+          context: app-starter-prod
+          requires:
+            - lint
+            - setup-env-prod
+          filters:
+            <<: *prod-filters
+      - deploy-prod:
+          context: app-starter-prod
+          requires:
+            - build-client-prod
+            - build-server-prod
+          filters:
+            <<: *prod-filters
+      - push-to-s3-prod:
+          context: app-starter-prod
+          requires:
+            - deploy-prod
+          filters:
+            <<: *prod-filters
