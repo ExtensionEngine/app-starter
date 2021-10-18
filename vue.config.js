@@ -33,6 +33,15 @@ module.exports = {
     },
     port: 8081
   },
+  css: {
+    loaderOptions: {
+      scss: {
+        additionalData: `
+          @import "./client/common/assets/stylesheets/_variables.scss";
+        `
+      }
+    }
+  },
   pages: {
     admin: {
       filename: 'admin/index.html',
