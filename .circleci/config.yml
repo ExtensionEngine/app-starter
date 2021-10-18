@@ -98,7 +98,7 @@ jobs:
             pulumi config set s3:site-bucket-name ${S3_SITE_BUCKET_NAME}
             pulumi config set s3:storage-bucket-name ${S3_STORAGE_BUCKET}
       - pulumi/update:
-          stack: PULUMI_STACK
+          stack: "${PULUMI_STACK}"
           working_directory: ./infrastructure
   deploy-staging:
     <<: *deploy
