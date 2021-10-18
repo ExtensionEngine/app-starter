@@ -7,5 +7,6 @@ const vpc = require('./vpc');
 
 module.exports = {
   dbHost: rds.address,
-  siteBucketEndpoint: s3.siteBucket.websiteEndpoint
+  siteBucketEndpoint: s3.siteBucket.websiteEndpoint,
+  storageBucketName: s3.storageBucket.bucket
 };

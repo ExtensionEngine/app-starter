@@ -1,9 +1,16 @@
 'use strict';
 
 const aws = require('@pulumi/aws');
+const pulumi = require('@pulumi/pulumi');
+
+const config = new pulumi.Config('s3');
+
+const storageBucket = new aws.s3.Bucket('storage-bucket', {
+  bucket: config.require('storage-bucket-name')
+});
 
 const siteBucket = new aws.s3.Bucket('site-bucket', {
-  bucket: 'app-starter-site-bucket',
+  bucket: config.require('site-bucket-name'),
   website: {
     indexDocument: 'index.html',
     errorDocument: 'index.html'
@@ -27,4 +34,4 @@ function publicReadPolicyForBucket(name) {
   };
 }
 
-module.exports = { siteBucket };
+module.exports = { storageBucket, siteBucket };

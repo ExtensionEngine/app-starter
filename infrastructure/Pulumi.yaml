@@ -14,3 +14,7 @@ template:
       description: Database user
     server:docker-image:
       description: Server microservice docker image
+    s3:site-bucket-name:
+      description: Site bucket name
+    s3:storage-bucket-name:
+      description: Storage bucket name
