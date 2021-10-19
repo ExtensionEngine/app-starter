@@ -23,7 +23,7 @@ class Authenticator {
   }
 
   authenticate(strategy: string, options?: AuthenticateOptions): RequestHandler {
-    const { setCookie } = options || {};
+    const { setCookie = false } = options || {};
     return (req: Request, res: Response, next: NextFunction) => {
       return passport.authenticate(strategy, (error, user) => {
         if (error) throw error;
