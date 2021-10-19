@@ -19,7 +19,7 @@ class UserNotificationService implements IUserNotificationService {
   }
 
   private resetUrl(token) {
-    return `${this.#config.server.serverUrl}/#/auth/reset-password/${token}`;
+    return `${this.#config.appUrl}/#/auth/reset-password/${token}`;
   }
 
   async resetPassword(user: User): Promise<User> {
