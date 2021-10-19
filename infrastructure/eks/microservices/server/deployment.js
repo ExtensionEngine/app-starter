@@ -31,6 +31,8 @@ const deployment = new k8s.apps.v1.Deployment(`${NAME}-deployment`, {
           resources: {
             requests: { cpu: '250m' }
           },
+          // TODO: Add config map resource for storing configs
+          // TODO: Add secret map resource for storing secrets
           env: [
             { name: 'DATABASE_HOST', value: db.address },
             { name: 'DATABASE_PORT', value: db.port.apply(port => String(port)) },
