@@ -22,6 +22,7 @@ const envs = {
 Object.assign(process.env, envs);
 
 module.exports = {
+  parallel: !process.env.CIRCLECI,
   transpileDependencies: ['vuetify'],
   outputDir,
   devServer: {
