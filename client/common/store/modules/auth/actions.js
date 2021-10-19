@@ -1,5 +1,5 @@
 import auth from '@/common/api/auth';
-import { navigate } from '@/common/navigation';
+import { navigateTo } from '@/common/navigation';
 
 export const login = async ({ commit }, credentials) => {
   const user = await auth.login(credentials);
@@ -7,7 +7,7 @@ export const login = async ({ commit }, credentials) => {
 };
 export const logout = async () => {
   await auth.logout();
-  return navigate('/');
+  return navigateTo('/');
 };
 
 export const forgotPassword = (_, { email }) => {

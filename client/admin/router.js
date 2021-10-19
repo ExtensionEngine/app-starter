@@ -1,4 +1,4 @@
-import { navigate } from '@/common/navigation';
+import { navigateTo } from '@/common/navigation';
 import NotFound from '@/common/components//NotFound';
 import { Role } from '@/../common/config';
 import Router from 'vue-router';
@@ -20,12 +20,11 @@ const router = new Router({
 });
 
 const isAdmin = user => user && user.role === Role.ADMIN;
-const requiresAuth = route => route.matched.some(it => it.meta.auth);
+const isAuthRequired = (to, user) => !user && to.matched.some(it => it.meta.auth);
 
 router.beforeEach((to, _from, next) => {
   const { user } = router.app.$store.state.auth;
-  const isNotAuthenticated = !user && requiresAuth(to);
-  if (!isAdmin(user) || isNotAuthenticated) return navigate();
+  if (!isAdmin(user) || isAuthRequired(to, user)) return navigateTo();
   return next();
 });
 

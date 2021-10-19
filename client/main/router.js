@@ -2,7 +2,7 @@ import Auth from '@/main/components/auth';
 import ForgotPassword from '@/main/components/auth/ForgotPassword';
 import Home from '@/main/components';
 import Login from '@/main/components/auth/Login';
-import { navigate } from '@/common/navigation';
+import { navigateTo } from '@/common/navigation';
 import NotFound from '@/common/components/NotFound';
 import ResetPassword from '@/main/components/auth/ResetPassword';
 import { Role } from '@/../common/config';
@@ -42,13 +42,12 @@ const router = new Router({
 });
 
 const isAdmin = user => user && user.role === Role.ADMIN;
-const requiresAuth = route => route.matched.some(it => it.meta.auth);
+const isAuthRequired = (to, user) => !user && to.matched.some(it => it.meta.auth);
 
 router.beforeEach((to, _from, next) => {
   const { user } = router.app.$store.state.auth;
-  const isNotAuthenticated = !user && requiresAuth(to);
-  if (isNotAuthenticated) return next({ name: 'login' });
-  return !isAdmin(user) ? next() : navigate('/admin');
+  if (isAuthRequired(to, user)) return next({ name: 'login' });
+  return !isAdmin(user) ? next() : navigateTo('/admin');
 });
 
 export default router;

@@ -1,5 +1,5 @@
-export function navigate(path = '/') {
-  const url = new URL(location);
-  url.pathname = path;
-  location.replace(url.href);
+import join from 'url-join';
+
+export function navigateTo(path) {
+  return window.location.replace(join(window.location.origin, `/${path}/`));
 }
