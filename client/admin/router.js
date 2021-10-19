@@ -19,7 +19,7 @@ const router = new Router({
   }, fallbackRoute]
 });
 
-const isAdmin = user => user && user.role === Role.ADMIN;
+const isAdmin = user => user?.role === Role.ADMIN;
 const isAuthRequired = (to, user) => !user && to.matched.some(it => it.meta.auth);
 
 router.beforeEach((to, _from, next) => {
