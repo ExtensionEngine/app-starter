@@ -1,4 +1,4 @@
-import Authenticate from './middleware/authenticate';
+import Authenticator from './middleware/authenticator';
 import Controller from './controller';
 import createRouter from './router';
 import { Provider } from '../framework/provider';
@@ -8,8 +8,8 @@ import SetRequestContext from './middleware/set-request-context';
 export default { load };
 
 function load(provider: Provider): void {
-  provider.service('authenticate', Authenticate, 'config', 'authService');
-  provider.service('authRouter', createRouter, 'authController', 'authenticate');
+  provider.service('authenticator', Authenticator, 'config', 'authService');
+  provider.service('authRouter', createRouter, 'authController', 'authenticator');
   provider.service('authService', Service, 'config', 'userRepository');
   provider.service(
     'authController',

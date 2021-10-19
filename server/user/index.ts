@@ -12,7 +12,7 @@ function load(provider: Provider): void {
   provider.service(
     'userRouter',
     createRouter,
-    'userController', 'getUserMiddleware', 'authenticate'
+    'userController', 'getUserMiddleware', 'authenticator'
   );
   provider.service('userRepository', Repository, 'db');
   provider.service(

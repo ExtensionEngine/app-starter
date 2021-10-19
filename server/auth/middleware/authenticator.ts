@@ -12,7 +12,7 @@ import User from '../../user/model';
 
 type Options = { setCookie: boolean };
 
-class Authenticate {
+class Authenticator {
   #config: AuthConfig;
   #authService: IAuthService;
 
@@ -22,7 +22,7 @@ class Authenticate {
     autobind(this);
   }
 
-  handle(strategy: string, options?: Options): RequestHandler {
+  authenticate(strategy: string, options?: Options): RequestHandler {
     const { setCookie } = options || {};
     return (req: Request, res: Response, next: NextFunction) => {
       return passport.authenticate(strategy, (error, user) => {
@@ -34,7 +34,7 @@ class Authenticate {
     };
   }
 
-  logout(middleware?: boolean) {
+  logout(middleware?: boolean): (...params: Parameters<RequestHandler>) => void {
     return (_req: Request, res: Response, next: NextFunction): void => {
       res.clearCookie(this.#config.jwt.cookie.name);
       middleware ? next() : res.end();
@@ -50,4 +50,4 @@ class Authenticate {
   }
 }
 
-export default Authenticate;
+export default Authenticator;

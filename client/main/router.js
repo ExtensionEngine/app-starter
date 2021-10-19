@@ -46,7 +46,8 @@ const requiresAuth = route => route.matched.some(it => it.meta.auth);
 
 router.beforeEach((to, _from, next) => {
   const { user } = router.app.$store.state.auth;
-  if (requiresAuth(to) && !user) return next({ name: 'login' });
+  const isNotAuthenticated = !user && requiresAuth(to);
+  if (isNotAuthenticated) return next({ name: 'login' });
   return !isAdmin(user) ? next() : navigate('/admin');
 });
 
