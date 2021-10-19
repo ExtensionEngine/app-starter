@@ -34,10 +34,10 @@ class Authenticator {
     };
   }
 
-  logout(middleware?: boolean): (...params: Parameters<RequestHandler>) => void {
-    return (_req: Request, res: Response, next: NextFunction): void => {
+  logout(middleware?: boolean): RequestHandler {
+    return (_req: Request, res: Response, next: NextFunction) => {
       res.clearCookie(this.#config.jwt.cookie.name);
-      middleware ? next() : res.end();
+      return middleware ? next() : res.end();
     };
   }
 
