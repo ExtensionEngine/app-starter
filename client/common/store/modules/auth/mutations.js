@@ -1,4 +1,4 @@
-export const login = (state, user) => {
+export const setAuth = (state, user) => {
   state.user = user;
 };
 

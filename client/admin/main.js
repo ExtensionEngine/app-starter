@@ -7,8 +7,8 @@ import {
   ValidationProvider
 } from 'vee-validate';
 import App from './App';
+import getStore from './store';
 import router from './router';
-import store from './store';
 import Vue from 'vue';
 import VueHotkey from 'v-hotkey';
 import vuetify from '@/common/plugins/vuetify';
@@ -25,10 +25,10 @@ Vue.use(VueHotkey);
 Vue.use(VueVisible);
 
 // eslint-disable-next-line no-new
-new Vue({
+getStore().then(store => new Vue({
   store,
   router,
   vuetify,
   el: '#app',
   render: h => h(App)
-});
+}));

@@ -1,18 +1,25 @@
 import auth from '@/common/api/auth';
+import { navigate } from '@/common/navigation';
 
-export const login = ({ commit }, credentials) => {
-  return auth.login(credentials)
-    .then(user => commit('login', user) || user);
+export const login = async ({ commit }, credentials) => {
+  const user = await auth.login(credentials);
+  return commit('setAuth', user) || user;
+};
+export const logout = async () => {
+  await auth.logout();
+  return navigate('/');
 };
 
-export const logout = () => {
-  return auth.logout();
-};
-
-export const forgotPassword = (_context, { email }) => {
+export const forgotPassword = (_, { email }) => {
   return auth.forgotPassword(email);
 };
 
-export const resetPassword = (_context, payload) => {
+export const resetPassword = (_, payload) => {
   return auth.resetPassword(payload);
+};
+
+export const fetchUserInfo = ({ commit }) => {
+  return auth.getUserInfo()
+    .then(user => commit('setAuth', user))
+    .catch(() => commit('logout'));
 };

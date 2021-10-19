@@ -75,7 +75,7 @@ export default {
     ...mapActions('auth', ['login']),
     submit() {
       this.message = '';
-      this.login({ email: this.email, password: this.password })
+      return this.login({ email: this.email, password: this.password })
         .then(user => {
           if (user.role !== Role.ADMIN) return this.$router.push('/');
           document.location.replace(`${document.location.origin}/admin`);

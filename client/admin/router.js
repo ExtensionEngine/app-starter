@@ -1,9 +1,7 @@
-import get from 'lodash/get';
 import { navigate } from '@/common/navigation';
 import NotFound from '@/common/components//NotFound';
 import { Role } from '@/../common/config';
 import Router from 'vue-router';
-import store from './store';
 import Users from '@/admin/components/users';
 import Vue from 'vue';
 
@@ -21,12 +19,14 @@ const router = new Router({
   }, fallbackRoute]
 });
 
+const isAdmin = user => user && user.role === Role.ADMIN;
+const requiresAuth = route => route.matched.some(it => it.meta.auth);
+
 router.beforeEach((to, _from, next) => {
-  const user = get(store.state, 'auth.user');
-  const isNotAuthenticated = to.matched.some(it => it.meta.auth) && !user;
-  const isNotAuthorized = user && user.role !== Role.ADMIN;
-  if (isNotAuthenticated || isNotAuthorized) return navigate();
-  next();
+  const { user } = router.app.$store.state.auth;
+  const isNotAuthenticated = !user && requiresAuth(to);
+  if (!isAdmin(user) || isNotAuthenticated) return navigate();
+  return next();
 });
 
 export default router;

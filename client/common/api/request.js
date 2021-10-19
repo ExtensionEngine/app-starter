@@ -1,39 +1,15 @@
 import axios from 'axios';
-import { EventEmitter } from 'events';
-import HttpStatus from 'http-status';
+import { UNAUTHORIZED } from 'http-status';
 
-const authScheme = process.env.VUE_APP_AUTH_JWT_SCHEME;
+const baseURL = process.env.VUE_APP_API_PATH;
 
 const config = {
-  baseURL: process.env.VUE_APP_API_PATH,
-  withCredentials: true,
-  headers: { 'Content-Type': 'application/json' }
+  baseURL,
+  withCredentials: true
 };
-
-class Auth extends EventEmitter {
-  constructor(storage = localStorage) {
-    super();
-    this.storage = storage;
-    this.storageKey = 'TOKEN';
-  }
-
-  get token() {
-    return this.storage.getItem(this.storageKey);
-  }
-
-  set token(val) {
-    if (!val) {
-      this.storage.removeItem(this.storageKey);
-      return this.emit('token:remove');
-    }
-    this.storage.setItem(this.storageKey, val);
-    this.emit('token:set', val);
-  }
-}
 
 // Instance of axios to be used for all API requests.
 const client = axios.create(config);
-client.auth = new Auth();
 
 Object.defineProperty(client, 'base', {
   get() {
@@ -42,19 +18,9 @@ Object.defineProperty(client, 'base', {
   }
 });
 
-client.interceptors.request.use(config => {
-  const { token } = client.auth;
-  if (token) {
-    config.headers.Authorization = [authScheme, token].join(' ');
-    return config;
-  }
-  delete config.headers.Authorization;
-  return config;
-});
-
 client.interceptors.response.use(res => res, err => {
-  if (err.response.status !== HttpStatus.UNAUTHORIZED) throw err;
-  client.auth.emit('error', err);
+  if (err.response.status !== UNAUTHORIZED) throw err;
+  return window.location.reload();
 });
 
 export default client;
