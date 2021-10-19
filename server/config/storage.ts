@@ -6,11 +6,11 @@ export type Amazon = {
   secret: string,
   region: string,
   bucket: string
-}
+};
 
 export type Filesystem = {
   path: string
-}
+};
 
 export interface StorageConfig {
   amazon: Amazon;

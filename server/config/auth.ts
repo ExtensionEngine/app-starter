@@ -5,11 +5,10 @@ type Jwt = {
   secret: string,
   scheme: string,
   issuer: string
-}
+};
 
 export interface AuthConfig {
   jwt: Jwt;
-  saltRounds: number;
   corsAllowedOrigins: string[];
 }
 
@@ -21,7 +20,6 @@ const jwtSchema = joi.object({
 
 const schema = joi.object({
   jwt: jwtSchema,
-  saltRounds: joi.number().required(),
   corsAllowedOrigins: joi.array().items(joi.string().uri())
 });
 
@@ -31,7 +29,6 @@ const createConfig = (env: Env): AuthConfig => ({
     secret: env.AUTH_JWT_SECRET,
     issuer: env.AUTH_JWT_ISSUER
   },
-  saltRounds: parseInt(env.AUTH_SALT_ROUNDS, 10),
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });
 
