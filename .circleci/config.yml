@@ -143,91 +143,91 @@ workflows:
             - setup-env-dev
           filters:
             <<: *dev-filters
-      - build-server-dev:
-          context: app-starter-dev
-          requires:
-            - lint
-            - setup-env-dev
-          filters:
-            <<: *dev-filters
-      - deploy-dev:
-          context: app-starter-dev
-          requires:
-            - build-client-dev
-            - build-server-dev
-          filters:
-            <<: *dev-filters
-      - push-to-s3-dev:
-          context: app-starter-dev
-          requires:
-            - deploy-dev
-          filters:
-            <<: *dev-filters
-      - setup-env-staging:
-          context: app-starter-staging
-          requires:
-            - shellcheck/check
-          filters: &staging-filters
-            branches:
-              only:
-                - staging
-      - build-client-staging:
-          requires:
-            - lint
-            - setup-env-staging
-          filters:
-            <<: *staging-filters
-      - build-server-staging:
-          context: app-starter-staging
-          requires:
-            - lint
-            - setup-env-staging
-          filters:
-            <<: *staging-filters
-      - deploy-staging:
-          context: app-starter-staging
-          requires:
-            - build-client-staging
-            - build-server-staging
-          filters:
-            <<: *staging-filters
-      - push-to-s3-staging:
-          context: app-starter-staging
-          requires:
-            - deploy-staging
-          filters:
-            <<: *staging-filters
-      - setup-env-prod:
-          context: app-starter-prod
-          requires:
-            - shellcheck/check
-          filters: &prod-filters
-            branches:
-              only:
-                - master
-      - build-client-prod:
-          requires:
-            - lint
-            - setup-env-prod
-          filters:
-            <<: *prod-filters
-      - build-server-prod:
-          context: app-starter-prod
-          requires:
-            - lint
-            - setup-env-prod
-          filters:
-            <<: *prod-filters
-      - deploy-prod:
-          context: app-starter-prod
-          requires:
-            - build-client-prod
-            - build-server-prod
-          filters:
-            <<: *prod-filters
-      - push-to-s3-prod:
-          context: app-starter-prod
-          requires:
-            - deploy-prod
-          filters:
-            <<: *prod-filters
+      # - build-server-dev:
+      #     context: app-starter-dev
+      #     requires:
+      #       - lint
+      #       - setup-env-dev
+      #     filters:
+      #       <<: *dev-filters
+      # - deploy-dev:
+      #     context: app-starter-dev
+      #     requires:
+      #       - build-client-dev
+      #       - build-server-dev
+      #     filters:
+      #       <<: *dev-filters
+      # - push-to-s3-dev:
+      #     context: app-starter-dev
+      #     requires:
+      #       - deploy-dev
+      #     filters:
+      #       <<: *dev-filters
+      # - setup-env-staging:
+      #     context: app-starter-staging
+      #     requires:
+      #       - shellcheck/check
+      #     filters: &staging-filters
+      #       branches:
+      #         only:
+      #           - staging
+      # - build-client-staging:
+      #     requires:
+      #       - lint
+      #       - setup-env-staging
+      #     filters:
+      #       <<: *staging-filters
+      # - build-server-staging:
+      #     context: app-starter-staging
+      #     requires:
+      #       - lint
+      #       - setup-env-staging
+      #     filters:
+      #       <<: *staging-filters
+      # - deploy-staging:
+      #     context: app-starter-staging
+      #     requires:
+      #       - build-client-staging
+      #       - build-server-staging
+      #     filters:
+      #       <<: *staging-filters
+      # - push-to-s3-staging:
+      #     context: app-starter-staging
+      #     requires:
+      #       - deploy-staging
+      #     filters:
+      #       <<: *staging-filters
+      # - setup-env-prod:
+      #     context: app-starter-prod
+      #     requires:
+      #       - shellcheck/check
+      #     filters: &prod-filters
+      #       branches:
+      #         only:
+      #           - master
+      # - build-client-prod:
+      #     requires:
+      #       - lint
+      #       - setup-env-prod
+      #     filters:
+      #       <<: *prod-filters
+      # - build-server-prod:
+      #     context: app-starter-prod
+      #     requires:
+      #       - lint
+      #       - setup-env-prod
+      #     filters:
+      #       <<: *prod-filters
+      # - deploy-prod:
+      #     context: app-starter-prod
+      #     requires:
+      #       - build-client-prod
+      #       - build-server-prod
+      #     filters:
+      #       <<: *prod-filters
+      # - push-to-s3-prod:
+      #     context: app-starter-prod
+      #     requires:
+      #       - deploy-prod
+      #     filters:
+      #       <<: *prod-filters

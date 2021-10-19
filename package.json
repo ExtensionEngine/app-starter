@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "scripts": {
-    "build:client": "rimraf dist/client && vue-cli-service build",
+    "build:client": "rimraf dist/client && DEBUG=babel vue-cli-service build",
     "build:server": "rimraf dist/server && tsc",
     "dev:client": "vue-cli-service serve",
     "dev:server": "tsnd server/framework/start",
