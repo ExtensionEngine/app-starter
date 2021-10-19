@@ -1,5 +1,6 @@
 import 'express-async-errors';
 import express, { Application } from 'express';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import { IContainer } from 'bottlejs';
@@ -14,6 +15,7 @@ function createApp(
   const { errorHandler, config } = container;
   const app = express();
   app.use(express.static(path.join(__dirname, '../../dist/client')));
+  app.use(cookieParser(config.auth.jwt.cookie.secret));
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: false }));
   app.use(cors({ origin: config.auth.corsAllowedOrigins, credentials: true }));
