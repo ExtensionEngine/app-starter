@@ -99,9 +99,10 @@ jobs:
             pulumi config set server:docker-image ${AWS_ECR_ACCOUNT_URL}/${AWS_ECR_REPO}:${CIRCLE_SHA1}
             pulumi config set s3:site-bucket-name ${S3_SITE_BUCKET_NAME}
             pulumi config set s3:storage-bucket-name ${S3_STORAGE_BUCKET}
-      - pulumi/update:
-          stack: "${PULUMI_STACK}"
-          working_directory: ./infrastructure
+      - run:
+          name: Deploy stack
+          command: pulumi update --yes --stack ${PULUMI_STACK} --cwd ./infrastructure
+          no_output_timeout: 30m
   deploy-staging:
     <<: *deploy
   deploy-prod:
