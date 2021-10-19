@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
-import AudienceScope from './audience';
 import authContext from './context';
 import autobind from 'auto-bind';
-import IAuthService from './interfaces/service';
 import IUserNotificationService from '../user/interfaces/notification.service';
 import IUserRepository from '../user/interfaces/repository';
 import { NO_CONTENT } from 'http-status';
@@ -10,15 +8,12 @@ import { NotFound } from 'http-errors';
 
 class AuthController {
   #userRepository: IUserRepository;
-  #authService: IAuthService;
   #userNotificationService: IUserNotificationService;
 
   constructor(
-    authService: IAuthService,
     userRepository: IUserRepository,
     userNotificationService: IUserNotificationService
   ) {
-    this.#authService = authService;
     this.#userRepository = userRepository;
     this.#userNotificationService = userNotificationService;
     autobind(this);
@@ -26,9 +21,7 @@ class AuthController {
 
   me(_req: Request, res: Response): Response {
     const user = authContext.getCurrentUser();
-    const token = this.#authService.createToken(user, AudienceScope.Access, '5 days');
-    const data = { token, user };
-    return res.json({ data });
+    return res.json({ data: user });
   }
 
   async forgotPassword({ body }: Request, res: Response): Promise<Response> {

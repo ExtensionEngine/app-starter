@@ -1,10 +1,18 @@
 import Env from '../types/env';
 import joi from 'joi';
 
+type Cookie = {
+  name: string,
+  secret: string,
+  secure: boolean,
+  signed: boolean,
+  httpOnly: boolean
+};
+
 type Jwt = {
   secret: string,
-  scheme: string,
-  issuer: string
+  issuer: string,
+  cookie: Cookie
 };
 
 export interface AuthConfig {
@@ -12,10 +20,18 @@ export interface AuthConfig {
   corsAllowedOrigins: string[];
 }
 
+const cookieSchema = joi.object({
+  name: joi.string().default('access_token'),
+  secret: joi.string().required(),
+  secure: joi.boolean().required(),
+  signed: joi.boolean().required(),
+  httpOnly: joi.boolean().required()
+});
+
 const jwtSchema = joi.object({
   secret: joi.string().required(),
-  scheme: joi.string().required(),
-  issuer: joi.string().required()
+  issuer: joi.string().required(),
+  cookie: cookieSchema
 });
 
 const schema = joi.object({
@@ -25,9 +41,15 @@ const schema = joi.object({
 
 const createConfig = (env: Env): AuthConfig => ({
   jwt: {
-    scheme: env.AUTH_JWT_SCHEME,
     secret: env.AUTH_JWT_SECRET,
-    issuer: env.AUTH_JWT_ISSUER
+    issuer: env.AUTH_JWT_ISSUER,
+    cookie: {
+      name: env.AUTH_JWT_COOKIE_NAME,
+      secret: env.AUTH_JWT_COOKIE_SECRET,
+      secure: true,
+      signed: true,
+      httpOnly: true
+    }
   },
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });

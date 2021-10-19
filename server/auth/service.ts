@@ -6,6 +6,7 @@ import { AuthConfig } from '../config/auth';
 import autobind from 'auto-bind';
 import bcrypt from 'bcrypt';
 import { Config } from '../config';
+import get from 'lodash/get';
 import IAuthService from './interfaces/service';
 import IUserRepository from '../user/interfaces/repository';
 import jwt from 'jsonwebtoken';
@@ -25,7 +26,10 @@ class AuthService implements IAuthService {
     passport.use('jwt', new JwtStrategy({
       ...this.#config.jwt,
       audience: AudienceScope.Access,
-      jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme(this.#config.jwt.scheme),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        this.extractJwtFromCookie,
+        ExtractJwt.fromBodyField('token')
+      ]),
       secretOrKey: this.#config.jwt.secret
     }, this.verifyJWT));
 
@@ -59,6 +63,12 @@ class AuthService implements IAuthService {
 
   setRequestContext(...params: Parameters<RequestHandler>): void {
     return passport.initialize()(...params);
+  }
+
+  private extractJwtFromCookie(req: Request): string | null {
+    const { signed, name } = this.#config.jwt.cookie;
+    const path = signed ? 'signedCookies' : 'cookies';
+    return get(req[path], name, null);
   }
 
   private getTokenSecret({ id, updatedAt }: User, audience?: Audience) : string {

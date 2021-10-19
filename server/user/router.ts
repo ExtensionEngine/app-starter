@@ -1,6 +1,6 @@
 
 import App, { Router } from 'express';
-import { authenticate } from '../auth/middleware';
+import Authenticate from '../auth/middleware/authenticate';
 import { IMiddleware } from '../types/middleware';
 import multer from 'multer';
 import UserController from './controller';
@@ -11,10 +11,11 @@ export default createRouter;
 
 function createRouter(
   userController: UserController,
-  getUserMiddleware: IMiddleware['handle']
+  getUserMiddleware: IMiddleware['handle'],
+  authenticate: Authenticate
 ): Router {
   return App.Router()
-    .use(authenticate('jwt'))
+    .use(authenticate.handle('jwt'))
     .get('/', userController.list)
     .post('/', userController.createOrRestore)
     .param('userId', getUserMiddleware)

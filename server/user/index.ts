@@ -9,7 +9,11 @@ import Repository from './repository';
 export default { load };
 
 function load(provider: Provider): void {
-  provider.service('userRouter', createRouter, 'userController', 'getUserMiddleware');
+  provider.service(
+    'userRouter',
+    createRouter,
+    'userController', 'getUserMiddleware', 'authenticate'
+  );
   provider.service('userRepository', Repository, 'db');
   provider.service(
     'userController',
