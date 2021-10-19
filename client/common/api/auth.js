@@ -6,7 +6,7 @@ const urls = {
   root: '/auth',
   login: () => path.join(urls.root, 'login'),
   logout: () => path.join(urls.root, 'logout'),
-  profile: () => path.join(urls.root, 'me'),
+  me: () => path.join(urls.root, 'me'),
   forgotPassword: () => path.join(urls.root, 'forgot-password'),
   resetPassword: () => path.join(urls.root, 'reset-password')
 };
@@ -29,7 +29,7 @@ function resetPassword(token, password) {
 }
 
 function getUserInfo() {
-  return request.base.get(urls.profile())
+  return request.base.get(urls.me())
     .then(extractData);
 }
 
