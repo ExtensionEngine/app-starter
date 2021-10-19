@@ -14,8 +14,8 @@ export const forgotPassword = (_, { email }) => {
   return auth.forgotPassword(email);
 };
 
-export const resetPassword = (_, payload) => {
-  return auth.resetPassword(payload);
+export const resetPassword = (_, { token, password }) => {
+  return auth.resetPassword(token, password);
 };
 
 export const fetchUserInfo = ({ commit }) => {
