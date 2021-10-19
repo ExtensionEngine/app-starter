@@ -10,7 +10,7 @@ import passport from 'passport';
 import { Unauthorized } from 'http-errors';
 import User from '../../user/model';
 
-type Options = { setCookie: boolean };
+type AuthenticateOptions = { setCookie: boolean };
 
 class Authenticator {
   #config: AuthConfig;
@@ -22,7 +22,7 @@ class Authenticator {
     autobind(this);
   }
 
-  authenticate(strategy: string, options?: Options): RequestHandler {
+  authenticate(strategy: string, options?: AuthenticateOptions): RequestHandler {
     const { setCookie } = options || {};
     return (req: Request, res: Response, next: NextFunction) => {
       return passport.authenticate(strategy, (error, user) => {
