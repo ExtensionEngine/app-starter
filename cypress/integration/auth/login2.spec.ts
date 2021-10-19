@@ -1,4 +1,4 @@
-import { login } from '../../framework/pages';
+import login from '../../framework/pages';
 
 describe('Login Test', () => {
   it('Opens website', function () {
@@ -6,6 +6,6 @@ describe('Login Test', () => {
   });
 
   it('Login', function () {
-    login.loginToPage(this.data.email, this.data.password);
+    (login as any).loginToPage(this.data.email, this.data.password);
   });
 });
