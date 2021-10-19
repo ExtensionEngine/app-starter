@@ -48,8 +48,7 @@ jobs:
       - node/install-packages
       - run:
           name: Build client
-          # https://stackoverflow.com/questions/12329816/error-write-epipe-when-piping-node-output-to-head
-          command: npm run build:client | tee /dev/null | head
+          command: npm run build:client
       - persist_to_workspace:
           root: .
           paths:
