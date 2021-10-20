@@ -1,7 +1,7 @@
 version: 2.1
 
 defaults: &defaults
-  working_directory: ~/project/solution-tree
+  working_directory: ~/project/app-starter
   docker:
     - image: cimg/node:14.17.0
 
@@ -58,7 +58,7 @@ jobs:
   build-client-prod:
     <<: *build-client
   build-server-dev: &build-server
-    working_directory: ~/project/solution-tree
+    working_directory: ~/project/app-starter
     executor: aws-ecr/default
     steps:
       - aws-cli/setup:
