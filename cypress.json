@@ -3,5 +3,7 @@
   "viewportHeight": 720,
   "viewportWidth": 1280,
   "force": true,
-  "chromeWebSecurity": false
+  "chromeWebSecurity": false,
+  "screenshotOnRunFailure": false,
+  "video": false
 }
