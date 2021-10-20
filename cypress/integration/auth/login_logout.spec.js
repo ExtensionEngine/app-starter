@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Login Test', () => {
+describe('Logout Test', () => {
   it('Opens website', function () {
     cy.visit(this.config.localServerURL);
   });
@@ -16,5 +16,16 @@ describe('Login Test', () => {
 
   it('Verifies dashboard visible', function () {
     cy.findByText(/APP STARTER/i).should('exist');
+  });
+
+  it('Finds and clicks logout', function () {
+    cy.findByText(this.data.username).click();
+    cy.findByText('Logout').click();
+  });
+
+  it('Verifies login page visible', function () {
+    cy.findByLabelText('Email').should('exist');
+    cy.findByLabelText('Password').should('exist');
+    cy.findByText('Log in').should('exist');
   });
 });
