@@ -1,6 +1,7 @@
 'use strict';
-const { login } = require('./page_objects');
+const { dashboard, login } = require('./page_objects');
 
 module.exports = {
+  dashboard,
   login
 };
