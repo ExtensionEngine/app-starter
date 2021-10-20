@@ -3,4 +3,4 @@ build
 dist
 client
 infrastructure
-poi.config.js
+vue.config.js
