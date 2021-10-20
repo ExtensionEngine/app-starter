@@ -26,3 +26,6 @@ stats.json
 
 # General
 .DS_Store
+
+# Cypress
+.spec.js.mp4

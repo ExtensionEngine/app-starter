@@ -21,9 +21,12 @@
 // import '../framework/pages';
 // import 'cypress-xpath';
 // Alternatively you can use CommonJS syntax:
-require('../framework/pages');
 require('./commands');
 require('cypress-xpath');
+
+Cypress.Cookies.defaults({
+  preserve: ['connect.sid', 'TOKEN', 'APP_USER']
+});
 
 beforeEach(() => {
   cy.fixture('data').then(function (data) {
@@ -32,4 +35,5 @@ beforeEach(() => {
   cy.fixture('config').then(function (config) {
     this.config = config;
   });
+  Cypress.Cookies.preserveOnce('connect.sid', 'TOKEN', 'APP_USER');
 });
