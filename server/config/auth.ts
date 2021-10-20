@@ -15,17 +15,8 @@ type Jwt = {
   cookie: Cookie
 };
 
-type Session = {
-  resave: boolean,
-  saveUninitialized: boolean,
-  secret: string,
-  proxy: boolean,
-  cookie: { secure: boolean }
-};
-
 export interface AuthConfig {
   jwt: Jwt;
-  session: Session;
   corsAllowedOrigins: string[];
 }
 
@@ -40,12 +31,7 @@ const jwtSchema = joi.object({
   cookie: cookieSchema
 });
 
-const sessionSchema = joi.object({
-  secret: joi.string().required()
-}).unknown();
-
 const schema = joi.object({
-  session: sessionSchema,
   jwt: jwtSchema,
   corsAllowedOrigins: joi.array().items(joi.string().uri())
 });
@@ -61,13 +47,6 @@ const createConfig = (env: Env): AuthConfig => ({
       signed: true,
       httpOnly: true
     }
-  },
-  session: {
-    secret: env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    proxy: true,
-    cookie: { secure: false }
   },
   corsAllowedOrigins: getCorsAllowedOrigins(env.CORS_ALLOWED_ORIGINS)
 });

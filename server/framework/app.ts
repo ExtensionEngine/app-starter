@@ -7,7 +7,6 @@ import { IContainer } from 'bottlejs';
 import IProgram from '../types/program';
 import methodOverride from 'method-override';
 import path from 'path';
-import session from 'express-session';
 
 function createApp(
   container: IContainer,
@@ -16,7 +15,6 @@ function createApp(
   const { errorHandler, config } = container;
   const app = express();
   app.use(express.static(path.join(__dirname, '../../dist/client')));
-  app.use(session(config.auth.session));
   app.use(cookieParser(config.auth.jwt.cookie.secret));
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: false }));
