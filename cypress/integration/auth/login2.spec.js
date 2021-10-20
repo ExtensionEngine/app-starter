@@ -1,5 +1,5 @@
 'use strict';
-const { login } = require('../../framework/pages');
+const { dashboard, login } = require('../../framework/pages');
 
 describe('Login Test', () => {
   it('Opens website', function () {
@@ -12,5 +12,9 @@ describe('Login Test', () => {
 
   it('Clicks login', function () {
     cy.findByText('Log in').click();
+  });
+
+  it('Verifies dashboard visible', function () {
+    dashboard.isAppStarterVisible();
   });
 });
