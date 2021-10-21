@@ -1,9 +1,7 @@
+import * as providers from './providers';
 import { Config } from '../../config';
 import IStorage from './interface';
-import path from 'path';
 
-export default async function createStorage(config: Config): Promise<IStorage> {
-  const fullPath = path.join(__dirname, 'providers', config.storage.provider);
-  const Provider = (await import(fullPath)).default;
-  return new Provider(config);
+export default function createStorage(config: Config): IStorage {
+  return new providers[config.storage.provider](config);
 }
