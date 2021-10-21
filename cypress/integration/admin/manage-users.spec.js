@@ -1,9 +1,11 @@
 'use strict';
 
 const { loginAdmin } = require('../../actions/login');
+const seed = require('../../actions/seed');
 
 describe('Manage users', () => {
   beforeEach(() => {
+    seed('users');
     loginAdmin();
   });
 
