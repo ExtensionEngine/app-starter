@@ -1,8 +1,13 @@
 'use strict';
 
 const { loginAdmin, loginUser } = require('../../actions/login');
+const seed = require('../../actions/seed');
 
 describe('Logout', () => {
+  beforeEach(() => {
+    seed('users');
+  });
+
   it('Logout as User', function () {
     loginUser();
     cy.visit('/');
