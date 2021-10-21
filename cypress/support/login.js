@@ -10,15 +10,18 @@ Cypress.Commands.add('login', (email, password) => {
 
   login({ email, password }).then(({ body }) => {
     saveToLocalStorage('TOKEN', body.data.token);
+    saveToLocalStorage('APP_USER', JSON.stringify(body.data.user));
     log.snapshot('after');
     log.end();
   });
 });
 
 function login(credentials) {
+  const serverUrl = Cypress.env('API_URL');
+  const url = new URL('api/auth/login', serverUrl);
   return cy.request({
     method: 'POST',
-    url: '/api/auth/login',
+    url: url.href,
     body: credentials
   });
 }
