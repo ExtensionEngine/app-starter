@@ -90,7 +90,6 @@ class AuthService implements IAuthService {
     done: SecretOrKeyCallback
   ): Promise<void> {
     const payload = jwt.decode(rawToken) as JwtPayload;
-    console.log(payload);
     return this.#userRepository.findOne(payload?.id)
       .then(user => this.getTokenSecret(user))
       .then(secret => done(null, secret))
