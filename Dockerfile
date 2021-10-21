@@ -11,6 +11,7 @@ COPY package*.json ./
 COPY .env ./
 RUN npm install
 # TODO: use production install after moving migrations to kubernetes job
+# https://andrewlock.net/deploying-asp-net-core-applications-to-kubernetes-part-7-running-database-migrations/#helm-chart-hooks
 # RUN npm install --production
 COPY --from=builder /usr/src/app/dist/server /usr/src/app/dist/server
 EXPOSE 3000
