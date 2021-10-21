@@ -8,7 +8,11 @@ const ENV_SECRETS = [
 ];
 
 const schema = joi.object({
-  API_URL: joi.string().required()
+  API_URL: joi.string().required(),
+  USER_EMAIL: joi.string().required(),
+  USER_PASSWORD: joi.string().required(),
+  ADMIN_EMAIL: joi.string().required(),
+  ADMIN_PASSWORD: joi.string().required()
 }).unknown();
 joi.assert(process.env, schema);
 
