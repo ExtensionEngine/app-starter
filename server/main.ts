@@ -29,7 +29,6 @@ function configure(provider: Provider): void {
   provider.service('db', Db, 'config', 'logger');
   provider.service('mail', Mail, 'config', 'logger');
   provider.service('storage', Storage, 'config');
-
   provider.service(
     'userNotificationService',
     UserNotificationService,
