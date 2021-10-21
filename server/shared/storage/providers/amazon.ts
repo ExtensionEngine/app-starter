@@ -5,7 +5,11 @@ import miss from 'mississippi';
 import path from 'path';
 import S3 from 'aws-sdk/clients/s3';
 
-const isNotFound = (err: AWSError): boolean => err.code === 'NoSuchKey';
+const isNotFound = (err: AWSError): boolean => {
+  const errorCodes = ['NoSuchKey', 'NotFound'];
+  return errorCodes.some(code => code === err.code);
+};
+
 const noop = () => null;
 
 class Amazon implements IStorage {
@@ -97,7 +101,7 @@ class Amazon implements IStorage {
     const params = { Bucket: this.#bucket, Key: key };
     return this.#client.headObject(params).promise()
       .then(Boolean)
-      .catch(() => false);
+      .catch(err => isNotFound(err) ? false : Promise.reject(err));
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getSignedUrl-property
