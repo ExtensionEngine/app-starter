@@ -7,7 +7,6 @@ const ENV_SECRETS = [
   'API_URL'
 ];
 
-console.log('process.env: ', process.env.API_URL);
 const schema = joi.object({
   API_URL: joi.string().required()
 }).unknown();
@@ -18,7 +17,6 @@ joi.assert(process.env, schema);
  */
 module.exports = async (on, config) => {
   config.baseUrl = process.env.API_URL;
-  console.log('config.baseUrl: ', config.baseUrl);
   ENV_SECRETS.forEach(secret => {
     config.env[secret] = process.env[secret];
   });
