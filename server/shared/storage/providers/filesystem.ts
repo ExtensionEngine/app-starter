@@ -1,100 +1,90 @@
+import fs, { createReadStream, createWriteStream, promises as fsAsync } from 'fs';
+import IStorage, { ContentResponse, FileListResponse } from '../interface';
 import { Config } from '../../../config';
 import expandPath from 'untildify';
-import fs from 'fs';
-import Joi from 'joi';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
 import path from 'path';
-import { validateConfig } from '../validation';
 
-const fsAsync = P.promisifyAll(fs);
+interface SystemError extends Error {
+  code: string;
+}
 
-const isNotFound = (err: any): boolean => err.code === 'ENOENT';
+const isNotFound = (err: SystemError): boolean => err.code === 'ENOENT';
 const resolvePath = (str: string): string => path.resolve(expandPath(str));
 
-const schema = Joi.object().keys({
-  path: Joi.string().required()
-});
-
-class FilesystemStorage {
+class FilesystemStorage implements IStorage {
   #rootPath: string;
   #serverUrl: string;
 
   constructor({ server, storage }: Config) {
-    const config = validateConfig(storage.filesystem, schema);
+    const config = storage.filesystem;
     this.#serverUrl = server.serverUrl;
     this.#rootPath = resolvePath(config.path);
   }
 
-  static create(config) {
-    return new FilesystemStorage(config);
-  }
-
-  path(...segments): string {
-    segments = [this.#rootPath, ...segments];
-    return path.join(...segments);
-  }
-
-  getFile(key: string): Promise<Buffer> {
-    return fsAsync.readFileAsync(this.path(key))
+  getFile(key: string): Promise<ContentResponse<string>> {
+    return fsAsync.readFile(this.path(key))
+      .then(data => ({ content: data.toString(), raw: data }))
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  createReadStream(key: string, options = {}): fs.ReadStream {
-    return fsAsync.createReadStream(this.path(key), options);
+  createReadStream(key: string): NodeJS.ReadableStream {
+    return createReadStream(this.path(key));
   }
 
-  async saveFile(key: string, data): Promise<undefined> {
-    const filePath = this.path(key);
-    await mkdirp(path.dirname(filePath));
-    return fsAsync.writeFileAsync(filePath, data);
-  }
-
-  createWriteStream(key: string, options = {}): fs.WriteStream {
+  async createWriteStream(key: string): Promise<NodeJS.WritableStream> {
     const filepath = this.path(key);
     const dirname = path.dirname(filepath);
-    // TODO: Replace with async mkdir
-    fsAsync.mkdirSync(dirname, { recursive: true });
-    return fsAsync.createWriteStream(filepath, options);
+    await fsAsync.mkdir(dirname, { recursive: true });
+    return createWriteStream(filepath);
   }
 
-  async copyFile(key: string, newKey: string, options): Promise<undefined> {
+  async saveFile(key: string, data: Buffer): Promise<void> {
+    const filePath = this.path(key);
+    await mkdirp(path.dirname(filePath));
+    await fsAsync.writeFile(filePath, data);
+  }
+
+  async copyFile(key: string, newKey: string): Promise<void> {
     const src = this.path(key);
     const dest = this.path(newKey);
     await mkdirp(path.dirname(dest));
-    return fsAsync.copyFileAsync(src, dest, options);
+    await fsAsync.copyFile(src, dest);
   }
 
-  async moveFile(key: string, newKey: string, options): Promise<undefined> {
-    const file = await this.copyFile(key, newKey, options);
+  async moveFile(key: string, newKey: string): Promise<void> {
+    await this.copyFile(key, newKey);
     await this.deleteFile(key);
-    return file;
   }
 
-  deleteFile(key: string): Promise<undefined> {
-    return fsAsync.unlinkAsync(this.path(key));
+  async deleteFile(key: string): Promise<void> {
+    const exists = await this.fileExists(key);
+    if (exists) await fsAsync.unlink(this.path(key));
   }
 
-  deleteFiles(keys: string[]): Promise<undefined[]> {
-    return P.map(keys, key => this.deleteFile(key));
+  async deleteFiles(keys: string[]): Promise<void> {
+    await P.map(keys, key => this.deleteFile(key));
   }
 
-  listFiles(key: string, options) {
-    const readdir = fsAsync.readdirAsync(this.path(key), options);
-    return P.map(readdir, fileName => path.join(key, String(fileName)))
+  listFiles(key: string): Promise<FileListResponse[]> {
+    const readdir = fsAsync.readdir(this.path(key), { withFileTypes: true });
+    return P.map(readdir, file => ({ path: path.join(key, String(file.name)) }))
       .catch(err => isNotFound(err) ? null : Promise.reject(err));
   }
 
-  fileExists(key: string): boolean {
-    return fsAsync.existsSync(this.path(key));
+  fileExists(key: string): Promise<boolean> {
+    const exists = fs.existsSync(this.path(key));
+    return Promise.resolve(exists);
   }
 
   getFileUrl(key: string): Promise<string> {
-    return P.resolve(`${this.#serverUrl}/${key}`);
+    return Promise.resolve(`${this.#serverUrl}/${key}`);
+  }
+
+  private path(...segments): string {
+    return path.join(this.#rootPath, ...segments);
   }
 }
 
-export default {
-  schema,
-  create: FilesystemStorage.create
-};
+export default FilesystemStorage;
