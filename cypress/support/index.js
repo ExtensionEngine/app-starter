@@ -22,18 +22,3 @@
 // import 'cypress-xpath';
 // Alternatively you can use CommonJS syntax:
 require('./commands');
-require('cypress-xpath');
-
-Cypress.Cookies.defaults({
-  preserve: ['connect.sid', 'TOKEN', 'APP_USER']
-});
-
-beforeEach(() => {
-  cy.fixture('data').then(function (data) {
-    this.data = data;
-  });
-  cy.fixture('config').then(function (config) {
-    this.config = config;
-  });
-  Cypress.Cookies.preserveOnce('connect.sid', 'TOKEN', 'APP_USER');
-});
