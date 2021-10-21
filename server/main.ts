@@ -10,7 +10,7 @@ import Mail from './shared/mail';
 import parsePaginationMiddleware from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
-import Seed from './shared/database/seed';
+import Seed from './shared/database/seeds';
 import Storage from './shared/storage';
 import user from './user';
 import UserImportService from './user/import.service';
