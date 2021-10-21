@@ -1,34 +1,27 @@
-import IStorage, {
-  ContentResponse,
-  DeleteResponse,
-  FileListResponse
-} from './interface';
+import IStorage, { ContentResponse, FileListResponse } from '../interface';
 import { AWSError } from 'aws-sdk';
-import { Config } from '../../config';
+import { Config } from '../../../config';
 import miss from 'mississippi';
 import path from 'path';
 import S3 from 'aws-sdk/clients/s3';
 
 const isNotFound = (err: AWSError): boolean => err.code === 'NoSuchKey';
+const noop = () => null;
 
 class Amazon implements IStorage {
   #bucket: string;
   #client: S3;
 
   constructor(config: Config) {
-    const amazonConfig = config.storage.amazon;
-
-    const s3Config = {
-      accessKeyId: amazonConfig.key,
-      secretAccessKey: amazonConfig.secret,
-      region: amazonConfig.region,
+    this.#bucket = config.storage.amazon.bucket;
+    this.#client = new S3({
+      accessKeyId: config.storage.amazon.key,
+      secretAccessKey: config.storage.amazon.secret,
+      region: config.storage.amazon.region,
       signatureVersion: 'v4',
       apiVersion: '2006-03-01',
       maxRetries: 3
-    };
-
-    this.#bucket = amazonConfig.bucket;
-    this.#client = new S3(s3Config);
+    });
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#getObject-property
@@ -46,11 +39,11 @@ class Amazon implements IStorage {
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#upload-property
-  createWriteStream(key: string): NodeJS.WritableStream {
+  async createWriteStream(key: string): Promise<NodeJS.WritableStream> {
     const throughStream = miss.through();
     const params = { Bucket: this.#bucket, Key: key, Body: throughStream };
-    this.#client.upload(params, () => null);
-    return throughStream;
+    this.#client.upload(params, noop);
+    return Promise.resolve(throughStream);
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#putObject-property
@@ -77,21 +70,19 @@ class Amazon implements IStorage {
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObject-property
-  async deleteFile(key: string): Promise<DeleteResponse> {
+  async deleteFile(key: string): Promise<void> {
     const params = { Bucket: this.#bucket, Key: key };
     await this.#client.deleteObject(params).promise();
-    return { isDeleted: true };
   }
 
   // API docs: https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#deleteObjects-property
-  async deleteFiles(keys: string[]): Promise<DeleteResponse> {
+  async deleteFiles(keys: string[]): Promise<void> {
     const objects = keys.map(key => ({ Key: key }));
     const params = {
       Bucket: this.#bucket,
       Delete: { Objects: objects }
     };
     await this.#client.deleteObjects(params).promise();
-    return { isDeleted: true };
   }
 
   // API docs: http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#listObjects-property

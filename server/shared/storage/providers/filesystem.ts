@@ -1,10 +1,6 @@
 import fs, { createReadStream, createWriteStream, promises as fsAsync } from 'fs';
-import IStorage, {
-  ContentResponse,
-  DeleteResponse,
-  FileListResponse
-} from './interface';
-import { Config } from '../../config';
+import IStorage, { ContentResponse, FileListResponse } from '../interface';
+import { Config } from '../../../config';
 import expandPath from 'untildify';
 import mkdirp from 'mkdirp';
 import P from 'bluebird';
@@ -62,15 +58,13 @@ class FilesystemStorage implements IStorage {
     await this.deleteFile(key);
   }
 
-  async deleteFile(key: string): Promise<DeleteResponse> {
+  async deleteFile(key: string): Promise<void> {
     const exists = await this.fileExists(key);
     if (exists) await fsAsync.unlink(this.path(key));
-    return { isDeleted: true };
   }
 
-  async deleteFiles(keys: string[]): Promise<DeleteResponse> {
+  async deleteFiles(keys: string[]): Promise<void> {
     await P.map(keys, key => this.deleteFile(key));
-    return { isDeleted: true };
   }
 
   listFiles(key: string): Promise<FileListResponse[]> {
