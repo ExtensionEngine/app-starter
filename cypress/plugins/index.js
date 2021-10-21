@@ -4,11 +4,17 @@ require('dotenv').config({ path: require.resolve('../.env') });
 const joi = require('joi');
 
 const ENV_SECRETS = [
-  'API_URL'
+  'API_URL',
+  'APP_URL',
+  'USER_EMAIL',
+  'USER_PASSWORD',
+  'ADMIN_EMAIL',
+  'ADMIN_PASSWORD'
 ];
 
 const schema = joi.object({
   API_URL: joi.string().required(),
+  APP_URL: joi.string().required(),
   USER_EMAIL: joi.string().required(),
   USER_PASSWORD: joi.string().required(),
   ADMIN_EMAIL: joi.string().required(),
@@ -20,7 +26,7 @@ joi.assert(process.env, schema);
  * @type {Cypress.PluginConfig}
  */
 module.exports = async (on, config) => {
-  config.baseUrl = process.env.API_URL;
+  config.baseUrl = process.env.APP_URL;
   ENV_SECRETS.forEach(secret => {
     config.env[secret] = process.env[secret];
   });
