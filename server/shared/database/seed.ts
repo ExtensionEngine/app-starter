@@ -1,16 +1,13 @@
-import { Config } from '../config';
-import Db from '../shared/database';
+import Db from '.';
 import Logger from 'bunyan';
 import path from 'path';
 
 class Seed {
   #db: Db;
-  #config: Config;
   #log: Logger;
 
-  constructor(db: Db, config: Config, logger: Logger) {
+  constructor(db: Db, logger: Logger) {
     this.#db = db;
-    this.#config = config;
     this.#log = logger.child({ service: 'seed' });
   }
 

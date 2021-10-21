@@ -6,8 +6,7 @@ import User from '../../../user/model';
 async function seedUsers(em: EntityManager): Promise<void> {
   const users = times(10, idx => {
     const suffix = idx || '';
-    const role = idx ? roles.USER : roles.ADMIN;
-    return new User(`User ${suffix}`, 'Example', `user${suffix}@example.org`, role);
+    return new User(`User ${suffix}`, 'Example', `user${suffix}@example.org`, roles.USER);
   });
   await em.persistAndFlush(users);
 }
