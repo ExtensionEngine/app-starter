@@ -17,7 +17,8 @@
           v-bind="attrs"
           color="primary"
           dark icon large
-          class="mr-2">
+          class="mr-2"
+          :data-testid="user.label">
           <v-avatar size="42" color="#eaeaea">
             <span class="grey--text headline">{{ user.label[0] }}</span>
           </v-avatar>
