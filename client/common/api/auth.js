@@ -30,7 +30,7 @@ function forgotPassword(email) {
 }
 
 function resetPassword(body) {
-  return request.post(urls.resetPassword(), body);
+  return request.base.post(urls.resetPassword(), body);
 }
 
 export default {

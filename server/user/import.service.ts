@@ -1,23 +1,15 @@
+import IUserImportService, { SheetData } from './interfaces/import.service';
 import autobind from 'auto-bind';
 import { Config } from '../config';
 import Datasheet from '../shared/datasheet';
 import { File } from 'multer';
 import find from 'lodash/find';
 import { generateUsers } from '../shared/helpers';
-import IUserImportService from './interfaces/import.service';
 import IUserNotificationService from './interfaces/notification.service';
 import IUserRepository from './interfaces/repository';
 import P from 'bluebird';
 import User from '../user/model';
 import { UserDTO } from './interfaces/dtos';
-
-export type SheetData = {
-  name: string,
-  columns: {
-    [key: string]: { header: string, width: number }
-  },
-  data: UserDTO[]
-};
 
 const columns = {
   email: { header: 'Email', width: 30 },
