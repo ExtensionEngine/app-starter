@@ -8,6 +8,7 @@ import Env from '../types/env';
 import joi from 'joi';
 
 export interface Config {
+  appUrl: string,
   environment: Environment;
   database: DatabaseConfig;
   server: ServerConfig;
@@ -17,6 +18,7 @@ export interface Config {
 }
 
 const schema = joi.object({
+  appUrl: joi.string().required().uri(),
   environment: joi.string().valid(...environments),
   database: joi.object(),
   server: joi.object(),
@@ -26,6 +28,7 @@ const schema = joi.object({
 });
 
 const createConfig = (env: Env) => ({
+  appUrl: env.APP_URL,
   environment: env.NODE_ENV,
   database: database(env),
   server: server(env),
