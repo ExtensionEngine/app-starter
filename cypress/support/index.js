@@ -14,7 +14,21 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+// import './commands'
 
+import './commands';
+
+import 'cypress-xpath';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+
+
+beforeEach(() => {
+  cy.fixture('data').then(function (data) {
+    this.data = data;
+  });
+  cy.fixture('config').then(function (config) {
+    this.config = config;
+  });
+});

@@ -153,6 +153,7 @@
     "@vue/cli-service": "^4.5.13",
     "babel-eslint": "^10.1.0",
     "cypress": "^8.6.0",
+    "cypress-xpath": "^1.6.2",
     "dargs": "^7.0.0",
     "del-cli": "^3.0.1",
     "esbuild-loader": "^2.16.0",
