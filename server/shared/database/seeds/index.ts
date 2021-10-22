@@ -1,3 +1,4 @@
+import autobind from 'auto-bind';
 import Db from '../';
 import Logger from 'bunyan';
 import map from 'lodash/map';
@@ -12,6 +13,7 @@ class Seed {
   constructor(db: Db, logger: Logger) {
     this.#db = db;
     this.#log = logger.child({ service: 'seed' });
+    autobind(this);
   }
 
   async run(): Promise<void> {

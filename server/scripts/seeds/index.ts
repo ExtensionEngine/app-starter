@@ -7,7 +7,7 @@ const program = new Command('seed');
 program.action(async () => {
   const { db, seed } = provider.container;
   await db.connect();
-  return RequestContext.createAsync(db.provider.em, () => seed.run());
+  return RequestContext.createAsync(db.provider.em, seed.run);
 });
 
 export default program;
