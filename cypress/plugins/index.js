@@ -1,6 +1,6 @@
 'use strict';
 
-require('dotenv').config({ path: require.resolve('../.env') });
+require('dotenv').config();
 const joi = require('joi');
 
 const ENV_SECRETS = [
@@ -22,9 +22,6 @@ const schema = joi.object({
 }).unknown();
 joi.assert(process.env, schema);
 
-/**
- * @type {Cypress.PluginConfig}
- */
 module.exports = async (on, config) => {
   config.baseUrl = process.env.APP_URL;
   ENV_SECRETS.forEach(secret => {
