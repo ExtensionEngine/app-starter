@@ -15,10 +15,10 @@
         <v-btn
           v-on="on"
           v-bind="attrs"
+          :data-testid="user.label"
           color="primary"
           dark icon large
-          class="mr-2"
-          :data-testid="user.label">
+          class="mr-2">
           <v-avatar size="42" color="#eaeaea">
             <span class="grey--text headline">{{ user.label[0] }}</span>
           </v-avatar>

@@ -19,9 +19,9 @@
         v-if="show"
         ref="form"
         @submit.prevent="$refs.form.handleSubmit(save)"
+        data-testid="add-user-form"
         tag="form"
-        novalidate
-        data-testid="add-user-form">
+        novalidate>
         <validation-provider
           v-slot="{ errors }"
           :rules="{ required: true, email: true, unique_email: userData }"
