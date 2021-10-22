@@ -17,7 +17,7 @@ Cypress.Commands.add('login', (email, password) => {
 });
 
 function login(credentials) {
-  const serverUrl = Cypress.env('API_URL');
+  const serverUrl = Cypress.env('SERVER_URL');
   const url = new URL('api/auth/login', serverUrl);
   return cy.request({
     method: 'POST',

@@ -4,7 +4,7 @@ require('dotenv').config();
 const joi = require('joi');
 
 const ENV_SECRETS = [
-  'API_URL',
+  'SERVER_URL',
   'APP_URL',
   'USER_EMAIL',
   'USER_PASSWORD',
@@ -13,7 +13,7 @@ const ENV_SECRETS = [
 ];
 
 const schema = joi.object({
-  API_URL: joi.string().required(),
+  SERVER_URL: joi.string().required(),
   APP_URL: joi.string().required(),
   USER_EMAIL: joi.string().required(),
   USER_PASSWORD: joi.string().required(),
