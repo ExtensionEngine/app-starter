@@ -8,7 +8,7 @@ describe('Logout', () => {
     seed('users');
   });
 
-  it('Logout as User', function () {
+  it('User should be able to log out', function () {
     loginUser();
     cy.visit('/');
     cy.findByText(/User ? Example/i).click();
@@ -16,7 +16,7 @@ describe('Logout', () => {
     cy.findByText('Log in').should('exist');
   });
 
-  it('Logout as Admin', function () {
+  it('Admin should be able to log out', function () {
     loginAdmin();
     cy.visit('/');
     cy.findByTestId(/Admin Example/i).click();

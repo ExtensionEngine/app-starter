@@ -11,14 +11,16 @@ describe('Login Test', () => {
   beforeEach(() => {
     seed('users');
   });
-  it('Logins as User', function () {
+
+  it('User should be able to log in', function () {
     cy.visit('/');
     cy.findByLabelText('Email').type(user);
     cy.findByLabelText('Password').type(userPassword);
     cy.findByText('Log in').click();
     cy.findByText(/APP STARTER/i).should('exist');
   });
-  it('Logins as Admin', function () {
+
+  it('Admin should be able to log in', function () {
     cy.visit('/');
     cy.findByLabelText('Email').type(admin);
     cy.findByLabelText('Password').type(adminPassword);
