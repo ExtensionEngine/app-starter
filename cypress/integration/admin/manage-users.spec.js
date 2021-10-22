@@ -26,6 +26,7 @@ describe('Manage users', () => {
       cy.findByLabelText('Last Name').type('Last Name');
       cy.findByText(/Save/i).click();
     });
+    cy.findByLabelText('Search').type('test');
     cy.findByText('test@example.org').should('exist');
   });
 });
