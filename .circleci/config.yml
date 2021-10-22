@@ -1,9 +1,11 @@
 version: 2.1
 
-defaults: &defaults
-  working_directory: ~/project/app-starter
+default-executor: &default-executor
   docker:
     - image: cimg/node:14.17.0
+
+default_directory: &default-directory
+  working_directory: ~/project/app-starter
 
 aws-credentials: &aws-credentials
   aws-access-key-id: AWS_ACCESS_KEY
@@ -17,17 +19,40 @@ orbs:
   shellcheck: circleci/shellcheck@2.2.4
   kubernetes: circleci/kubernetes@0.12.0
 
+dev-stack-defaults: &dev-stack-defaults
+  context: app-starter-dev
+  filters:
+    branches:
+      only:
+        - develop
+
+staging-stack-defaults: &staging-stack-defaults
+  context: app-starter-staging
+  filters:
+    branches:
+      only:
+        - staging
+
+prod-stack-defaults: &prod-stack-defaults
+  context: app-starter-prod
+  filters:
+    branches:
+      only:
+        - master
+
 jobs:
   lint:
-    <<: *defaults
+    <<: *default-executor
+    <<: *default-directory
     steps:
       - checkout
       - node/install-packages
       - run:
           name: Lint
           command: npm run lint
-  setup-env-dev: &setup-env
-    <<: *defaults
+  setup-env:
+    <<: *default-executor
+    <<: *default-directory
     steps:
       - checkout
       - run:
@@ -37,12 +62,9 @@ jobs:
           root: .
           paths:
             - .env
-  setup-env-staging:
-    <<: *setup-env
-  setup-env-prod:
-    <<: *setup-env
-  build-client-dev: &build-client
-    <<: *defaults
+  build-client:
+    <<: *default-executor
+    <<: *default-directory
     steps:
       - checkout
       - node/install-packages
@@ -53,12 +75,8 @@ jobs:
           root: .
           paths:
             - dist/client
-  build-client-staging:
-    <<: *build-client
-  build-client-prod:
-    <<: *build-client
-  build-server-dev: &build-server
-    working_directory: ~/project/app-starter
+  build-server:
+    <<: *default-directory
     executor: aws-ecr/default
     steps:
       - aws-cli/setup:
@@ -70,12 +88,9 @@ jobs:
           create-repo: true
           repo: "${AWS_ECR_REPO}"
           tag: "${CIRCLE_SHA1}"
-  build-server-staging:
-    <<: *build-server
-  build-server-prod:
-    <<: *build-server
-  deploy-dev: &deploy
-    <<: *defaults
+  deploy:
+    <<: *default-executor
+    <<: *default-directory
     steps:
       - checkout
       - attach_workspace:
@@ -87,7 +102,7 @@ jobs:
       - kubernetes/install-kubectl
       - pulumi/login
       - run:
-          name: Stack init
+          name: Configure stack
           command: |
             cd ./infrastructure
             pulumi stack init ${PULUMI_STACK} || true
@@ -103,12 +118,9 @@ jobs:
           name: Deploy stack
           command: pulumi update --yes --stack ${PULUMI_STACK} --cwd ./infrastructure
           no_output_timeout: 30m
-  deploy-staging:
-    <<: *deploy
-  deploy-prod:
-    <<: *deploy
-  push-to-s3-dev: &push-to-s3
-    <<: *defaults
+  deploy-client:
+    <<: *default-executor
+    <<: *default-directory
     steps:
       - attach_workspace:
           at: .
@@ -119,115 +131,88 @@ jobs:
           name: Deploy to S3
           command: |
             aws s3 sync dist/client s3://${S3_SITE_BUCKET_NAME} --no-progress --delete
-  push-to-s3-staging:
-    <<: *push-to-s3
-  push-to-s3-prod:
-    <<: *push-to-s3
 
 workflows:
   test-and-deploy:
     jobs:
       - lint
       - shellcheck/check
-      - setup-env-dev:
-          context: app-starter-dev
+      - setup-env:
+          <<: *dev-stack-defaults
           requires:
             - shellcheck/check
-          filters: &dev-filters
-            branches:
-              only:
-                - develop
-      - build-client-dev:
+      - build-client:
+          <<: *dev-stack-defaults
           requires:
             - lint
-            - setup-env-dev
-          filters:
-            <<: *dev-filters
-      - build-server-dev:
-          context: app-starter-dev
+            - setup-env
+      - build-server:
+          <<: *dev-stack-defaults
           requires:
             - lint
-            - setup-env-dev
-          filters:
-            <<: *dev-filters
-      - deploy-dev:
-          context: app-starter-dev
+            - setup-env
+      - deploy:
+          <<: *dev-stack-defaults
           requires:
-            - build-client-dev
-            - build-server-dev
-          filters:
-            <<: *dev-filters
-      - push-to-s3-dev:
-          context: app-starter-dev
+            - build-client
+            - build-server
+      - deploy-client:
+          <<: *dev-stack-defaults
           requires:
-            - deploy-dev
-          filters:
-            <<: *dev-filters
-      - setup-env-staging:
-          context: app-starter-staging
+            - deploy
+      - setup-env:
+          name: setup-env-staging
+          <<: *staging-stack-defaults
           requires:
             - shellcheck/check
-          filters: &staging-filters
-            branches:
-              only:
-                - staging
-      - build-client-staging:
+      - build-client:
+          name: build-client-staging
+          <<: *staging-stack-defaults
           requires:
             - lint
             - setup-env-staging
-          filters:
-            <<: *staging-filters
-      - build-server-staging:
-          context: app-starter-staging
+      - build-server:
+          name: build-server-staging
+          <<: *staging-stack-defaults
           requires:
             - lint
             - setup-env-staging
-          filters:
-            <<: *staging-filters
-      - deploy-staging:
-          context: app-starter-staging
+      - deploy:
+          name: deploy-staging
+          <<: *staging-stack-defaults
           requires:
             - build-client-staging
             - build-server-staging
-          filters:
-            <<: *staging-filters
-      - push-to-s3-staging:
-          context: app-starter-staging
+      - deploy-client:
+          name: deploy-client-staging
+          <<: *staging-stack-defaults
           requires:
             - deploy-staging
-          filters:
-            <<: *staging-filters
-      - setup-env-prod:
-          context: app-starter-prod
+      - setup-env:
+          name: setup-env-prod
+          <<: *prod-stack-defaults
           requires:
             - shellcheck/check
-          filters: &prod-filters
-            branches:
-              only:
-                - master
-      - build-client-prod:
+      - build-client:
+          name: build-client-prod
+          <<: *prod-stack-defaults
           requires:
             - lint
             - setup-env-prod
-          filters:
-            <<: *prod-filters
-      - build-server-prod:
-          context: app-starter-prod
+      - build-server:
+          name: build-server-prod
+          <<: *prod-stack-defaults
           requires:
             - lint
             - setup-env-prod
-          filters:
-            <<: *prod-filters
-      - deploy-prod:
-          context: app-starter-prod
+      - deploy:
+          name: deploy-prod
+          <<: *prod-stack-defaults
           requires:
             - build-client-prod
             - build-server-prod
-          filters:
-            <<: *prod-filters
-      - push-to-s3-prod:
-          context: app-starter-prod
+      - deploy-client:
+          name: deploy-client-prod
+          <<: *prod-stack-defaults
           requires:
             - deploy-prod
-          filters:
-            <<: *prod-filters
