@@ -22,5 +22,8 @@ module.exports = {
       strict: 'off',
       '@typescript-eslint/no-explicit-any': 'off'
     }
+  }, {
+    files: ['cypress/**/*.js'],
+    extends: ['plugin:cypress/recommended']
   }]
 };
