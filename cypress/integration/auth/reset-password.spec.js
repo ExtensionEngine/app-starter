@@ -1,7 +1,7 @@
 'use strict';
 
-const user = Cypress.env('USER_EMAIL');
 const seed = require('../../actions/seed');
+const user = Cypress.env('USER_EMAIL');
 
 describe('Reset Password Test', () => {
   beforeEach(() => {
