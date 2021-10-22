@@ -12,7 +12,7 @@ describe('Login Test', () => {
     seed('users');
   });
 
-  it('User should be able to log in', function () {
+  it('User should be able to log in', () => {
     cy.visit('/');
     cy.findByLabelText('Email').type(user);
     cy.findByLabelText('Password').type(userPassword);
