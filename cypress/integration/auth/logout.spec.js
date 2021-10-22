@@ -19,7 +19,7 @@ describe('Logout', () => {
   it('Admin should be able to log out', function () {
     loginAdmin();
     cy.visit('/');
-    cy.findByTestId(/Admin Example/i).click();
+    cy.findByTestId(/navbar-avatar-Admin Example/i).click();
     cy.findByText('Logout').click();
     cy.findByText('Log in').should('exist');
   });
