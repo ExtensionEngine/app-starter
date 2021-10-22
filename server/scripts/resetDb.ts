@@ -5,12 +5,11 @@ import provider from '../framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 
 const program = new Command('reset-db');
-program
-  .action(async () => {
-    const { db } = provider.container;
-    await db.connect();
-    return RequestContext.createAsync(db.provider.em, reset);
-  });
+program.action(async () => {
+  const { db } = provider.container;
+  await db.connect();
+  return RequestContext.createAsync(db.provider.em, reset);
+});
 
 async function reset(): Promise<void> {
   const { db, logger } = provider.container;
