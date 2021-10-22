@@ -9,16 +9,23 @@ describe('Manage users', () => {
     loginAdmin();
   });
 
-  it('should add user', function () {
+  it('Should add user', function () {
+    const addUserFormId = 'add-user-form';
     cy.visit('/');
     cy.findByText(/Add User/i).click();
-    cy.findByText(/Create user/i).should('exist');
-    cy.findByLabelText('Email').type('test@example.org');
-    cy.get('div[role="button"]').contains('Role').click({ force: true });
-    cy.get('div[role="listbox"]').contains('User').click({ force: true });
-    cy.findByLabelText('First Name').type('First Name');
-    cy.findByLabelText('Last Name').type('Last Name');
-    cy.findByText(/Save/i).click();
+    cy.findByTestId(addUserFormId).within(() => {
+      cy.findByLabelText('Email').type('test@example.org');
+      cy.findByLabelText('Role').click({ force: true });
+    });
+    cy.root()
+      .get('[role="option"]')
+      .contains('User')
+      .click();
+    cy.findByTestId(addUserFormId).within(() => {
+      cy.findByLabelText('First Name').type('First Name');
+      cy.findByLabelText('Last Name').type('Last Name');
+      cy.findByText(/Save/i).click();
+    });
     cy.findByText('test@example.org').should('exist');
   });
 });
