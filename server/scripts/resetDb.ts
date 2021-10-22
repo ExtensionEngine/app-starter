@@ -14,16 +14,15 @@ program.action(async () => {
 async function reset(): Promise<void> {
   const { db, logger } = provider.container;
   const em = db.provider.em.fork(false);
-  await em.begin();
-  return p.each(entities, it => em.nativeDelete(it))
-    .then(() => {
-      logger.info('Database has been reset successfuly.');
-      return em.commit();
-    })
-    .catch(err => {
-      logger.error(err);
-      return em.rollback();
-    });
+  try {
+    await em.begin();
+    await p.each(entities, it => em.nativeDelete(it));
+    logger.info('Database has been reset successfuly.');
+    return em.commit();
+  } catch (err) {
+    logger.error(err);
+    return em.rollback();
+  }
 }
 
 export default program;
