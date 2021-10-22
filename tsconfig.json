@@ -17,5 +17,5 @@
   },
   "ts-node": {
     "files": true
-  },
+  }
 }
