@@ -20,7 +20,7 @@ describe('Login Test', () => {
     cy.findByText(/APP STARTER/i).should('exist');
   });
 
-  it('Admin should be able to log in', function () {
+  it('Admin should be able to log in', () => {
     cy.visit('/');
     cy.findByLabelText('Email').type(admin);
     cy.findByLabelText('Password').type(adminPassword);

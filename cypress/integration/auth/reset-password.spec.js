@@ -8,7 +8,7 @@ describe('Reset Password Test', () => {
     seed('users');
   });
 
-  it('Resets password', function () {
+  it('Resets password', () => {
     cy.visit('/');
     cy.findByText('Forgot password?').click();
     cy.findByLabelText('Email').type(user);

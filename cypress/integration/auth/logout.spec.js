@@ -8,7 +8,7 @@ describe('Logout', () => {
     seed('users');
   });
 
-  it('User should be able to log out', function () {
+  it('User should be able to log out', () => {
     loginUser();
     cy.visit('/');
     cy.findByText(/User ? Example/i).click();
@@ -16,7 +16,7 @@ describe('Logout', () => {
     cy.findByText('Log in').should('exist');
   });
 
-  it('Admin should be able to log out', function () {
+  it('Admin should be able to log out', () => {
     loginAdmin();
     cy.visit('/');
     cy.findByTestId(/navbar-avatar-Admin Example/i).click();
