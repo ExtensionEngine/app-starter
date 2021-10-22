@@ -38,8 +38,8 @@
     "create:model": "hygen generator resource:model",
     "create:router": "hygen generator resource:index",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
     "postshrinkwrap": "rewrite-lockfile package-lock.json"
   },
   "mikro-orm": {
