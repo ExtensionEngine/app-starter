@@ -1,20 +1,28 @@
 'use strict';
 
+const seed = require('../../actions/seed');
+
+const user = Cypress.env('USER_EMAIL');
+const userPassword = Cypress.env('USER_PASSWORD');
+const admin = Cypress.env('ADMIN_EMAIL');
+const adminPassword = Cypress.env('ADMIN_PASSWORD');
+
 describe('Login Test', () => {
-  it('Opens website', function () {
-    cy.visit(this.config.localServerURL);
+  beforeEach(() => {
+    seed('users');
   });
-
-  it('Types in email and password', function () {
-    cy.findByLabelText('Email').type(this.data.email);
-    cy.findByLabelText('Password').type(this.data.password);
-  });
-
-  it('Clicks login', function () {
+  it('Logins as User', function () {
+    cy.visit('/');
+    cy.findByLabelText('Email').type(user);
+    cy.findByLabelText('Password').type(userPassword);
     cy.findByText('Log in').click();
-  });
-
-  it('Verifies dashboard visible', function () {
     cy.findByText(/APP STARTER/i).should('exist');
+  });
+  it('Logins as Admin', function () {
+    cy.visit('/');
+    cy.findByLabelText('Email').type(admin);
+    cy.findByLabelText('Password').type(adminPassword);
+    cy.findByText('Log in').click();
+    cy.findByText(/STARTER/i).should('exist');
   });
 });
