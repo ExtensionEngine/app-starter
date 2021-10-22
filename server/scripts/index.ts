@@ -1,3 +1,4 @@
 import addUser from './add-user';
+import seed from './seeds';
 
-export default [addUser];
+export default [addUser, seed];

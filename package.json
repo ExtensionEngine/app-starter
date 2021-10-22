@@ -26,6 +26,7 @@
     "lint": "eslint server",
     "lint:fix": "eslint --fix server",
     "user:add": "ts-node server/framework/cli add-user",
+    "db:seed": "ts-node server/framework/cli seed",
     "db:migration:up": "npx mikro-orm migration:up",
     "db:migration:down": "npx mikro-orm migration:down",
     "db:dump": "npx mikro-orm schema:create --dump",
