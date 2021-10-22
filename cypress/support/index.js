@@ -1,3 +1,4 @@
+'use strict';
 // ***********************************************************
 // This example support/index.js is processed and
 // loaded automatically before your test files.
@@ -16,12 +17,13 @@
 // Import commands.js using ES2015 syntax:
 // import './commands'
 
-import './commands';
-import '../framework/pages';
-import 'cypress-xpath';
+// import './commands';
+// import '../framework/pages';
+// import 'cypress-xpath';
 // Alternatively you can use CommonJS syntax:
-// require('./commands');
-// require('../framework/pages');
+require('../framework/pages');
+require('./commands');
+require('cypress-xpath');
 
 beforeEach(() => {
   cy.fixture('data').then(function (data) {
