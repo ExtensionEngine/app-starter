@@ -69,8 +69,6 @@ jobs:
     <<: *default-directory
     steps:
       - checkout
-      - node/install:
-          npm-version: 14.17.0
       - node/install-packages
       - run:
           name: Build client
