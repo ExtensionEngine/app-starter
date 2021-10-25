@@ -52,8 +52,7 @@ jobs:
           name: Lint
           command: npm run lint
   setup-env:
-    machine:
-      image: ubuntu-1604:202007-01
+    <<: *default-executor
     <<: *default-directory
     steps:
       - checkout
@@ -65,10 +64,13 @@ jobs:
           paths:
             - .env
   build-client:
-    <<: *default-executor
+    machine:
+      image: ubuntu-1604:202007-01
     <<: *default-directory
     steps:
       - checkout
+      - node/install:
+          npm-version: 14.17.0
       - node/install-packages
       - run:
           name: Build client
