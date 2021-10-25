@@ -22,8 +22,6 @@ const envs = {
 Object.assign(process.env, envs);
 
 module.exports = {
-  // https://github.com/vuejs/vue-cli/issues/2176
-  // parallel: !process.env.CIRCLECI,
   transpileDependencies: ['vuetify'],
   outputDir,
   devServer: {
