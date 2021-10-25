@@ -1,7 +1,7 @@
 import autobind from 'auto-bind';
 import Db from '../';
 import Logger from 'bunyan';
-import map from 'lodash/map';
+import P from 'bluebird';
 import users from './users';
 
 const SEED_MODULES = [users];
@@ -19,9 +19,8 @@ class Seed {
   async run(): Promise<void> {
     await this.#db.connect();
     this.#log.info('Seeding database...');
-    const pSeeds = map(SEED_MODULES, seed => seed(this.#db.provider.em));
-    await Promise.all(pSeeds);
-    this.#log.info('Database successfully seeded');
+    await P.each(SEED_MODULES, seed => seed(this.#db.provider.em));
+    this.#log.info('Database successfully seeded.');
   }
 }
 
