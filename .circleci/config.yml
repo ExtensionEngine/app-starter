@@ -24,7 +24,8 @@ dev-stack-defaults: &dev-stack-defaults
   filters:
     branches:
       only:
-        - develop
+        - feature/ST-293_setup-cicd
+        # - develop
 
 staging-stack-defaults: &staging-stack-defaults
   context: app-starter-staging
@@ -51,7 +52,8 @@ jobs:
           name: Lint
           command: npm run lint
   setup-env:
-    <<: *default-executor
+    machine:
+      image: ubuntu-1604:202007-01
     <<: *default-directory
     steps:
       - checkout
@@ -135,7 +137,7 @@ jobs:
 workflows:
   test-and-deploy:
     jobs:
-      - lint
+      # - lint
       - shellcheck/check
       - setup-env:
           <<: *dev-stack-defaults
@@ -144,75 +146,75 @@ workflows:
       - build-client:
           <<: *dev-stack-defaults
           requires:
-            - lint
+            # - lint
             - setup-env
-      - build-server:
-          <<: *dev-stack-defaults
-          requires:
-            - lint
-            - setup-env
-      - deploy:
-          <<: *dev-stack-defaults
-          requires:
-            - build-client
-            - build-server
-      - deploy-client:
-          <<: *dev-stack-defaults
-          requires:
-            - deploy
-      - setup-env:
-          name: setup-env-staging
-          <<: *staging-stack-defaults
-          requires:
-            - shellcheck/check
-      - build-client:
-          name: build-client-staging
-          <<: *staging-stack-defaults
-          requires:
-            - lint
-            - setup-env-staging
-      - build-server:
-          name: build-server-staging
-          <<: *staging-stack-defaults
-          requires:
-            - lint
-            - setup-env-staging
-      - deploy:
-          name: deploy-staging
-          <<: *staging-stack-defaults
-          requires:
-            - build-client-staging
-            - build-server-staging
-      - deploy-client:
-          name: deploy-client-staging
-          <<: *staging-stack-defaults
-          requires:
-            - deploy-staging
-      - setup-env:
-          name: setup-env-prod
-          <<: *prod-stack-defaults
-          requires:
-            - shellcheck/check
-      - build-client:
-          name: build-client-prod
-          <<: *prod-stack-defaults
-          requires:
-            - lint
-            - setup-env-prod
-      - build-server:
-          name: build-server-prod
-          <<: *prod-stack-defaults
-          requires:
-            - lint
-            - setup-env-prod
-      - deploy:
-          name: deploy-prod
-          <<: *prod-stack-defaults
-          requires:
-            - build-client-prod
-            - build-server-prod
-      - deploy-client:
-          name: deploy-client-prod
-          <<: *prod-stack-defaults
-          requires:
-            - deploy-prod
+      # - build-server:
+      #     <<: *dev-stack-defaults
+      #     requires:
+      #       - lint
+      #       - setup-env
+      # - deploy:
+      #     <<: *dev-stack-defaults
+      #     requires:
+      #       - build-client
+      #       - build-server
+      # - deploy-client:
+      #     <<: *dev-stack-defaults
+      #     requires:
+      #       - deploy
+      # - setup-env:
+      #     name: setup-env-staging
+      #     <<: *staging-stack-defaults
+      #     requires:
+      #       - shellcheck/check
+      # - build-client:
+      #     name: build-client-staging
+      #     <<: *staging-stack-defaults
+      #     requires:
+      #       - lint
+      #       - setup-env-staging
+      # - build-server:
+      #     name: build-server-staging
+      #     <<: *staging-stack-defaults
+      #     requires:
+      #       - lint
+      #       - setup-env-staging
+      # - deploy:
+      #     name: deploy-staging
+      #     <<: *staging-stack-defaults
+      #     requires:
+      #       - build-client-staging
+      #       - build-server-staging
+      # - deploy-client:
+      #     name: deploy-client-staging
+      #     <<: *staging-stack-defaults
+      #     requires:
+      #       - deploy-staging
+      # - setup-env:
+      #     name: setup-env-prod
+      #     <<: *prod-stack-defaults
+      #     requires:
+      #       - shellcheck/check
+      # - build-client:
+      #     name: build-client-prod
+      #     <<: *prod-stack-defaults
+      #     requires:
+      #       - lint
+      #       - setup-env-prod
+      # - build-server:
+      #     name: build-server-prod
+      #     <<: *prod-stack-defaults
+      #     requires:
+      #       - lint
+      #       - setup-env-prod
+      # - deploy:
+      #     name: deploy-prod
+      #     <<: *prod-stack-defaults
+      #     requires:
+      #       - build-client-prod
+      #       - build-server-prod
+      # - deploy-client:
+      #     name: deploy-client-prod
+      #     <<: *prod-stack-defaults
+      #     requires:
+      #       - deploy-prod
