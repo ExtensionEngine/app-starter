@@ -1,0 +1,219 @@
+version: 2.1
+
+default-executor: &default-executor
+  docker:
+    - image: cimg/node:14.17.0
+
+default_directory: &default-directory
+  working_directory: ~/project/app-starter
+
+aws-credentials: &aws-credentials
+  aws-access-key-id: AWS_ACCESS_KEY
+  aws-secret-access-key: AWS_ACCESS_SECRET
+
+orbs:
+  node: circleci/node@4.5.1
+  aws-cli: circleci/aws-cli@1.3
+  aws-ecr: circleci/aws-ecr@7.0.0
+  pulumi: pulumi/pulumi@2.0.0
+  shellcheck: circleci/shellcheck@2.2.4
+  kubernetes: circleci/kubernetes@0.12.0
+
+dev-stack-defaults: &dev-stack-defaults
+  context: app-starter-dev
+  filters:
+    branches:
+      only:
+        - develop
+
+staging-stack-defaults: &staging-stack-defaults
+  context: app-starter-staging
+  filters:
+    branches:
+      only:
+        - staging
+
+prod-stack-defaults: &prod-stack-defaults
+  context: app-starter-prod
+  filters:
+    branches:
+      only:
+        - master
+
+jobs:
+  lint:
+    <<: *default-executor
+    <<: *default-directory
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Lint
+          command: npm run lint
+  setup-env:
+    <<: *default-executor
+    <<: *default-directory
+    steps:
+      - checkout
+      - run:
+          name: Setup environment variables
+          command: source ./.circleci/setup-env.sh
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .env
+  build-client:
+    machine:
+      image: ubuntu-1604:202007-01
+    <<: *default-directory
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build client
+          command: npm run build:client
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/client
+  build-server:
+    <<: *default-directory
+    executor: aws-ecr/default
+    steps:
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - aws-ecr/build-and-push-image:
+          <<: *aws-credentials
+          attach-workspace: true
+          create-repo: true
+          repo: "${AWS_ECR_REPO}"
+          tag: "${CIRCLE_SHA1}"
+  deploy:
+    <<: *default-executor
+    <<: *default-directory
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: cd ./infrastructure && npm i
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - kubernetes/install-kubectl
+      - pulumi/login
+      - run:
+          name: Configure stack
+          command: |
+            cd ./infrastructure
+            pulumi stack init ${PULUMI_STACK} || true
+            pulumi stack select ${PULUMI_STACK}
+            pulumi config set aws:region ${AWS_REGION}
+            pulumi config set db:name ${DATABASE_NAME}
+            pulumi config set db:user ${DATABASE_USER}
+            pulumi config set db:password ${DATABASE_PASSWORD} --secret
+            pulumi config set server:docker-image ${AWS_ECR_ACCOUNT_URL}/${AWS_ECR_REPO}:${CIRCLE_SHA1}
+            pulumi config set s3:site-bucket-name ${S3_SITE_BUCKET_NAME}
+            pulumi config set s3:storage-bucket-name ${S3_STORAGE_BUCKET}
+      - run:
+          name: Deploy stack
+          command: pulumi update --yes --stack ${PULUMI_STACK} --cwd ./infrastructure
+          no_output_timeout: 30m
+  deploy-client:
+    <<: *default-executor
+    <<: *default-directory
+    steps:
+      - attach_workspace:
+          at: .
+      - aws-cli/setup:
+          <<: *aws-credentials
+          aws-region: AWS_REGION
+      - run:
+          name: Deploy to S3
+          command: |
+            aws s3 sync dist/client s3://${S3_SITE_BUCKET_NAME} --no-progress --delete
+
+workflows:
+  test-and-deploy:
+    jobs:
+      - lint
+      - shellcheck/check
+      - setup-env:
+          <<: *dev-stack-defaults
+          requires:
+            - shellcheck/check
+      - build-client:
+          <<: *dev-stack-defaults
+          requires:
+            - lint
+            - setup-env
+      - build-server:
+          <<: *dev-stack-defaults
+          requires:
+            - lint
+            - setup-env
+      - deploy:
+          <<: *dev-stack-defaults
+          requires:
+            - build-client
+            - build-server
+      - deploy-client:
+          <<: *dev-stack-defaults
+          requires:
+            - deploy
+      - setup-env:
+          name: setup-env-staging
+          <<: *staging-stack-defaults
+          requires:
+            - shellcheck/check
+      - build-client:
+          name: build-client-staging
+          <<: *staging-stack-defaults
+          requires:
+            - lint
+            - setup-env-staging
+      - build-server:
+          name: build-server-staging
+          <<: *staging-stack-defaults
+          requires:
+            - lint
+            - setup-env-staging
+      - deploy:
+          name: deploy-staging
+          <<: *staging-stack-defaults
+          requires:
+            - build-client-staging
+            - build-server-staging
+      - deploy-client:
+          name: deploy-client-staging
+          <<: *staging-stack-defaults
+          requires:
+            - deploy-staging
+      - setup-env:
+          name: setup-env-prod
+          <<: *prod-stack-defaults
+          requires:
+            - shellcheck/check
+      - build-client:
+          name: build-client-prod
+          <<: *prod-stack-defaults
+          requires:
+            - lint
+            - setup-env-prod
+      - build-server:
+          name: build-server-prod
+          <<: *prod-stack-defaults
+          requires:
+            - lint
+            - setup-env-prod
+      - deploy:
+          name: deploy-prod
+          <<: *prod-stack-defaults
+          requires:
+            - build-client-prod
+            - build-server-prod
+      - deploy-client:
+          name: deploy-client-prod
+          <<: *prod-stack-defaults
+          requires:
+            - deploy-prod

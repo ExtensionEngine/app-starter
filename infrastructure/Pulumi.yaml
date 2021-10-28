@@ -1,0 +1,20 @@
+name: app_starter
+runtime: nodejs
+description: App starter infrastructure
+template:
+  config:
+    aws:region:
+      description: The AWS region to deploy into
+    db:name:
+      description: Database name
+    db:password:
+      description: Database password
+      secret: true
+    db:user:
+      description: Database user
+    server:docker-image:
+      description: Server microservice docker image
+    s3:site-bucket-name:
+      description: Site bucket name
+    s3:storage-bucket-name:
+      description: Storage bucket name
