@@ -17,7 +17,7 @@ async function reset(): Promise<void> {
   try {
     await em.begin();
     await p.each(entities, it => em.nativeDelete(it));
-    logger.info('Database has been reset successfuly.');
+    logger.info('Database has been reset successfully.');
     return em.commit();
   } catch (err) {
     logger.error(err);
