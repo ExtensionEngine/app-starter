@@ -3,12 +3,12 @@
 const seed = require('../../actions/seed');
 const user = Cypress.env('USER_EMAIL');
 
-describe('Reset Password Test', () => {
+describe('Reset password page', () => {
   beforeEach(() => {
     seed('users');
   });
 
-  it('Resets password', () => {
+  it('should send reset password email', () => {
     cy.visit('/');
     cy.findByText('Forgot password?').click();
     cy.findByLabelText('Email').type(user);
