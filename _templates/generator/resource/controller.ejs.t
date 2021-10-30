@@ -3,40 +3,36 @@ to: "<%= `${h.getResourcePath(resource, path)}/controller.ts` %>"
 ---
 import { Request, Response } from 'express';
 import autobind from 'auto-bind';
-import <%= Resource = h.capitalize(resource) %> from './model';
-import I<%= Resource = h.capitalize(resource) %>Repository from './interfaces/repository';
+import <%= Resource = h.changeCase.pascalCase(resource) %> from './model';
+import I<%= Resource = h.changeCase.pascalCase(resource) %>Repository from './interfaces/repository';
 
 class <%= Resource %>Controller {
   #repository: I<%= Resource %>Repository;
 
-  constructor(<%= resource %>Repository: I<%= Resource %>Repository) {
+  constructor(<%= resource = h.changeCase.camelCase(resource) %>Repository: I<%= Resource %>Repository) {
     this.#repository = <%= resource %>Repository;
     autobind(this);
   }
 
-  async getAll(_: Request, res: Response): Promise<Response> {
+  async list(_: Request, res: Response): Promise<Response> {
     const data = await this.#repository.findAll();
     return res.json({ data });
   }
 
-  async get({ params }: Request, res: Response): Promise<Response> {
-    const id = Number(params.<%= h.inflection.camelize(resource, true) %>Id);
-    const data = await this.#repository.findOne(id);
-    return res.json({ data });
+  async get({ <%= resource %> }: Request, res: Response): Promise<Response> {
+    return res.json({ data: <%= resource %> });
   }
 
-  async post({ body }: Request, res: Response): Promise<Response> {
+  async create({ body }: Request, res: Response): Promise<Response> {
     const data = new <%= Resource %>();
     await this.#repository.persistAndFlush(data);
     return res.json({ data });
   }
 
-  async patch({ params, body }: Request, res: Response): Promise<Response> {
-    const id = Number(params.<%= h.inflection.camelize(resource, true) %>Id);
-    const data = await this.#repository.findOne(id);
-    this.#repository.assign(data, body);
+    async update({ <%= resource %>, body }: Request, res: Response): Promise<Response> {
+    this.#repository.assign(<%= resource %>, body);
     await this.#repository.flush();
-    return res.json({ data });
+    return res.json({ data: <%= resource %> });
   }
 }
 
