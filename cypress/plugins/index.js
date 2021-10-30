@@ -22,7 +22,7 @@ const schema = joi.object({
 }).unknown();
 joi.assert(process.env, schema);
 
-module.exports = async (on, config) => {
+module.exports = async (_, config) => {
   config.baseUrl = process.env.APP_URL;
   ENV_SECRETS.forEach(secret => {
     config.env[secret] = process.env[secret];
