@@ -30,16 +30,17 @@ class UserController {
     autobind(this);
   }
 
-  async list({ query, pagination }: Request, res: Response): Promise<Response> {
+  async list(req: Request, res: Response): Promise<Response> {
+    const { query, parsedQuery, pagination } = req;
     const { role, email, filter } = query;
-    const { showArchived } = pagination;
+    const excludeDeleted = !parsedQuery.includeArchived;
     const where = {
       ...filter && { $or: createFilter(filter) },
       ...email && { email: email as string },
-      ...role && { role: role as Role },
-      ...!showArchived && { deletedAt: null }
+      ...role && { role: role as Role }
     };
-    const [items, total] = await this.#userRepository.findAndCount(where, pagination);
+    const options = { ...pagination, filters: { excludeDeleted } };
+    const [items, total] = await this.#userRepository.findAndCount(where, options);
     return res.json({ data: { items, total } });
   }
 

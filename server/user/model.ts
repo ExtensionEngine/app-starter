@@ -1,6 +1,7 @@
 import {
   Entity,
   Enum,
+  Filter,
   Property,
   Unique
 } from '@mikro-orm/core';
@@ -9,6 +10,11 @@ import bcrypt from 'bcrypt';
 import { Role } from './roles';
 
 @Entity()
+@Filter({
+  name: 'excludeDeleted',
+  cond: { deletedAt: null },
+  default: true
+})
 class User extends BaseEntity {
   @Property()
   firstName: string;
