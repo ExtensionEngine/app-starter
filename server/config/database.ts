@@ -32,7 +32,9 @@ const createConfig = (env: Env): DatabaseConfig => ({
   type: 'postgresql',
   migrations: {
     path: `${process.cwd()}/server/shared/database/migrations`,
-    disableForeignKeys: false
+    disableForeignKeys: false,
+    pattern: /^\d+[\w-]+\.ts$/,
+    fileName: (timestamp: string) => `${timestamp}-new-migration`
   },
   debug: env.NODE_ENV !== 'production',
   highlighter: env.NODE_ENV !== 'production' && new SqlHighlighter()

@@ -6,7 +6,7 @@ declare module 'express' {
   interface Request {
     user: User;
     pagination: Pagination;
-    parsedQuery: ParsedQuery
+    parsedQuery: ParsedQuery;
     file: File;
   }
 }
