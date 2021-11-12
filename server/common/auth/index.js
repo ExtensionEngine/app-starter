@@ -1,10 +1,10 @@
 'use strict';
 
 const { ExtractJwt, Strategy: JwtStrategy } = require('passport-jwt');
-const { User, Sequelize } = require('../database');
+const { Sequelize, User } = require('../database');
 const { Authenticator } = require('passport');
-const { auth: config } = require('../../config');
 const autobind = require('auto-bind');
+const { auth: config } = require('../../config');
 const LocalStrategy = require('passport-local');
 
 const { EmptyResultError } = Sequelize;
@@ -38,8 +38,10 @@ auth.use('local', new LocalStrategy(localOptions, (email, password, done) => {
   return User.findOne({ where, rejectOnEmpty: true })
     .then(user => user.authenticate(password))
     .then(user => done(null, user || false))
-    .catch(EmptyResultError, () => done(null, false))
-    .catch(err => done(err));
+    .catch(err => {
+      if (err instanceof EmptyResultError) return done(null, false);
+      return done(err);
+    });
 }));
 auth.use('jwt', new JwtStrategy(jwtOptions, verify));
 
@@ -51,6 +53,8 @@ module.exports = auth;
 function verify(payload, done) {
   return User.findByPk(payload.id, { rejectOnEmpty: true })
     .then(user => done(null, user))
-    .catch(EmptyResultError, () => done(null, false))
-    .catch(err => done(err));
+    .catch(err => {
+      if (err instanceof EmptyResultError) return done(null, false);
+      return done(err);
+    });
 }

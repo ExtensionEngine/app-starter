@@ -1,26 +1,28 @@
 <template>
-  <nav
-    class="navbar is-fixed-top is-info"
-    role="navigation"
-    aria-label="main navigation">
-    <div class="navbar-brand">
-      <router-link to="/" class="navbar-item">APP STARTER</router-link>
-    </div>
-    <div v-if="user" class="navbar-menu">
-      <div class="navbar-end">
-        <div class="navbar-item has-dropdown is-hoverable user-dropdown">
-          <a href="#" class="navbar-link">
-            <span class="mdi mdi-account-circle"></span>{{ user.email }}
-          </a>
-          <div class="navbar-dropdown is-right">
-            <a @click.prevent="logout" href="#" class="navbar-item">
-              <span class="mdi mdi-logout"></span>Logout
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </nav>
+  <v-app-bar color="blue" app>
+    <router-link :to="{ name: 'home' }" class="app-brand text-decoration-none">
+      App starter
+    </router-link>
+    <v-spacer />
+    <v-menu
+      min-width="220"
+      transition="slide-y-transition"
+      z-index="1000"
+      offset-y>
+      <template #activator="{ on }">
+        <a v-on="on" class="navbar-link">
+          <v-icon color="white" class="mr-1">mdi-account-circle</v-icon>
+          {{ user.label }}
+          <v-icon color="white">mdi-chevron-down</v-icon>
+        </a>
+      </template>
+      <v-list class="menu-list text-left">
+        <v-list-item @click="logout">
+          <v-list-item-title>Logout</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </v-app-bar>
 </template>
 
 <script>
@@ -28,83 +30,22 @@ import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'main-navbar',
-  computed: {
-    ...mapState('auth', ['user'])
-  },
-  methods: mapActions('auth', ['logout']),
-  mounted() {
-    // NOTE: Add appropriate css class to <html> element according to:
-    //       https://bulma.io/documentation/components/navbar/#fixed-navbar
-    document.documentElement.classList.add('has-navbar-fixed-top');
-  }
+  computed: mapState('auth', ['user']),
+  methods: mapActions('auth', ['logout'])
 };
 </script>
 
 <style lang="scss" scoped>
-.navbar {
-  min-height: 4rem;
-  box-shadow:
-    0 2px 4px -1px rgba(0,0,0,0.2),
-    0 4px 5px 0 rgba(0,0,0,0.14),
-    0 1px 10px 0 rgba(0,0,0,0.12);
-}
-
-.navbar-item {
+.app-brand {
+  padding-bottom: 0.125rem;
+  color: #fafafa;
   font-size: 1.25rem;
-  font-weight: 300;
+  font-weight: 400;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
-.search-container {
-  width: 51%;
-  margin-left: 6%;
-}
-
-.search-container .navbar-item {
-  width: 100%;
-}
-
-.fade-enter-active, .fade-leave-active {
-  transition: all 0.5s;
-}
-
-.fade-enter, .fade-leave-to {
-  opacity: 0;
-}
-
-.user-dropdown {
-  margin-left: 2rem;
-
-  .navbar-dropdown {
-    padding: 0;
-  }
-
-  .mdi {
-    padding-right: 0.5rem;
-    font-size: 1.5rem;
-  }
-
-  .navbar-link .mdi {
-    font-size: 2rem;
-  }
-
-  .mdi-logout {
-    padding-left: 0.4rem;
-  }
-
-  .navbar-item {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-  }
-}
-
-.navbar-brand .navbar-item {
-  padding: 0 1.5rem;
-  font-size: 1.5rem;
-  line-height: 2.5rem;
-
-  .mdi {
-    margin-right: 0.5rem;
-    font-size: 2rem;
-  }
+.navbar-link {
+  color: #fafafa;
 }
 </style>

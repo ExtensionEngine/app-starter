@@ -1,4 +1,6 @@
-const fileType = require('file-type');
+'use strict';
+
+const FileType = require('file-type');
 const FsBlobStore = require('fs-blob-store');
 const getStream = require('get-stream');
 const Joi = require('joi');
@@ -27,9 +29,9 @@ class FsStore extends FsBlobStore {
 
   getFileUrl(key) {
     return getStream.buffer(FsBlobStore(this.path).createReadStream({ key }))
-      .then(data => {
-        const mimetype = fileType(data).mime;
-        return `data:${mimetype};base64,${data.toString('base64')}`;
+      .then(async data => {
+        const { mime } = await FileType.fromBuffer(data);
+        return `data:${mime};base64,${data.toString('base64')}`;
       });
   }
 }
