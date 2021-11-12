@@ -10,6 +10,7 @@ import Mail from './shared/mail';
 import parsePaginationMiddleware from './middleware/pagination';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
+import Seed from './shared/database/seeds';
 import Storage from './shared/storage';
 import user from './user';
 import UserImportService from './user/import.service';
@@ -29,6 +30,7 @@ function configure(provider: Provider): void {
   provider.service('db', Db, 'config', 'logger');
   provider.service('mail', Mail, 'config', 'logger');
   provider.service('storage', Storage, 'config');
+  provider.service('seed', Seed, 'db', 'logger');
   provider.service(
     'userNotificationService',
     UserNotificationService,

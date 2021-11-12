@@ -1,23 +1,31 @@
 'use strict';
-/// <reference types="cypress" />
-// ***********************************************************
-// This example plugins/index.js can be used to load plugins
-//
-// You can change the location of this file or turn off loading
-// the plugins file with the 'pluginsFile' configuration option.
-//
-// You can read more here:
-// https://on.cypress.io/plugins-guide
-// ***********************************************************
 
-// This function is called when a project is opened or re-opened (e.g. due to
-// the project's config changing)
+require('dotenv').config();
+const joi = require('joi');
 
-/**
- * @type {Cypress.PluginConfig}
- */
-// eslint-disable-next-line no-unused-vars
-module.exports = (on, config) => {
-  // `on` is used to hook into various events Cypress emits
-  // `config` is the resolved Cypress config
+const ENV_SECRETS = [
+  'SERVER_URL',
+  'APP_URL',
+  'USER_EMAIL',
+  'USER_PASSWORD',
+  'ADMIN_EMAIL',
+  'ADMIN_PASSWORD'
+];
+
+const schema = joi.object({
+  SERVER_URL: joi.string().required(),
+  APP_URL: joi.string().required(),
+  USER_EMAIL: joi.string().required(),
+  USER_PASSWORD: joi.string().required(),
+  ADMIN_EMAIL: joi.string().required(),
+  ADMIN_PASSWORD: joi.string().required()
+}).unknown();
+joi.assert(process.env, schema);
+
+module.exports = async (_, config) => {
+  config.baseUrl = process.env.APP_URL;
+  ENV_SECRETS.forEach(secret => {
+    config.env[secret] = process.env[secret];
+  });
+  return config;
 };

@@ -8,7 +8,7 @@ import {
   FindOptions
 } from '@mikro-orm/core';
 import Db, { DatabaseProvider } from '../shared/database';
-import <%= Resource = h.capitalize(resource) %> from './model';
+import <%= Resource = h.changeCase.pascalCase(resource) %> from './model';
 import I<%= Resource %>Repository from './interfaces/repository';
 
 class <%= Resource %>Repository implements I<%= Resource %>Repository {

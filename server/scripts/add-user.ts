@@ -1,4 +1,5 @@
 import { anyTldEmailSchema } from '../utils/validation';
+import { Command } from 'commander';
 import configure from '../framework/configure';
 import humanize from 'humanize-string';
 import joi from 'joi';
@@ -9,6 +10,19 @@ import provider from '../framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import roles from '../user/roles';
 import User from '../user/model';
+import { UserDTO } from '../user/interfaces/dtos';
+
+const program = new Command('add-user');
+
+program.action(async () => {
+  const data = await prompt(questions);
+  configure(provider, main);
+  const { db } = provider.container;
+  await db.connect();
+  return RequestContext.createAsync(db.provider.em, () => addUser(data));
+});
+
+export default program;
 
 const userSchema = {
   email: anyTldEmailSchema.required(),
@@ -46,15 +60,8 @@ const questions = [{
   message: 'Select role:'
 }];
 
-prompt(questions)
-  .then(async data => {
-    configure(provider, main);
-    const { db } = provider.container;
-    await db.connect();
-    await RequestContext.createAsync(db.provider.em, () => addUser(data));
-  });
-
-function addUser({ firstName, lastName, email, role, password }) {
+function addUser(userData: UserDTO): Promise<void> {
+  const { firstName, lastName, email, role, password } = userData;
   const { db, logger } = provider.container;
   const em = db.provider.em.fork(false);
   const user = new User(firstName, lastName, email, role, password);
@@ -64,8 +71,8 @@ function addUser({ firstName, lastName, email, role, password }) {
     .then((code = 0) => process.exit(code));
 }
 
-function validate(attribute) {
-  return input => {
+function validate(attribute: string) {
+  return (input: string) => {
     const { error, value } = userSchema[attribute].validate(input);
     return error || Boolean(value);
   };
