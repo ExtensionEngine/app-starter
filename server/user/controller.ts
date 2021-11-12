@@ -15,7 +15,7 @@ const createFilter = q => ['email', 'firstName', 'lastName'].map(field => ({
 }));
 
 class UserController {
-  #userRepository: IUserRepository;
+  #repository: IUserRepository;
   #userNotificationService: IUserNotificationService;
   #userImportService: IUserImportService;
 
@@ -24,7 +24,7 @@ class UserController {
     userNotificationService: IUserNotificationService,
     userImportService: IUserImportService
   ) {
-    this.#userRepository = userRepository;
+    this.#repository = userRepository;
     this.#userNotificationService = userNotificationService;
     this.#userImportService = userImportService;
     autobind(this);
@@ -39,7 +39,7 @@ class UserController {
       ...role && { role: role as Role },
       ...!showArchived && { deletedAt: null }
     };
-    const [items, total] = await this.#userRepository.findAndCount(where, pagination);
+    const [items, total] = await this.#repository.findAndCount(where, pagination);
     return res.json({ data: { items, total } });
   }
 
@@ -51,24 +51,24 @@ class UserController {
     joi.attempt(body, userSchema);
     const { id, firstName, lastName, email, role } = body;
     const user = id
-      ? await this.#userRepository.findOne(Number(id))
+      ? await this.#repository.findOne(Number(id))
       : new User(firstName, lastName, email, role);
-    if (id) this.#userRepository.assign(user, { deletedAt: null });
-    await this.#userRepository.persistAndFlush(user);
+    if (id) this.#repository.assign(user, { deletedAt: null });
+    await this.#repository.persistAndFlush(user);
     await this.#userNotificationService.invite(user);
     return res.json({ data: user });
   }
 
   async update({ user, body }: Request, res: Response): Promise<Response> {
     const userData = joi.attempt(body, userSchema);
-    this.#userRepository.assign(user, userData);
-    await this.#userRepository.persistAndFlush(user);
+    this.#repository.assign(user, userData);
+    await this.#repository.persistAndFlush(user);
     return res.json({ data: user });
   }
 
   async delete({ user }: Request, res: Response): Promise<Response> {
-    this.#userRepository.assign(user, { deletedAt: new Date() });
-    await this.#userRepository.flush();
+    this.#repository.assign(user, { deletedAt: new Date() });
+    await this.#repository.flush();
     return res.status(NO_CONTENT).send();
   }
 
