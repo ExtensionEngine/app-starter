@@ -1,6 +1,6 @@
 import { QueryOrder } from '@mikro-orm/core';
 
-type orderBy = {
+export type OrderBy = {
   [key: string]: QueryOrder
 };
 
@@ -12,5 +12,5 @@ export interface ParsedQuery {
 export interface Pagination {
   limit: number;
   offset: number;
-  orderBy: orderBy;
+  orderBy: OrderBy;
 }
