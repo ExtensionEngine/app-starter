@@ -59,16 +59,16 @@ class UserController {
     return res.json({ data: user });
   }
 
-  async patch({ user, body }: Request, res: Response): Promise<Response> {
+  async update({ user, body }: Request, res: Response): Promise<Response> {
     const userData = joi.attempt(body, userSchema);
     this.#userRepository.assign(user, userData);
     await this.#userRepository.persistAndFlush(user);
     return res.json({ data: user });
   }
 
-  async remove({ user }: Request, res: Response): Promise<Response> {
+  async delete({ user }: Request, res: Response): Promise<Response> {
     this.#userRepository.assign(user, { deletedAt: new Date() });
-    await this.#userRepository.persistAndFlush(user);
+    await this.#userRepository.flush();
     return res.status(NO_CONTENT).send();
   }
 

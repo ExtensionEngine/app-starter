@@ -1,9 +1,9 @@
 
 import User from '../../user/model';
 
-interface IAuthService {
-  invite(user: User): Promise<User>;
-  resetPassword(user: User): Promise<User>;
+interface IUserNotificationService {
+  invite(user: User): Promise<void>;
+  resetPassword(user: User): Promise<void>;
 }
 
-export default IAuthService;
+export default IUserNotificationService;
