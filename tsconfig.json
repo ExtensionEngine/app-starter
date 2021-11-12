@@ -1,0 +1,21 @@
+{
+  "include": ["server/**/*.ts"],
+  "compilerOptions": {
+    "rootDir": "./server",
+    "outDir": "./dist/server",
+    "target": "ES6",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "alwaysStrict": true,
+    "allowJs": true,
+    "types": ["cypress"]
+  },
+  "ts-node": {
+    "files": true
+  },
+}

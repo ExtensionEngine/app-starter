@@ -1,7 +1,11 @@
 import '@/common/validation';
 
 import { formatDate, truncate } from '@/common/filters';
-import { ValidationObserver, ValidationProvider } from 'vee-validate';
+import {
+  setInteractionMode,
+  ValidationObserver,
+  ValidationProvider
+} from 'vee-validate';
 import App from './App';
 import router from './router';
 import store from './store';
@@ -15,6 +19,7 @@ Vue.filter('truncate', truncate);
 
 Vue.component('validation-observer', ValidationObserver);
 Vue.component('validation-provider', ValidationProvider);
+setInteractionMode('passive');
 
 Vue.use(VueHotkey);
 Vue.use(VueVisible);

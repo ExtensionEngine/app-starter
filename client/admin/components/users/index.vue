@@ -69,7 +69,6 @@
 <script>
 import api from '@/admin/api/user';
 import ConfirmationDialog from '../common/ConfirmationDialog';
-import humanize from 'humanize-string';
 import ImportDialog from './ImportDialog';
 import { mapState } from 'vuex';
 import throttle from 'lodash/throttle';
@@ -123,7 +122,6 @@ export default {
       const { deletedAt, label } = user;
       const action = deletedAt ? 'restore' : 'archive';
       this.confirmation = {
-        heading: `${humanize(action)} user`,
         message: `Are you sure you want to ${action} user "${label}"?`,
         action: actions(user)[action],
         dialog: true

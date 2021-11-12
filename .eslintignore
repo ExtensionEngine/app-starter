@@ -1,1 +1,5 @@
+node_modules
+# build output (make sure it's set to your correct build folder name)
 dist
+# nyc coverage output
+coverage
