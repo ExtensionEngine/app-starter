@@ -7,7 +7,7 @@ import { IContainer } from 'bottlejs';
 import IProgram from './types/program';
 import logger from './shared/logger';
 import Mail from './shared/mail';
-import parsePaginationMiddleware from './middleware/pagination';
+import parseQueryMiddleware from './shared/query-parser/middleware';
 import { Provider } from './framework/provider';
 import { RequestContext } from '@mikro-orm/core';
 import Seed from './shared/database/seeds';
@@ -41,7 +41,6 @@ function configure(provider: Provider): void {
     UserImportService,
     'config', 'userRepository', 'userNotificationService'
   );
-  provider.registerMiddleware('parsePaginationMiddleware', parsePaginationMiddleware);
   provider.registerModule(auth);
   provider.registerModule(user);
 }
@@ -55,13 +54,12 @@ function registerRouters(app: Application, container: IContainer): void {
     db,
     userRouter,
     authRouter,
-    setAuthRequestContextMiddleware,
-    parsePaginationMiddleware
+    setAuthRequestContextMiddleware
   } = container;
   app.use((_req: Request, _res: Response, next: NextFunction) => {
     RequestContext.create(db.provider.em, next);
   });
-  app.use(setAuthRequestContextMiddleware, parsePaginationMiddleware);
+  app.use(setAuthRequestContextMiddleware, parseQueryMiddleware);
   app.use('/api/auth', authRouter);
   app.use('/api/users', userRouter);
 }
