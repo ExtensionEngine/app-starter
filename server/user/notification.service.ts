@@ -18,11 +18,7 @@ class UserNotificationService implements IUserNotificationService {
     autobind(this);
   }
 
-  private resetUrl(token) {
-    return `${this.#config.appUrl}/#/auth/reset-password/${token}`;
-  }
-
-  async resetPassword(user: User): Promise<User> {
+  async resetPassword(user: User): Promise<void> {
     const token = this.#authService.createToken(user, AudienceScope.Setup, '5 days');
     const href = this.resetUrl(token);
     const templateData = { href, recipientName: user.firstName };
@@ -32,10 +28,9 @@ class UserNotificationService implements IUserNotificationService {
       templateName: 'reset',
       templateData
     });
-    return user;
   }
 
-  async invite(user: User): Promise<User> {
+  async invite(user: User): Promise<void> {
     const token = this.#authService.createToken(user, AudienceScope.Setup, '5 days');
     const href = this.resetUrl(token);
     const recipient = user.email;
@@ -47,7 +42,10 @@ class UserNotificationService implements IUserNotificationService {
       templateName: 'welcome',
       templateData
     });
-    return user;
+  }
+
+  private resetUrl(token: string): string {
+    return `${this.#config.appUrl}/#/auth/reset-password/${token}`;
   }
 }
 

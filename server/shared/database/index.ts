@@ -40,6 +40,7 @@ class Db {
       ...database,
       loadStrategy: LoadStrategy.JOINED,
       subscribers: this.#subscribers,
+      forceEntityConstructor: true,
       entities
     });
     if (!isProduction) await this.migrate();

@@ -19,6 +19,7 @@
         v-if="show"
         ref="form"
         @submit.prevent="$refs.form.handleSubmit(save)"
+        data-testid="add-user-form"
         tag="form"
         novalidate>
         <validation-provider

@@ -15,6 +15,7 @@
         <v-btn
           v-on="on"
           v-bind="attrs"
+          :data-testid="`navbar-avatar-${user.label}`"
           color="primary"
           dark icon large
           class="mr-2">

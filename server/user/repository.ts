@@ -14,41 +14,38 @@ class UserRepository implements IUserRepository {
     where: FilterQuery<User>,
     options?: FindOneOptions<User>
   ): Promise<User | null> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.findOne(where, options);
+    return this.instance.findOne(where, options);
   }
 
   findAndCount(
     where: FilterQuery<User>,
     options?: FindOptions<User>
   ): Promise<[User[], number]> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.findAndCount(where, options);
+    return this.instance.findAndCount(where, options);
   }
 
   findAll(options?: FindOptions<User>): Promise<User[]> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.findAll(options);
+    return this.instance.findAll(options);
   }
 
   persistAndFlush(user: User | User[]): Promise<void> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.persistAndFlush(user);
+    return this.instance.persistAndFlush(user);
   }
 
   removeAndFlush(user: User): Promise<void> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.removeAndFlush(user);
+    return this.instance.removeAndFlush(user);
   }
 
   flush(): Promise<void> {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.flush();
+    return this.instance.flush();
   }
 
   assign(user: User, data: EntityData<User>): User {
-    const repository = this.#dbProvider.em.getRepository(User);
-    return repository.assign(user, data);
+    return this.instance.assign(user, data);
+  }
+
+  private get instance() {
+    return this.#dbProvider.em.getRepository(User);
   }
 }
 

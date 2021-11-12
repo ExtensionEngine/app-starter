@@ -12,9 +12,10 @@
     "emitDecoratorMetadata": true,
     "suppressImplicitAnyIndexErrors": true,
     "alwaysStrict": true,
-    "allowJs": true
+    "allowJs": true,
+    "types": ["cypress"]
   },
   "ts-node": {
     "files": true
-  }
+  },
 }

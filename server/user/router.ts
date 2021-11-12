@@ -19,8 +19,8 @@ function createRouter(
     .post('/', userController.createOrRestore)
     .param('userId', getUserMiddleware)
     .get('/:userId', userController.get)
-    .patch('/:userId', userController.patch)
-    .delete('/:userId', userController.remove)
+    .patch('/:userId', userController.update)
+    .delete('/:userId', userController.delete)
     .post('/:userId/invite', userController.invite)
     .post('/import', upload.single('file'), userController.bulkImport)
     .get('/import/template', userController.getImportTemplate);

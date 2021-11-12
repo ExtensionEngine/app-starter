@@ -14,7 +14,7 @@ import BaseEntity from '<%= h.getBaseEntityPath(
 ) %>';
 
 @Entity()
-class <%= Resource = h.capitalize(resource) %> extends BaseEntity {
+class <%= Resource = h.changeCase.pascalCase(resource) %> extends BaseEntity {
   @Property()
   textProp: string;
 

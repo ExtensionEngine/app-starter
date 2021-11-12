@@ -20,7 +20,7 @@ class Seed {
     await this.#db.connect();
     this.#log.info('Seeding database...');
     await P.each(SEED_MODULES, seed => seed(this.#db.provider.em));
-    this.#log.info('Database successfully seeded.');
+    this.#log.info('Database successfully seeded');
   }
 }
 
