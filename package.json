@@ -120,7 +120,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "eslint-plugin-vue": "^7.9.0",
     "minimist": "^1.2.5",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.17",
     "poi": "^12.7.1",
     "rewrite-lockfile": "^1.0.0",
     "sass": "^1.32.11",
