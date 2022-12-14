@@ -49,7 +49,7 @@
     "dotenv": "^8.2.0",
     "emailjs": "^3.4.0",
     "exceljs": "^4.2.1",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
     "express-history-api-fallback": "^2.2.1",
     "fecha": "^4.2.1",
