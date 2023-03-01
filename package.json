@@ -84,7 +84,7 @@
     "sass-web-fonts": "^2.1.0",
     "save-as": "^0.1.8",
     "semver": "^7.3.5",
-    "sequelize": "^6.6.2",
+    "sequelize": "^6.29.0",
     "umzug": "^2.3.0",
     "url-join": "^4.0.1",
     "v-hotkey": "^0.9.0",
