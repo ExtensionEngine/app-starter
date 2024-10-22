@@ -89,7 +89,7 @@
     "url-join": "^4.0.1",
     "v-hotkey": "^0.9.0",
     "vee-validate": "^3.4.5",
-    "vue": "^2.6.12",
+    "vue": "^3.0.0",
     "vue-router": "^3.5.1",
     "vue-visible": "^1.0.2",
     "vuetify": "^2.4.11",
